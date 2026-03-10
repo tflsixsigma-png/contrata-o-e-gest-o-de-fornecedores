@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchasing Chessboard Dashboard | Prof. Thiago Lima</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --q1: #dc2626; --q2: #7c3aed; --q3: #475569; --q4: #1d4ed8;
+            --bg: #0a0f1e; --surface: #111827; --surface2: #1a2236;
+            --border: #1e2d45; --text: #e2e8f0; --muted: #64748b;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
+        code, .mono { font-family: 'Space Mono', monospace; }
+
+        /* NAV */
+        .nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .nav-title { font-size: 1.1rem; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: -.02em; }
+        .nav-sub { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; }
+
+        /* TABS */
+        .tabs { display: flex; gap: .5rem; padding: 1.5rem 2rem 0; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+        .tab { padding: .6rem 1.2rem; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; border-radius: 8px 8px 0 0; border: 1px solid transparent; border-bottom: none; transition: all .2s; color: var(--muted); white-space: nowrap; }
+        .tab:hover { color: var(--text); background: var(--surface2); }
+        .tab.active { background: var(--bg); color: #60a5fa; border-color: var(--border); }
+
+        /* PANELS */
+        .panel { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .panel.active { display: block; }
+
+        /* CARDS */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+        .card-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+
+        /* SLIDERS */
+        input[type=range] { accent-color: #3b82f6; cursor: pointer; width: 100%; }
+
+        /* HIGHLIGHT */
+        .highlight-strat { border: 2px solid #3b82f6 !important; box-shadow: 0 0 30px rgba(59,130,246,.3); }
+
+        /* QUADRANT CARDS */
+        details summary::-webkit-details-marker { display: none; }
+        .method-item { border-left: 2px solid var(--border); padding-left: 10px; margin-bottom: 12px; font-size: .72rem; color: #94a3b8; }
+        .method-item b { color: var(--text); }
+        .chart-container { position: relative; height: 320px; width: 100%; }
+
+        /* SUPPLIER FORM */
+        .input-field { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .6rem 1rem; color: var(--text); font-family: 'Syne', sans-serif; font-size: .85rem; width: 100%; outline: none; transition: border-color .2s; }
+        .input-field:focus { border-color: #3b82f6; }
+        .btn { padding: .6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; transition: all .2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: #dc2626; color: white; font-size: .7rem; padding: .3rem .7rem; }
+
+        /* SUPPLIER LIST */
+        .supplier-pill { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; background: var(--surface2); border-radius: 10px; border: 1px solid var(--border); margin-bottom: .5rem; font-size: .8rem; }
+        .supplier-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* SCORING */
+        .scoring-slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .scoring-label { font-size: .75rem; width: 180px; flex-shrink: 0; color: #94a3b8; }
+        .scoring-val { font-family: 'Space Mono', monospace; font-size: .75rem; width: 40px; text-align: right; color: #60a5fa; }
+        .score-badge { display: inline-block; padding: .3rem .9rem; border-radius: 999px; font-size: .75rem; font-weight: 700; font-family: 'Space Mono', monospace; }
+
+        /* CHECKLIST */
+        .checklist-item { display: flex; align-items: flex-start; gap: .75rem; padding: .75rem; border-radius: 8px; transition: background .15s; cursor: default; }
+        .checklist-item:hover { background: var(--surface2); }
+        .checklist-item input[type=checkbox] { accent-color: #3b82f6; width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+        .checklist-item label { font-size: .8rem; color: #94a3b8; cursor: pointer; }
+        .checklist-item.checked label { color: #475569; text-decoration: line-through; }
+        .progress-bar-wrap { background: var(--surface2); border-radius: 999px; height: 6px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 999px; background: #3b82f6; transition: width .4s; }
+
+        /* STRATEGY GUIDE */
+        .quadrant-guide { border-radius: 14px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem; }
+        .quadrant-guide-header { padding: 1rem 1.5rem; font-weight: 800; font-size: .85rem; text-transform: uppercase; display: flex; align-items: center; gap: .75rem; }
+        .quadrant-guide-body { padding: 1.5rem; background: var(--surface2); display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .guide-section-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .75rem; }
+        .guide-tag { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: .25rem .65rem; font-size: .7rem; margin: .2rem; color: #94a3b8; }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0; border-bottom: 1px solid var(--border); font-size: .78rem; }
+        .kpi-row:last-child { border-bottom: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .panel { padding: 1rem; }
+            .quadrant-guide-body { grid-template-columns: 1fr; }
+        }
+
+        /* BADGE QUADRANT */
+        .badge-q1 { background: rgba(220,38,38,.15); color: #f87171; border: 1px solid rgba(220,38,38,.3); }
+        .badge-q2 { background: rgba(124,58,237,.15); color: #c084fc; border: 1px solid rgba(124,58,237,.3); }
+        .badge-q3 { background: rgba(71,85,105,.15); color: #94a3b8; border: 1px solid rgba(71,85,105,.3); }
+        .badge-q4 { background: rgba(29,78,216,.15); color: #60a5fa; border: 1px solid rgba(29,78,216,.3); }
+
+        .animate-in { animation: fadeUp .4s ease forwards; }
+        @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div>
+        <div class="nav-title">⬡ Purchasing Chessboard Dashboard</div>
+        <div class="nav-sub">Prof. Thiago Lima · MBA & Consultoria</div>
+    </div>
+    <div style="font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);">Kearney · 64 Métodos</div>
+</nav>
+
+<div class="tabs">
+    <div class="tab active" onclick="showTab('diagnostico')">🎯 Diagnóstico</div>
+    <div class="tab" onclick="showTab('fornecedores')">📍 Fornecedores</div>
+    <div class="tab" onclick="showTab('scoring')">📊 Scoring</div>
+    <div class="tab" onclick="showTab('checklist')">✅ Checklist Contrato</div>
+    <div class="tab" onclick="showTab('guia')">📖 Guia Estratégico</div>
+    <div class="tab" onclick="showTab('taxonomia')">🗂 Taxonomia (64)</div>
+</div>
+
+<!-- ====== TAB: DIAGNÓSTICO ====== -->
+<div id="tab-diagnostico" class="panel active animate-in">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+        <div class="card">
+            <div class="card-title">Diagnóstico de Poder (Kearney)</div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.5rem;">Poder de Demanda (Comprador) <span id="vY" style="color:#60a5fa;font-family:'Space Mono',monospace;">50%</span></label>
+                <input type="range" id="y" min="0" max="100" value="50">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.5rem;">Poder de Oferta (Fornecedor) <span id="vX" style="color:#60a5fa;font-family:'Space Mono',monospace;">50%</span></label>
+                <input type="range" id="x" min="0" max="100" value="50">
+            </div>
+            <div id="parecerBox" style="padding:1.25rem;background:var(--surface2);border-radius:12px;border-left:4px solid #3b82f6;">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#60a5fa;margin-bottom:.4rem;">Parecer Estratégico</div>
+                <div id="resEstrategia" style="font-size:1rem;font-weight:800;margin-bottom:.5rem;text-transform:uppercase;">Ajuste os Sliders</div>
+                <div id="textoParecer" style="font-size:.78rem;color:#94a3b8;line-height:1.6;">Selecione o nível de poder para ver as alavancas sugeridas.</div>
+                <div id="quadranteBadge" style="margin-top:.75rem;"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Mapa de Posicionamento</div>
+            <div class="chart-container"><canvas id="mainChart"></canvas></div>
+        </div>
+    </div>
+    <!-- quadrant summary cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+        <div style="border-radius:12px;padding:1rem;background:rgba(71,85,105,.1);border:1px solid rgba(71,85,105,.3);">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#94a3b8;margin-bottom:.5rem;">Gerenciar Gastos</div>
+            <div style="font-size:.72rem;color:#64748b;">Baixo poder mútuo. Eficiência e agregação de volume.</div>
+        </div>
+        <div style="border-radius:12px;padding:1rem;background:rgba(29,78,216,.1);border:1px solid rgba(29,78,216,.3);">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#60a5fa;margin-bottom:.5rem;">Alavancar Competição</div>
+            <div style="font-size:.72rem;color:#64748b;">Comprador forte. Pressão via rivalidade e leilões.</div>
+        </div>
+        <div style="border-radius:12px;padding:1rem;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#f87171;margin-bottom:.5rem;">Mudar Natureza</div>
+            <div style="font-size:.72rem;color:#64748b;">Fornecedor forte. Quebre monopólios via inovação.</div>
+        </div>
+        <div style="border-radius:12px;padding:1rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#c084fc;margin-bottom:.5rem;">Vantagem Conjunta</div>
+            <div style="font-size:.72rem;color:#64748b;">Alto poder mútuo. Colaboração e integração de cadeia.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== TAB: FORNECEDORES ====== -->
+<div id="tab-fornecedores" class="panel animate-in" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem;">
+        <div class="card">
+            <div class="card-title">Cadastrar Fornecedor</div>
+            <div style="display:flex;flex-direction:column;gap:.85rem;">
+                <div>
+                    <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Nome do Fornecedor</label>
+                    <input type="text" id="supName" class="input-field" placeholder="Ex: Acme Ltda.">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                    <div>
+                        <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Poder do Comprador (0–100)</label>
+                        <input type="number" id="supY" class="input-field" min="0" max="100" value="50" placeholder="0–100">
+                    </div>
+                    <div>
+                        <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Poder do Fornecedor (0–100)</label>
+                        <input type="number" id="supX" class="input-field" min="0" max="100" value="50" placeholder="0–100">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Categoria / Produto</label>
+                    <input type="text" id="supCat" class="input-field" placeholder="Ex: Matéria-prima, TI, Logística">
+                </div>
+                <button class="btn btn-primary" onclick="addSupplier()">+ Adicionar ao Mapa</button>
+            </div>
+
+            <div style="margin-top:1.5rem;" id="supplierList">
+                <div class="card-title">Fornecedores Cadastrados</div>
+                <div id="supplierItems"><p style="font-size:.75rem;color:var(--muted);">Nenhum fornecedor cadastrado ainda.</p></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Mapa de Fornecedores</div>
+            <div style="position:relative;height:420px;width:100%;"><canvas id="supplierChart"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== TAB: SCORING ====== -->
+<div id="tab-scoring" class="panel animate-in" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="card">
+            <div class="card-title">Avaliação de Fornecedor</div>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Fornecedor avaliado</label>
+                <input type="text" id="scoreName" class="input-field" placeholder="Nome do fornecedor">
+            </div>
+            <div id="scoringCriteria"></div>
+            <div style="margin-top:1.25rem;padding:1rem;background:var(--surface2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:.75rem;color:var(--muted);">Score Total</span>
+                <span id="totalScore" class="score-badge" style="background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">0 / 100</span>
+            </div>
+            <div id="scoreVerdict" style="margin-top:.75rem;padding:.75rem;border-radius:8px;font-size:.78rem;display:none;"></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Radar de Performance</div>
+            <div style="position:relative;height:350px;"><canvas id="radarChart"></canvas></div>
+            <div id="scoreHistory" style="margin-top:1rem;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== TAB: CHECKLIST ====== -->
+<div id="tab-checklist" class="panel animate-in" style="display:none;">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:1.5rem;">
+        <div class="card" style="position:sticky;top:80px;height:fit-content;">
+            <div class="card-title">Selecionar Quadrante</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;" id="checklistNav">
+                <button onclick="showChecklist('all')" class="checklist-nav-btn active" style="text-align:left;padding:.75rem 1rem;border-radius:8px;border:1px solid #3b82f6;background:rgba(59,130,246,.1);color:#60a5fa;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'Syne',sans-serif;">📋 Base Genérica</button>
+                <button onclick="showChecklist('q3')" class="checklist-nav-btn" style="text-align:left;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:#94a3b8;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'Syne',sans-serif;">⬜ I. Gerenciar Gastos</button>
+                <button onclick="showChecklist('q4')" class="checklist-nav-btn" style="text-align:left;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:#94a3b8;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'Syne',sans-serif;">🔵 II. Alavancar Competição</button>
+                <button onclick="showChecklist('q1')" class="checklist-nav-btn" style="text-align:left;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:#94a3b8;cursor:pointer;font-size:.78em;font-weight:700;font-family:'Syne',sans-serif;">🔴 III. Mudar Natureza</button>
+                <button onclick="showChecklist('q2')" class="checklist-nav-btn" style="text-align:left;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:#94a3b8;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'Syne',sans-serif;">🟣 IV. Vantagem Conjunta</button>
+            </div>
+            <div style="margin-top:1.5rem;">
+                <div class="card-title">Progresso Geral</div>
+                <div id="progressAll" style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">0 / 0 itens</div>
+                <div class="progress-bar-wrap"><div id="progressAllBar" class="progress-bar-fill" style="width:0%"></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <div id="checklistContent"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== TAB: GUIA ESTRATÉGICO ====== -->
+<div id="tab-guia" class="panel animate-in" style="display:none;">
+    
+    <div class="quadrant-guide">
+        <div class="quadrant-guide-header" style="background:rgba(71,85,105,.15);border-bottom:1px solid var(--border);">
+            <span style="width:12px;height:12px;border-radius:3px;background:#64748b;display:inline-block;"></span>
+            <span style="color:#94a3b8;">I. Gerenciar Gastos</span>
+            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Comprador fraco · Fornecedor fraco</span>
+        </div>
+        <div class="quadrant-guide-body">
+            <div>
+                <div class="guide-section-title">Objetivo Principal</div>
+                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Maximizar eficiência via agregação, padronização e transparência de dados. Foco em processos, não em relacionamento.</p>
+                <div class="guide-section-title">Alavancas Prioritárias</div>
+                <span class="guide-tag">Gestão de Demanda</span><span class="guide-tag">Co-sourcing</span><span class="guide-tag">Agregação de Volume</span><span class="guide-tag">Mineração Comercial</span>
+                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Contratos curtos (6–12 meses), com revisões frequentes de preço. Evitar lock-in.</p>
+            </div>
+            <div>
+                <div class="guide-section-title">KPIs de Monitoramento</div>
+                <div class="kpi-row"><span>Economia vs. linha de base</span><span style="color:#60a5fa;font-size:.72rem;">% redução anual</span></div>
+                <div class="kpi-row"><span>Compliance de gastos</span><span style="color:#60a5fa;font-size:.72rem;">% uso de contratos</span></div>
+                <div class="kpi-row"><span>Nº de fornecedores ativos</span><span style="color:#60a5fa;font-size:.72rem;">Meta: redução 20%</span></div>
+                <div class="kpi-row"><span>Prazo médio de pagamento</span><span style="color:#60a5fa;font-size:.72rem;">DPO otimizado</span></div>
+                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Fragmentação de gastos, shadow buying, aprovações sem processo.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="quadrant-guide">
+        <div class="quadrant-guide-header" style="background:rgba(29,78,216,.1);border-bottom:1px solid var(--border);">
+            <span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>
+            <span style="color:#60a5fa;">II. Alavancar Competição</span>
+            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Comprador forte · Fornecedor fraco</span>
+        </div>
+        <div class="quadrant-guide-body">
+            <div>
+                <div class="guide-section-title">Objetivo Principal</div>
+                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Explorar posição de poder via pressão de mercado. Usar rivalidade entre fornecedores como alavanca de preço e inovação.</p>
+                <div class="guide-section-title">Alavancas Prioritárias</div>
+                <span class="guide-tag">Globalização</span><span class="guide-tag">Leilão Reverso</span><span class="guide-tag">Target Pricing</span><span class="guide-tag">Make-or-Buy</span>
+                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Contratos com cláusulas de redução progressiva de preço, benchmarking automático e multisourcing.</p>
+            </div>
+            <div>
+                <div class="guide-section-title">KPIs de Monitoramento</div>
+                <div class="kpi-row"><span>Saving realizado vs. meta</span><span style="color:#60a5fa;font-size:.72rem;">% hard saving</span></div>
+                <div class="kpi-row"><span>Nº fornecedores por categoria</span><span style="color:#60a5fa;font-size:.72rem;">Min. 3 ativos</span></div>
+                <div class="kpi-row"><span>Adesão ao RFP</span><span style="color:#60a5fa;font-size:.72rem;">% respostas válidas</span></div>
+                <div class="kpi-row"><span>Redução de TCO</span><span style="color:#60a5fa;font-size:.72rem;">Custo total vs. ano anterior</span></div>
+                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Race to the bottom de qualidade, dependência oculta de fornecedores únicos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="quadrant-guide">
+        <div class="quadrant-guide-header" style="background:rgba(220,38,38,.08);border-bottom:1px solid var(--border);">
+            <span style="width:12px;height:12px;border-radius:3px;background:#dc2626;display:inline-block;"></span>
+            <span style="color:#f87171;">III. Mudar Natureza</span>
+            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Comprador fraco · Fornecedor forte</span>
+        </div>
+        <div class="quadrant-guide-body">
+            <div>
+                <div class="guide-section-title">Objetivo Principal</div>
+                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Quebrar dependência e monopólios via inovação técnica, re-especificação e desenvolvimento de alternativas.</p>
+                <div class="guide-section-title">Alavancas Prioritárias</div>
+                <span class="guide-tag">Ruptura por Inovação</span><span class="guide-tag">Re-especificação</span><span class="guide-tag">Gestão de Risco</span><span class="guide-tag">Design for Sourcing</span>
+                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Contratos com cláusulas de saída, SLA rigoroso, penalidades por monopolização e plano de backup obrigatório.</p>
+            </div>
+            <div>
+                <div class="guide-section-title">KPIs de Monitoramento</div>
+                <div class="kpi-row"><span>Nº de alternativas desenvolvidas</span><span style="color:#f87171;font-size:.72rem;">Meta: ≥ 1 p/ categoria</span></div>
+                <div class="kpi-row"><span>Dependência de único fornecedor</span><span style="color:#f87171;font-size:.72rem;">% do gasto (meta: &lt;60%)</span></div>
+                <div class="kpi-row"><span>Lead time de substituição</span><span style="color:#f87171;font-size:.72rem;">Dias p/ ativar backup</span></div>
+                <div class="kpi-row"><span>Estoque de segurança</span><span style="color:#f87171;font-size:.72rem;">Dias de cobertura</span></div>
+                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Lock-in tecnológico, especificações proprietárias, custos de switching elevados.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="quadrant-guide">
+        <div class="quadrant-guide-header" style="background:rgba(124,58,237,.1);border-bottom:1px solid var(--border);">
+            <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;display:inline-block;"></span>
+            <span style="color:#c084fc;">IV. Vantagem Conjunta</span>
+            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Comprador forte · Fornecedor forte</span>
+        </div>
+        <div class="quadrant-guide-body">
+            <div>
+                <div class="guide-section-title">Objetivo Principal</div>
+                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Criar valor conjunto via parcerias profundas, inovação colaborativa e integração de cadeia de valor.</p>
+                <div class="guide-section-title">Alavancas Prioritárias</div>
+                <span class="guide-tag">Aliança Estratégica</span><span class="guide-tag">Revenue Sharing</span><span class="guide-tag">VMI</span><span class="guide-tag">Supplier Development</span>
+                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Contratos longos (3–5 anos), com mecanismos de gain-sharing, roadmap de inovação conjunto e governança formal.</p>
+            </div>
+            <div>
+                <div class="guide-section-title">KPIs de Monitoramento</div>
+                <div class="kpi-row"><span>NPS do relacionamento</span><span style="color:#c084fc;font-size:.72rem;">Avaliação mútua</span></div>
+                <div class="kpi-row"><span>Projetos conjuntos ativos</span><span style="color:#c084fc;font-size:.72rem;">Nº e ROI</span></div>
+                <div class="kpi-row"><span>Saving colaborativo</span><span style="color:#c084fc;font-size:.72rem;">% vs. meta de ganho</span></div>
+                <div class="kpi-row"><span>Prazo de entrega vs. SLA</span><span style="color:#c084fc;font-size:.72rem;">OTIF %</span></div>
+                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
+                <p style="font-size:.8rem;color:#94a3b8;">Captura de valor assimétrica, conflito de interesses, dependência relacional excessiva.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== TAB: TAXONOMIA ====== -->
+<div id="tab-taxonomia" class="panel animate-in" style="display:none;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;" id="taxonomiaGrid">
+        <!-- Q3 -->
+        <div id="cardQ3" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
+            <details open class="rounded-xl overflow-hidden" style="background:var(--surface2);border:1px solid var(--border);">
+                <summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#94a3b8;letter-spacing:.05em;">I. Gerenciar Gastos ▾</summary>
+                <div style="padding:.75rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--border);">Foco em eficiência de processos e transparência de dados.</div>
+            </details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">1. Gestão de Demanda</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A1. Redução de Demanda:</b> Questionar a necessidade fundamental via políticas de austeridade e auditorias.</div><div class="method-item"><b>B1. Gestão de Contratos:</b> Garantir que termos negociados sejam aplicados em todas as transações.</div><div class="method-item"><b>C1. Agregação entre Produtos:</b> Sinergia comercial ao agrupar produtos para um único parceiro.</div><div class="method-item"><b>D1. Agregação entre Unidades:</b> Centralizar demanda de múltiplas localizações para escala regional.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">2. Co-sourcing</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A2. Terceirização (BPO):</b> Delegação de categorias a provedores especializados com escala massiva.</div><div class="method-item"><b>B2. Comunidade de Sourcing:</b> Fóruns internos para compartilhar conhecimento técnico.</div><div class="method-item"><b>C2. Mega Fornecedor:</b> Consolidação de gastos em poucos fornecedores globais.</div><div class="method-item"><b>D2. Consórcios de Compras:</b> União de empresas independentes para compras conjuntas.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">3. Agregação de Volume</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A3. Gestão de Dados Mestre:</b> Harmonizar dados para identificar duplicidades e compras ocultas.</div><div class="method-item"><b>B3. Transparência de Gastos:</b> BI para mapear cada centavo e janelas de consolidação.</div><div class="method-item"><b>C3. Mineração de Custos:</b> Analisar histórico de faturas para preços de referência.</div><div class="method-item"><b>D3. Padronização:</b> Reduzir variedade técnica (SKUs) para aumentar escala.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">4. Mineração Comercial</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A4. Processo RFI/RFP:</b> Coleta factual de dados para eliminar subjetividade na escolha.</div><div class="method-item"><b>B4. Licitação Expressiva:</b> Condições variáveis para identificar otimizações.</div><div class="method-item"><b>C4. TCO:</b> Avaliar custo total da aquisição ao descarte.</div><div class="method-item"><b>D4. Desequilíbrios:</b> Aproveitar excesso de capacidade ou crises para fechar contratos.</div></div></details>
+        </div>
+        <!-- Q4 -->
+        <div id="cardQ4" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
+            <details open class="rounded-xl overflow-hidden" style="background:rgba(29,78,216,.15);border:1px solid rgba(29,78,216,.3);">
+                <summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#60a5fa;letter-spacing:.05em;">II. Alavancar Competição ▾</summary>
+                <div style="padding:.75rem 1rem;font-size:.72rem;color:#60a5fa;border-top:1px solid rgba(29,78,216,.3);opacity:.8;">Pressão de preços e exploração da rivalidade do mercado.</div>
+            </details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">5. Globalização</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A5. Sourcing Global:</b> Identificar fornecedores mundiais para acessar líderes de custo.</div><div class="method-item"><b>B5. Sourcing em LCC:</b> Focar em regiões com labor/energia baratos.</div><div class="method-item"><b>C5. Modelagem de Preço:</b> Decompor preço em matérias-primas, labor e margem.</div><div class="method-item"><b>D5. Precificação Linear (LPP):</b> Correlacionar preço a drivers técnicos via estatística.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">6. Licitação (Tendering)</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A6. Leilões Reversos:</b> Disputa online em tempo real para forçar custo marginal.</div><div class="method-item"><b>B6. Benchmarking de Preços:</b> Comparar preços com índices externos do setor.</div><div class="method-item"><b>C6. Preços Desagregados:</b> Quebrar sistemas para eliminar margens ocultas.</div><div class="method-item"><b>D6. Inteligência de Mercado:</b> Monitorar ociosidade para ganhar vantagem.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">7. Target Pricing</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A7. Regressão de Custos:</b> Fórmula multivariada para prever preço justo de itens.</div><div class="method-item"><b>B7. Custo de Fatores:</b> Negociar reduções por quedas de macro-insumos.</div><div class="method-item"><b>C7. Gestão Compliance:</b> Garantir compra apenas de fornecedores selecionados.</div><div class="method-item"><b>D7. Consolidação:</b> Reduzir base para focar volume em poucos.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">8. Revisão de Preços</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A8. Agregação Gerações:</b> Capturar economias de curva de aprendizado.</div><div class="method-item"><b>B8. Make or Buy:</b> Capacidade interna como teto de preço para o mercado.</div><div class="method-item"><b>C8. Bestshoring:</b> Otimizar geografia equilibrando custo e riscos geopolíticos.</div><div class="method-item"><b>D8. Ciclo Fechado:</b> Integrar compras ao financeiro para economia chegar ao caixa.</div></div></details>
+        </div>
+        <!-- Q1 -->
+        <div id="cardQ1" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
+            <details open class="rounded-xl overflow-hidden" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);">
+                <summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#f87171;letter-spacing:.05em;">III. Mudar Natureza ▾</summary>
+                <div style="padding:.75rem 1rem;font-size:.72rem;color:#f87171;border-top:1px solid rgba(220,38,38,.3);opacity:.8;">Inovação técnica e ruptura de monopólios.</div>
+            </details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">9. Ruptura por Inovação</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A9. Invenção sob demanda:</b> TRIZ para achar rotas sem infringir patentes.</div><div class="method-item"><b>B9. Rede de Inovação:</b> Co-desenvolver com startups para saltar monopolista.</div><div class="method-item"><b>C9. Avaliação Funcional:</b> Focar no "porquê" para achar alternativas.</div><div class="method-item"><b>D9. Reconfiguração Cadeia:</b> Toll manufacturing para remover margem sobre insumo.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">10. Re-especificação</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A10. Avaliação Specs:</b> Workshops para questionar tolerâncias milimétricas.</div><div class="method-item"><b>B10. Design for Sourcing:</b> Projetar para maximizar base e evitar aprisionamento.</div><div class="method-item"><b>C10. Teardown:</b> Analisar rivais peça a peça para otimizar specs internas.</div><div class="method-item"><b>D10. Design Manufatura:</b> Ajustar desenho para simplificar produção no parceiro.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">11. Mineração Técnica</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A11. Product Benchmark:</b> Melhor relação custo-benefício técnico mundial.</div><div class="method-item"><b>B11. Redução Complexidade:</b> Eliminar variantes e excesso de SKUs.</div><div class="method-item"><b>C11. Tierização:</b> Gerir apenas Tier 1 para reduzir carga administrativa.</div><div class="method-item"><b>D11. Sustentabilidade:</b> Critérios ESG para reduzir material e custo de longo prazo.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">12. Gestão de Risco</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A12. Gestão Gargalos:</b> Fontes alternativas e estoques estratégicos.</div><div class="method-item"><b>B12. Framework Político:</b> Atuar junto a governos contra práticas monopolistas.</div><div class="method-item"><b>C12. Processos Visíveis:</b> VPO para identificar riscos antes da parada fabril.</div><div class="method-item"><b>D12. Custo Central:</b> Entender drivers para limitar preços arbitrários.</div></div></details>
+        </div>
+        <!-- Q2 -->
+        <div id="cardQ2" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
+            <details open class="rounded-xl overflow-hidden" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);">
+                <summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#c084fc;letter-spacing:.05em;">IV. Vantagem Conjunta ▾</summary>
+                <div style="padding:.75rem 1rem;font-size:.72rem;color:#c084fc;border-top:1px solid rgba(124,58,237,.3);opacity:.8;">Parcerias e otimização da cadeia de valor.</div>
+            </details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">13. Parcerias de Valor</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A13. Aliança Estratégica:</b> União profunda com exclusividade e P&D comum.</div><div class="method-item"><b>B13. Parceria por Projeto:</b> Co-desenvolvimento e IP compartilhada.</div><div class="method-item"><b>C13. Revenue Sharing:</b> Fornecedor ganha sobre o sucesso final de vendas.</div><div class="method-item"><b>D13. Profit Sharing:</b> Divisão contratual de ganhos de melhoria contínua.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">14. Cadeia de Valor</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A14. Integração Vertical:</b> Adquirir fornecedor para controle total operacional.</div><div class="method-item"><b>B14. Sourcing por Valor:</b> Selecionar parceiros que agreguem valor intangível.</div><div class="method-item"><b>C14. Deal Inteligente:</b> Contratos adaptáveis a volumes e preços dinâmicos.</div><div class="method-item"><b>D14. Ciclo de Vida:</b> Reduzir custos de garantia e manutenção ao cliente.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">15. Plano Integrado</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A15. Capacid. Colaborativa:</b> Compartilhar planos para evitar ociosidade.</div><div class="method-item"><b>B15. VMI:</b> Fornecedor assume reposição, reduzindo capital de giro.</div><div class="method-item"><b>C15. Estoque Virtual:</b> Visibilidade real da rede como um pulmão único.</div><div class="method-item"><b>D15. Benchmark Cadeia:</b> Avaliar saúde da cadeia frente a concorrentes.</div></div></details>
+            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">16. Custos Conjuntos</summary><div style="padding:1rem;background:var(--surface2);" class="space-y-2"><div class="method-item"><b>A16. Supplier Development:</b> Investir em mentoria e treinamento do parceiro.</div><div class="method-item"><b>B16. Redução Colaborativa:</b> Equipes mistas atacando desperdícios Lean fabris.</div><div class="method-item"><b>C16. Benchmark Processo:</b> Comparar etapas detalhadas com o topo do mundo.</div><div class="method-item"><b>D16. Supplier Fitness:</b> Programa para reduzir custos fixos do fornecedor.</div></div></details>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======== TABS ========
+function showTab(name) {
+    document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).style.display = 'block';
+    event.target.classList.add('active');
+}
+
+// ======== DIAGNÓSTICO CHART ========
+const ctx = document.getElementById('mainChart').getContext('2d');
+const mainChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+        datasets: [
+            { label: 'Posição', data: [{x:50,y:50}], backgroundColor: '#60a5fa', pointRadius: 16, pointHoverRadius: 20 }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+            x: { min:0, max:100, title:{display:true, text:'Poder do Fornecedor →', color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} },
+            y: { min:0, max:100, title:{display:true, text:'Poder do Comprador →', color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} }
+        },
+        plugins: {
+            legend:{display:false},
+            annotation: {}
+        }
+    }
+});
+
+// Quadrant background plugin
+const quadrantPlugin = {
+    id: 'quadrants',
+    beforeDraw(chart) {
+        const {ctx, chartArea:{left,right,top,bottom}, scales:{x,y}} = chart;
+        const midX = x.getPixelForValue(50), midY = y.getPixelForValue(50);
+        const fills = [
+            {x:left, y:top, w:midX-left, h:midY-top, c:'rgba(71,85,105,.08)'},       // Q1 top-left
+            {x:midX, y:top, w:right-midX, h:midY-top, c:'rgba(220,38,38,.08)'},      // Q2 top-right
+            {x:left, y:midY, w:midX-left, h:bottom-midY, c:'rgba(29,78,216,.08)'},   // Q3 bottom-left
+            {x:midX, y:midY, w:right-midX, h:bottom-midY, c:'rgba(124,58,237,.08)'}, // Q4 bottom-right
+        ];
+        fills.forEach(f => { ctx.fillStyle=f.c; ctx.fillRect(f.x,f.y,f.w,f.h); });
+    }
+};
+Chart.register(quadrantPlugin);
+
+function update() {
+    const x = +document.getElementById('x').value;
+    const y = +document.getElementById('y').value;
+    mainChart.data.datasets[0].data[0] = {x,y}; mainChart.update();
+    document.getElementById('vX').innerText = x + '%';
+    document.getElementById('vY').innerText = y + '%';
+
+    ['cardQ1','cardQ2','cardQ3','cardQ4'].forEach(c => {
+        const el = document.getElementById(c);
+        if (el) el.classList.remove('highlight-strat');
+    });
+
+    let estrat, desc, card, color, badge;
+    if (x < 50 && y < 50) {
+        estrat="I. Gerenciar Gastos"; desc="Cenário de baixo poder mútuo. Priorize eficiência e agregação de volume interno (Alavancas 1 a 4)."; card='cardQ3'; color='#94a3b8'; badge='badge-q3';
+    } else if (x < 50 && y >= 50) {
+        estrat="II. Alavancar Competição"; desc="Domínio do Comprador. Pressione margens via rivalidade e leilões reversos (Alavancas 5 a 8)."; card='cardQ4'; color='#60a5fa'; badge='badge-q4';
+    } else if (x >= 50 && y < 50) {
+        estrat="III. Mudar Natureza"; desc="Domínio do Fornecedor. Quebre monopólios via inovação e re-especificação técnica (Alavancas 9 a 12)."; card='cardQ1'; color='#f87171'; badge='badge-q1';
+    } else {
+        estrat="IV. Vantagem Conjunta"; desc="Alto poder mútuo. Foque em colaboração e integração de cadeia de valor (Alavancas 13 a 16)."; card='cardQ2'; color='#c084fc'; badge='badge-q2';
+    }
+    document.getElementById('resEstrategia').innerText = estrat;
+    document.getElementById('resEstrategia').style.color = color;
+    document.getElementById('textoParecer').innerHTML = desc;
+    document.getElementById('quadranteBadge').innerHTML = `<span class="score-badge ${badge}">${estrat}</span>`;
+    const el = document.getElementById(card);
+    if (el) el.classList.add('highlight-strat');
+}
+document.querySelectorAll('#tab-diagnostico input[type=range]').forEach(el => el.oninput = update);
+update();
+
+// ======== SUPPLIER MAP ========
+let suppliers = [];
+const supColors = ['#60a5fa','#f87171','#c084fc','#34d399','#fbbf24','#fb923c','#a78bfa','#38bdf8'];
+const supCtx = document.getElementById('supplierChart').getContext('2d');
+const supplierChart = new Chart(supCtx, {
+    type: 'scatter',
+    data: { datasets: [] },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+            x: { min:0, max:100, title:{display:true, text:'Poder do Fornecedor →', color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} },
+            y: { min:0, max:100, title:{display:true, text:'Poder do Comprador →', color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} }
+        },
+        plugins: { legend:{display:true, labels:{color:'#94a3b8', boxWidth:10, font:{size:10}}} }
+    }
+});
+Chart.register(quadrantPlugin);
+
+function getQuadrant(x, y) {
+    if (x < 50 && y < 50) return 'I. Gerenciar Gastos';
+    if (x < 50 && y >= 50) return 'II. Alavancar Competição';
+    if (x >= 50 && y < 50) return 'III. Mudar Natureza';
+    return 'IV. Vantagem Conjunta';
+}
+
+function addSupplier() {
+    const name = document.getElementById('supName').value.trim();
+    const x = +document.getElementById('supX').value;
+    const y = +document.getElementById('supY').value;
+    const cat = document.getElementById('supCat').value.trim();
+    if (!name) return alert('Informe o nome do fornecedor.');
+    const color = supColors[suppliers.length % supColors.length];
+    const s = {name, x, y, cat, color, quad: getQuadrant(x,y)};
+    suppliers.push(s);
+    supplierChart.data.datasets.push({
+        label: name, data:[{x,y}],
+        backgroundColor: color, pointRadius: 14, pointHoverRadius: 17
+    });
+    supplierChart.update();
+    renderSupplierList();
+    document.getElementById('supName').value = '';
+    document.getElementById('supCat').value = '';
+}
+
+function removeSupplier(i) {
+    suppliers.splice(i, 1);
+    supplierChart.data.datasets.splice(i, 1);
+    supplierChart.update();
+    renderSupplierList();
+}
+
+function renderSupplierList() {
+    const el = document.getElementById('supplierItems');
+    if (!suppliers.length) { el.innerHTML = '<p style="font-size:.75rem;color:var(--muted);">Nenhum fornecedor cadastrado ainda.</p>'; return; }
+    el.innerHTML = suppliers.map((s,i) => `
+        <div class="supplier-pill">
+            <div class="supplier-dot" style="background:${s.color}"></div>
+            <div style="flex:1;">
+                <div style="font-weight:700;font-size:.8rem;">${s.name}</div>
+                <div style="font-size:.65rem;color:var(--muted);">${s.cat || '—'} · ${s.quad}</div>
+            </div>
+            <button class="btn btn-danger" onclick="removeSupplier(${i})">✕</button>
+        </div>`).join('');
+}
+
+// ======== SCORING ========
+const scoringCriteria = [
+    {label:'Qualidade do produto/serviço', weight:20},
+    {label:'Prazo de entrega (OTIF)', weight:15},
+    {label:'Competitividade de preço', weight:20},
+    {label:'Capacidade financeira', weight:10},
+    {label:'Inovação e tecnologia', weight:15},
+    {label:'Sustentabilidade (ESG)', weight:10},
+    {label:'Relacionamento e comunicação', weight:10},
+];
+let radarChart = null;
+
+function buildScoring() {
+    const el = document.getElementById('scoringCriteria');
+    el.innerHTML = scoringCriteria.map((c,i) => `
+        <div class="scoring-slider-row">
+            <div class="scoring-label">${c.label} <span style="color:var(--muted);font-size:.65rem;">(peso ${c.weight}%)</span></div>
+            <input type="range" min="0" max="10" value="5" id="sc${i}" oninput="calcScore()" style="flex:1;">
+            <div class="scoring-val" id="scv${i}">5</div>
+        </div>`).join('');
+    calcScore();
+}
+
+function calcScore() {
+    let total = 0;
+    const vals = scoringCriteria.map((c,i) => {
+        const v = +document.getElementById('sc'+i).value;
+        document.getElementById('scv'+i).innerText = v;
+        total += (v / 10) * c.weight;
+        return v;
+    });
+    total = Math.round(total);
+    document.getElementById('totalScore').innerText = `${total} / 100`;
+    const verdictEl = document.getElementById('scoreVerdict');
+    verdictEl.style.display = 'block';
+    if (total >= 80) {
+        verdictEl.style.background = 'rgba(52,211,153,.1)'; verdictEl.style.color = '#34d399';
+        verdictEl.innerHTML = '🟢 <b>Fornecedor Estratégico</b> — Alto potencial para parceria de longo prazo. Considere inclusão no quadrante IV.';
+    } else if (total >= 60) {
+        verdictEl.style.background = 'rgba(251,191,36,.1)'; verdictEl.style.color = '#fbbf24';
+        verdictEl.innerHTML = '🟡 <b>Fornecedor Qualificado</b> — Bom desempenho. Monitorar pontos fracos e desenvolver gaps.';
+    } else if (total >= 40) {
+        verdictEl.style.background = 'rgba(251,146,60,.1)'; verdictEl.style.color = '#fb923c';
+        verdictEl.innerHTML = '🟠 <b>Fornecedor em Desenvolvimento</b> — Necessita plano de melhoria estruturado.';
+    } else {
+        verdictEl.style.background = 'rgba(220,38,38,.1)'; verdictEl.style.color = '#f87171';
+        verdictEl.innerHTML = '🔴 <b>Fornecedor Crítico</b> — Risco alto. Buscar alternativas e plano de contingência imediato.';
+    }
+    // Radar
+    const radarCtx = document.getElementById('radarChart').getContext('2d');
+    const data = { labels: scoringCriteria.map(c=>c.label), datasets:[{
+        label: document.getElementById('scoreName').value || 'Fornecedor',
+        data: vals, fill:true,
+        backgroundColor:'rgba(96,165,250,.15)', borderColor:'#60a5fa', pointBackgroundColor:'#60a5fa'
+    }]};
+    if (radarChart) { radarChart.data = data; radarChart.update(); }
+    else {
+        radarChart = new Chart(radarCtx, {
+            type:'radar', data,
+            options:{ responsive:true, maintainAspectRatio:false,
+                scales:{r:{min:0,max:10,ticks:{color:'#64748b',stepSize:2},grid:{color:'#1e2d45'},pointLabels:{color:'#94a3b8',font:{size:9}}}},
+                plugins:{legend:{labels:{color:'#94a3b8'}}}
+            }
+        });
+    }
+}
+buildScoring();
+
+// ======== CHECKLIST ========
+const checklists = {
+    all: {
+        title: '📋 Checklist Base — Qualquer Contrato',
+        color: '#60a5fa',
+        sections: [
+            { title: 'Identificação e Objeto', items: [
+                'Razão social, CNPJ e endereço completo das partes',
+                'Objeto do contrato claramente definido (produto/serviço)',
+                'Prazo de vigência com datas de início e término',
+                'Valor total ou forma de cálculo da remuneração',
+            ]},
+            { title: 'Obrigações e Responsabilidades', items: [
+                'Obrigações do fornecedor detalhadas (escopo, prazo, qualidade)',
+                'Obrigações do comprador (pagamento, informações, acesso)',
+                'Definição de SLA — Service Level Agreement',
+                'Gestão de mudanças de escopo (Change Order)',
+            ]},
+            { title: 'Pagamento e Finanças', items: [
+                'Condições e prazo de pagamento',
+                'Indexador de reajuste (IPCA, IGP-M, outro)',
+                'Multas por atraso de pagamento e de entrega',
+                'Responsabilidade por impostos e encargos',
+            ]},
+            { title: 'Propriedade e Confidencialidade', items: [
+                'Cláusula de confidencialidade (NDA)',
+                'Propriedade intelectual — quem detém a IP gerada',
+                'Proteção de dados (LGPD/GDPR se aplicável)',
+            ]},
+            { title: 'Rescisão e Resolução de Conflitos', items: [
+                'Condições para rescisão (com e sem justa causa)',
+                'Prazo de aviso prévio para rescisão',
+                'Foro de eleição ou câmara de arbitragem',
+                'Penalidades por descumprimento',
+            ]},
+        ]
+    },
+    q3: {
+        title: '⬜ Quadrante I — Gerenciar Gastos',
+        color: '#94a3b8',
+        extra: 'Fornecedores de baixo impacto e baixo risco. Foco em eficiência administrativa.',
+        sections: [
+            { title: 'Cláusulas Específicas — Gerenciar Gastos', items: [
+                'Cláusula de revisão periódica de preços (mensal/trimestral)',
+                'Possibilidade de migração para outro fornecedor sem penalidade',
+                'Exigência de catálogo/tabela de preços vigentes',
+                'Autorização para compras por múltiplos centros de custo',
+                'Relatório mensal de consumo e gastos por centro de custo',
+                'Prazo de entrega máximo definido (ex: 48h para itens padrão)',
+                'Cláusula de padronização de SKUs e itens fornecidos',
+            ]}
+        ]
+    },
+    q4: {
+        title: '🔵 Quadrante II — Alavancar Competição',
+        color: '#60a5fa',
+        extra: 'Comprador em posição de força. Explorar rivalidade de mercado para pressionar preços.',
+        sections: [
+            { title: 'Cláusulas Específicas — Alavancar Competição', items: [
+                'Cláusula de benchmarking anual com direito de renegociação',
+                'Most Favored Customer (preço igual ou melhor que qualquer cliente)',
+                'Abertura de livro de custos (open book) para categorias relevantes',
+                'Cláusula de redução progressiva de preços (2–5% a.a.)',
+                'Garantia de multisourcing (nenhum fornecedor >60% do volume)',
+                'Penalidade automática por perda de competitividade de mercado',
+                'Direito de realizar leilão reverso após 12 meses de contrato',
+            ]}
+        ]
+    },
+    q1: {
+        title: '🔴 Quadrante III — Mudar Natureza',
+        color: '#f87171',
+        extra: 'Fornecedor em posição dominante. Foco em reduzir dependência e criar alternativas.',
+        sections: [
+            { title: 'Cláusulas Específicas — Mudar Natureza', items: [
+                'Plano de contingência e fornecedor backup documentado no contrato',
+                'Limitação de concentração: nenhum fornecedor >70% do volume crítico',
+                'Propriedade das especificações técnicas e moldes permanece com o comprador',
+                'Obrigação de transferência de tecnologia em caso de rescisão',
+                'Estoque mínimo de segurança a ser mantido pelo fornecedor',
+                'Cláusula de inovação: compromisso de apresentar 1 proposta/ano',
+                'Auditoria técnica anual na planta do fornecedor',
+                'Definição de lead time máximo para ativação de fornecedor reserva',
+            ]}
+        ]
+    },
+    q2: {
+        title: '🟣 Quadrante IV — Vantagem Conjunta',
+        color: '#c084fc',
+        extra: 'Parceria estratégica de alto valor. Foco em criação de valor conjunto e governança.',
+        sections: [
+            { title: 'Cláusulas Específicas — Vantagem Conjunta', items: [
+                'Mecanismo de gain-sharing: divisão de economias geradas conjuntamente',
+                'Roadmap de inovação conjunto com metas e responsabilidades',
+                'Comitê de governança com reuniões de revisão trimestrais',
+                'KPIs estratégicos com dashboard compartilhado',
+                'Cláusula de continuidade: mínimo 6 meses de aviso para saída',
+                'Plano de desenvolvimento do fornecedor (Supplier Development)',
+                'Exclusividade parcial em categorias estratégicas definidas',
+                'Possibilidade de participação em equity do fornecedor (joint venture)',
+                'Compartilhamento de previsão de demanda (S&OP integrado)',
+                'Responsabilidade compartilhada por metas de ESG',
+            ]}
+        ]
+    }
+};
+
+let checkStates = {};
+
+function showChecklist(key) {
+    document.querySelectorAll('.checklist-nav-btn').forEach(b => {
+        b.style.borderColor = 'var(--border)'; b.style.background = 'var(--surface2)'; b.style.color = '#94a3b8';
+    });
+    event.target.style.borderColor = checklists[key].color;
+    event.target.style.background = `rgba(${hexToRgb(checklists[key].color)},.1)`;
+    event.target.style.color = checklists[key].color;
+
+    const cl = checklists[key];
+    if (!checkStates[key]) checkStates[key] = {};
+    let html = `<div style="margin-bottom:1.5rem;"><div style="font-size:1.1rem;font-weight:800;color:${cl.color};margin-bottom:.3rem;">${cl.title}</div>`;
+    if (cl.extra) html += `<div style="font-size:.78rem;color:var(--muted);">${cl.extra}</div>`;
+    html += '</div>';
+
+    let totalItems = 0, checkedItems = 0;
+    // Always include base if not 'all'
+    const sections = key === 'all' ? cl.sections : [...checklists.all.sections, ...cl.sections];
+    sections.forEach((sec, si) => {
+        const stateKey = key + '_' + si;
+        if (!checkStates[stateKey]) checkStates[stateKey] = {};
+        html += `<div style="margin-bottom:1.5rem;"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);">${sec.title}</div>`;
+        sec.items.forEach((item, ii) => {
+            const id = `cl_${key}_${si}_${ii}`;
+            const checked = checkStates[stateKey][ii] || false;
+            if (checked) checkedItems++;
+            totalItems++;
+            html += `<div class="checklist-item ${checked?'checked':''}" id="wrap_${id}">
+                <input type="checkbox" id="${id}" ${checked?'checked':''} onchange="toggleCheck('${key}',${si},${ii},'${id}')">
+                <label for="${id}">${item}</label>
+            </div>`;
+        });
+        html += '</div>';
+    });
+    document.getElementById('checklistContent').innerHTML = html;
+    updateProgress(totalItems, checkedItems);
+}
+
+function toggleCheck(key, si, ii, id) {
+    const stateKey = key + '_' + si;
+    if (!checkStates[stateKey]) checkStates[stateKey] = {};
+    checkStates[stateKey][ii] = document.getElementById(id).checked;
+    const wrap = document.getElementById('wrap_' + id);
+    if (checkStates[stateKey][ii]) wrap.classList.add('checked'); else wrap.classList.remove('checked');
+    // Recalc progress
+    let total = 0, checked = 0;
+    document.querySelectorAll('#checklistContent input[type=checkbox]').forEach(c => { total++; if(c.checked) checked++; });
+    updateProgress(total, checked);
+}
+
+function updateProgress(total, checked) {
+    document.getElementById('progressAll').innerText = `${checked} / ${total} itens`;
+    document.getElementById('progressAllBar').style.width = total ? (checked/total*100)+'%' : '0%';
+}
+
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `${r},${g},${b}`;
+}
+
+// Init checklist
+showChecklist('all');
+document.querySelector('.checklist-nav-btn').style.borderColor = '#60a5fa';
+document.querySelector('.checklist-nav-btn').style.background = 'rgba(96,165,250,.1)';
+document.querySelector('.checklist-nav-btn').style.color = '#60a5fa';
+
+// Fix showChecklist for initial call (no event)
+const origShow = showChecklist;
+window.showChecklist = function(key) {
+    if (!event) { renderChecklist(key); return; }
+    origShow(key);
+}
+function renderChecklist(key) {
+    const cl = checklists[key];
+    if (!checkStates[key]) checkStates[key] = {};
+    let html = `<div style="margin-bottom:1.5rem;"><div style="font-size:1.1rem;font-weight:800;color:${cl.color};margin-bottom:.3rem;">${cl.title}</div>`;
+    if (cl.extra) html += `<div style="font-size:.78rem;color:var(--muted);">${cl.extra}</div>`;
+    html += '</div>';
+    let totalItems=0, checkedItems=0;
+    const sections = key==='all' ? cl.sections : [...checklists.all.sections, ...cl.sections];
+    sections.forEach((sec,si)=>{
+        const stateKey=key+'_'+si;
+        if(!checkStates[stateKey]) checkStates[stateKey]={};
+        html+=`<div style="margin-bottom:1.5rem;"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);">${sec.title}</div>`;
+        sec.items.forEach((item,ii)=>{
+            const id=`cl_${key}_${si}_${ii}`;
+            const checked=checkStates[stateKey][ii]||false;
+            if(checked) checkedItems++; totalItems++;
+            html+=`<div class="checklist-item ${checked?'checked':''}" id="wrap_${id}"><input type="checkbox" id="${id}" ${checked?'checked':''} onchange="toggleCheck('${key}',${si},${ii},'${id}')"><label for="${id}">${item}</label></div>`;
+        });
+        html+='</div>';
+    });
+    document.getElementById('checklistContent').innerHTML=html;
+    updateProgress(totalItems,checkedItems);
+}
+renderChecklist('all');
+</script>
+</body>
+</html>
