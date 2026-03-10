@@ -3,446 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchasing Chessboard Dashboard | Prof. Thiago Lima</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Purchasing Chessboard Dashboard | Prof. Dr. Thiago Lima</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --q1: #dc2626; --q2: #7c3aed; --q3: #475569; --q4: #1d4ed8;
-            --bg: #0a0f1e; --surface: #111827; --surface2: #1a2236;
-            --border: #1e2d45; --text: #e2e8f0; --muted: #64748b;
+            --bg:#0a0f1e; --surface:#111827; --surface2:#1a2236; --surface3:#0f172a;
+            --border:#1e2d45; --text:#e2e8f0; --muted:#64748b;
+            --blue:#3b82f6; --red:#dc2626; --purple:#7c3aed; --green:#10b981;
         }
-        * { box-sizing: border-box; }
-        body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
-        .mono { font-family: 'Space Mono', monospace; }
-        .nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .nav-title { font-size: 1.1rem; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: -.02em; }
-        .nav-sub { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; }
-        .tabs { display: flex; gap: .4rem; padding: 1.2rem 2rem 0; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; flex-wrap: nowrap; }
-        .tab { padding: .55rem 1rem; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; border-radius: 8px 8px 0 0; border: 1px solid transparent; border-bottom: none; transition: all .2s; color: var(--muted); white-space: nowrap; }
-        .tab:hover { color: var(--text); background: var(--surface2); }
-        .tab.active { background: var(--bg); color: #60a5fa; border-color: var(--border); }
-        .panel { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .panel.active { display: block; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
-        .card-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
-        input[type=range] { accent-color: #3b82f6; cursor: pointer; width: 100%; }
-        .highlight-strat { border: 2px solid #3b82f6 !important; box-shadow: 0 0 30px rgba(59,130,246,.3); }
-        details summary::-webkit-details-marker { display: none; }
-        .method-item { border-left: 2px solid var(--border); padding-left: 10px; margin-bottom: 12px; font-size: .72rem; color: #94a3b8; }
-        .method-item b { color: var(--text); }
-        .input-field { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .6rem 1rem; color: var(--text); font-family: 'Syne', sans-serif; font-size: .85rem; width: 100%; outline: none; transition: border-color .2s; }
-        .input-field:focus { border-color: #3b82f6; }
-        .btn { padding: .6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; transition: all .2s; }
-        .btn-primary { background: #3b82f6; color: white; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-danger { background: #dc2626; color: white; font-size: .7rem; padding: .3rem .7rem; border-radius: 6px; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; }
-        .supplier-pill { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; background: var(--surface2); border-radius: 10px; border: 1px solid var(--border); margin-bottom: .5rem; font-size: .8rem; }
-        .supplier-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .scoring-slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-        .scoring-label { font-size: .75rem; width: 200px; flex-shrink: 0; color: #94a3b8; }
-        .scoring-val { font-family: 'Space Mono', monospace; font-size: .75rem; width: 24px; text-align: right; color: #60a5fa; }
-        .score-badge { display: inline-block; padding: .3rem .9rem; border-radius: 999px; font-size: .75rem; font-weight: 700; font-family: 'Space Mono', monospace; }
-        .checklist-item { display: flex; align-items: flex-start; gap: .75rem; padding: .65rem .75rem; border-radius: 8px; transition: background .15s; }
-        .checklist-item:hover { background: var(--surface2); }
-        .checklist-item input[type=checkbox] { accent-color: #3b82f6; width: 15px; height: 15px; flex-shrink: 0; margin-top: 3px; cursor: pointer; }
-        .checklist-item label { font-size: .8rem; color: #94a3b8; cursor: pointer; line-height: 1.4; }
-        .checklist-item.checked label { color: #334155; text-decoration: line-through; }
-        .progress-bar-wrap { background: var(--surface2); border-radius: 999px; height: 6px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; border-radius: 999px; background: #3b82f6; transition: width .4s; }
-        .quadrant-guide { border-radius: 14px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem; }
-        .quadrant-guide-header { padding: 1rem 1.5rem; font-weight: 800; font-size: .85rem; text-transform: uppercase; display: flex; align-items: center; gap: .75rem; }
-        .quadrant-guide-body { padding: 1.5rem; background: var(--surface2); display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .guide-section-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .75rem; }
-        .guide-tag { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: .25rem .65rem; font-size: .7rem; margin: .2rem; color: #94a3b8; }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0; border-bottom: 1px solid var(--border); font-size: .78rem; }
-        .kpi-row:last-child { border-bottom: none; }
-        .badge-q1 { background: rgba(220,38,38,.15); color: #f87171; border: 1px solid rgba(220,38,38,.3); }
-        .badge-q2 { background: rgba(124,58,237,.15); color: #c084fc; border: 1px solid rgba(124,58,237,.3); }
-        .badge-q3 { background: rgba(71,85,105,.15); color: #94a3b8; border: 1px solid rgba(71,85,105,.3); }
-        .badge-q4 { background: rgba(29,78,216,.15); color: #60a5fa; border: 1px solid rgba(29,78,216,.3); }
-        .checklist-nav-btn { text-align:left; padding:.75rem 1rem; border-radius:8px; cursor:pointer; font-size:.78rem; font-weight:700; font-family:'Syne',sans-serif; width:100%; transition: all .2s; }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+        .mono{font-family:'Space Mono',monospace;}
 
-        /* PDF EXPORT STYLES */
-        @media print {
-            body { background: white !important; color: #1e293b !important; }
-            .nav, .tabs, .no-print { display: none !important; }
-            .panel { display: block !important; padding: 1rem !important; page-break-after: always; }
-            .panel:last-child { page-break-after: avoid; }
-            .card { border: 1px solid #e2e8f0 !important; background: white !important; }
-            .card-title { color: #475569 !important; border-color: #e2e8f0 !important; }
-            .input-field { background: #f8fafc !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
-            .supplier-pill { background: #f8fafc !important; border-color: #e2e8f0 !important; }
-            .method-item { color: #475569 !important; }
-            .method-item b { color: #1e293b !important; }
-            .checklist-item label { color: #475569 !important; }
-            .scoring-label { color: #475569 !important; }
-            .quadrant-guide-body { background: #f8fafc !important; }
-            .guide-tag { background: white !important; border-color: #e2e8f0 !important; color: #475569 !important; }
-            h1,h2,h3 { color: #1e2563 !important; }
-        }
-        .print-section { display: none; }
+        .nav{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:200;}
+        .nav-title{font-size:1rem;font-weight:800;color:#60a5fa;text-transform:uppercase;letter-spacing:-.02em;}
+        .nav-sub{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-top:.1rem;}
+
+        .sup-bar{background:var(--surface3);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:57px;z-index:190;flex-wrap:wrap;}
+        .sup-bar-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);white-space:nowrap;}
+        .sup-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.38rem .85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.78rem;outline:none;cursor:pointer;min-width:200px;}
+        .sup-select:focus{border-color:var(--blue);}
+        .badge{display:inline-block;padding:.25rem .75rem;border-radius:999px;font-size:.7rem;font-weight:700;font-family:'Space Mono',monospace;}
+        .phase-dots{display:flex;gap:.4rem;align-items:center;margin-left:auto;}
+        .pdot{display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:var(--muted);}
+        .pdot-circle{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;}
+        .pdot-circle.done{background:var(--green);}
+
+        .tabs{display:flex;gap:.3rem;padding:1rem 2rem 0;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
+        .tab{padding:.5rem .9rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;transition:all .2s;color:var(--muted);white-space:nowrap;}
+        .tab:hover{color:var(--text);background:var(--surface2);}
+        .tab.active{background:var(--bg);color:#60a5fa;border-color:var(--border);}
+        .tab-div{width:1px;background:var(--border);margin:.4rem .1rem;}
+
+        .panel{display:none;padding:1.5rem 2rem;max-width:1400px;margin:0 auto;}
+        .panel.active{display:block;}
+
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
+        .card-title{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+        input[type=range]{accent-color:var(--blue);cursor:pointer;width:100%;}
+        .ifield{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.55rem .9rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.82rem;width:100%;outline:none;transition:border-color .2s;}
+        .ifield:focus{border-color:var(--blue);}
+
+        .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;transition:all .2s;}
+        .btn-p{background:var(--blue);color:white;}.btn-p:hover{background:#2563eb;}
+        .btn-g{background:var(--green);color:white;}.btn-g:hover{background:#059669;}
+        .btn-danger{background:var(--red);color:white;font-size:.68rem;padding:.25rem .6rem;border-radius:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;}
+
+        .sup-pill{display:flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);margin-bottom:.4rem;cursor:pointer;transition:border-color .2s;}
+        .sup-pill:hover{border-color:var(--blue);}
+        .sup-pill.sel{border-color:var(--blue);background:rgba(59,130,246,.07);}
+        .sup-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+        .phase-icons{display:flex;gap:.2rem;margin-left:auto;}
+        .pi{font-size:.62rem;opacity:.22;}.pi.done{opacity:1;}
+
+        .scoring-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.85rem;}
+        .scoring-label{font-size:.72rem;color:#94a3b8;flex:1;line-height:1.3;}
+        .scoring-val{font-family:'Space Mono',monospace;font-size:.72rem;color:#60a5fa;width:18px;text-align:right;}
+
+        details summary::-webkit-details-marker{display:none;}
+        .cl-item{display:flex;align-items:flex-start;gap:.65rem;padding:.5rem .6rem;border-radius:7px;transition:background .15s;}
+        .cl-item:hover{background:var(--surface2);}
+        .cl-item input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;flex-shrink:0;margin-top:3px;cursor:pointer;}
+        .cl-item label{font-size:.77rem;color:#94a3b8;cursor:pointer;line-height:1.4;}
+        .cl-item.checked label{color:#334155;text-decoration:line-through;}
+        .prog-wrap{background:var(--surface2);border-radius:999px;height:5px;overflow:hidden;}
+        .prog-fill{height:100%;border-radius:999px;background:var(--blue);transition:width .4s;}
+
+        .guide-block{border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.2rem;}
+        .guide-head{padding:.85rem 1.25rem;font-weight:800;font-size:.82rem;text-transform:uppercase;display:flex;align-items:center;gap:.6rem;}
+        .guide-body{padding:1.25rem;background:var(--surface2);display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+        .gsec-title{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.6rem;}
+        .gtag{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;font-size:.68rem;margin:.15rem;color:#94a3b8;}
+        .kpi-row{display:flex;justify-content:space-between;align-items:center;padding:.32rem 0;border-bottom:1px solid var(--border);font-size:.74rem;}
+        .kpi-row:last-child{border-bottom:none;}
+
+        .method-item{border-left:2px solid var(--border);padding-left:9px;margin-bottom:10px;font-size:.71rem;color:#94a3b8;}
+        .method-item b{color:var(--text);}
+
+        .be{background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.3);}
+        .ba{background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.3);}
+        .bg{background:rgba(124,58,237,.15);color:#c084fc;border:1px solid rgba(124,58,237,.3);}
+        .bn{background:rgba(71,85,105,.15);color:#94a3b8;border:1px solid rgba(71,85,105,.3);}
+        .bp1{background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.3);}
+        .bp2{background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.3);}
+        .bp3{background:rgba(71,85,105,.15);color:#94a3b8;border:1px solid rgba(71,85,105,.3);}
+        .bp4{background:rgba(124,58,237,.15);color:#c084fc;border:1px solid rgba(124,58,237,.3);}
+
+        .empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+        .empty-icon{font-size:2.5rem;margin-bottom:.75rem;}
+        .empty p{font-size:.82rem;}
+
+        @media(max-width:768px){.grid2{grid-template-columns:1fr;}.panel{padding:1rem;}.guide-body{grid-template-columns:1fr;}}
     </style>
 </head>
 <body>
 
-<nav class="nav no-print">
+<nav class="nav">
     <div>
         <div class="nav-title">⬡ Purchasing Chessboard Dashboard</div>
-        <div class="nav-sub">Prof. Thiago Lima · MBA & Consultoria</div>
+        <div class="nav-sub">Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</div>
     </div>
-    <div class="mono" style="font-size:.7rem;color:var(--muted);">Krajlic · Kearney · 64 Métodos</div>
+    <div class="mono" style="font-size:.62rem;color:var(--muted);">Kraljic · Kearney · 64 Métodos</div>
 </nav>
 
-<div class="tabs no-print" id="tabBar">
-    <div class="tab active" onclick="showTab('fornecedores',this)">📍 Fornecedores</div>
-    <div class="tab" onclick="showTab('diagnostico',this)">🎯 Diagnóstico</div>
-    <div class="tab" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
-    <div class="tab" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
-    <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
-    <div class="tab" onclick="showTab('taxonomia',this)">🗂 Taxonomia (64)</div>
-    <div class="tab" onclick="showTab('exportar',this)">📄 Exportar PDF</div>
+<!-- SUPPLIER SELECTOR BAR -->
+<div class="sup-bar">
+    <div class="sup-bar-label">Fornecedor:</div>
+    <select class="sup-select" id="globalSel" onchange="selectSup(this.value)">
+        <option value="">— Cadastre na aba Kraljic —</option>
+    </select>
+    <div id="gBadgeK"></div>
+    <div id="gBadgePCB"></div>
+    <div class="phase-dots" id="phaseDots" style="display:none;">
+        <div class="pdot"><div class="pdot-circle" id="pd1"></div><span>Kraljic</span></div>
+        <div class="pdot"><div class="pdot-circle" id="pd2"></div><span>PCB</span></div>
+        <div class="pdot"><div class="pdot-circle" id="pd3"></div><span>Checklist</span></div>
+        <div class="pdot"><div class="pdot-circle" id="pd4"></div><span>Relacionamento</span></div>
+    </div>
 </div>
 
-<!-- ====== TAB: FORNECEDORES ====== -->
-<div id="tab-fornecedores" class="panel active">
-    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:1.5rem;">
-        <div class="card">
-            <div class="card-title">Cadastrar Fornecedor</div>
-            <div style="display:flex;flex-direction:column;gap:.85rem;">
-                <div>
-                    <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Nome do Fornecedor *</label>
-                    <input type="text" id="supName" class="input-field" placeholder="Ex: Acme Suprimentos Ltda.">
-                </div>
-                <div>
-                    <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">CNPJ</label>
-                    <input type="text" id="supCNPJ" class="input-field" placeholder="00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this)">
-                </div>
-                <div>
-                    <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Nome da Categoria</label>
-                    <input type="text" id="supCat" class="input-field" placeholder="Ex: Matéria-Prima, TI, Logística">
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-                    <div>
-                        <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Valor/Impacto (eixo Y) 0–100</label>
-                        <input type="number" id="supY" class="input-field" min="0" max="100" value="50">
-                    </div>
-                    <div>
-                        <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Risco/Complexidade (eixo X) 0–100</label>
-                        <input type="number" id="supX" class="input-field" min="0" max="100" value="50">
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="addSupplier()">+ Adicionar ao Mapa</button>
-            </div>
+<!-- TABS -->
+<div class="tabs">
+    <div class="tab active" onclick="showTab('kraljic',this)">📍 Avaliação Kraljic</div>
+    <div class="tab" onclick="showTab('pcb',this)">🎯 Diagnóstico PCB</div>
+    <div class="tab" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
+    <div class="tab" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
+    <div class="tab-div"></div>
+    <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
+    <div class="tab" onclick="showTab('taxonomia',this)">🗂 Taxonomia (64)</div>
+    <div class="tab-div"></div>
+    <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
+</div>
 
-            <div style="margin-top:1.5rem;">
+<!-- ===== KRALJIC ===== -->
+<div id="tab-kraljic" class="panel active">
+    <div class="grid2" style="align-items:start;">
+        <div>
+            <div class="card" style="margin-bottom:1rem;">
+                <div class="card-title">Cadastrar Fornecedor</div>
+                <div style="display:flex;flex-direction:column;gap:.7rem;">
+                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Acme Suprimentos Ltda."></div>
+                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">CNPJ</label><input id="sCNPJ" class="ifield" placeholder="00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this)"></div>
+                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Categoria</label><input id="sCat" class="ifield" placeholder="Ex: Matéria-Prima, TI, Logística"></div>
+                    <div class="grid2" style="gap:.6rem;">
+                        <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Valor/Impacto (Y) 0–100</label><input id="sY" type="number" class="ifield" min="0" max="100" value="50"></div>
+                        <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Risco/Complexidade (X) 0–100</label><input id="sX" type="number" class="ifield" min="0" max="100" value="50"></div>
+                    </div>
+                    <button class="btn btn-p" onclick="addSup()">+ Adicionar ao Mapa</button>
+                </div>
+            </div>
+            <div class="card">
                 <div class="card-title">Fornecedores Cadastrados</div>
-                <div id="supplierItems"><p style="font-size:.75rem;color:var(--muted);">Nenhum fornecedor cadastrado ainda.</p></div>
+                <div id="supList"><div class="empty"><div class="empty-icon">📋</div><p>Nenhum fornecedor ainda.</p></div></div>
             </div>
         </div>
-
         <div class="card">
-            <div class="card-title">Matriz Krajlic — Mapa de Posicionamento</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem;font-size:.65rem;text-align:center;">
-                <div style="padding:.4rem;border-radius:6px;background:rgba(220,38,38,.1);color:#f87171;border:1px solid rgba(220,38,38,.2);">🔴 Estratégico<br><span style="color:var(--muted);">Alto valor · Alto risco</span></div>
-                <div style="padding:.4rem;border-radius:6px;background:rgba(124,58,237,.1);color:#c084fc;border:1px solid rgba(124,58,237,.2);">🟣 Gargalo<br><span style="color:var(--muted);">Baixo valor · Alto risco</span></div>
-                <div style="padding:.4rem;border-radius:6px;background:rgba(29,78,216,.1);color:#60a5fa;border:1px solid rgba(29,78,216,.2);">🔵 Alavancagem<br><span style="color:var(--muted);">Alto valor · Baixo risco</span></div>
-                <div style="padding:.4rem;border-radius:6px;background:rgba(71,85,105,.1);color:#94a3b8;border:1px solid rgba(71,85,105,.2);">⬜ Não-crítico<br><span style="color:var(--muted);">Baixo valor · Baixo risco</span></div>
+            <div class="card-title">Matriz Kraljic — Valor/Impacto × Risco/Complexidade</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.75rem;font-size:.62rem;text-align:center;">
+                <div style="padding:.3rem;border-radius:6px;background:rgba(29,78,216,.08);color:#60a5fa;border:1px solid rgba(29,78,216,.2);">🔵 Alavancagem · Alto valor · Baixo risco</div>
+                <div style="padding:.3rem;border-radius:6px;background:rgba(220,38,38,.08);color:#f87171;border:1px solid rgba(220,38,38,.2);">🔴 Estratégico · Alto valor · Alto risco</div>
+                <div style="padding:.3rem;border-radius:6px;background:rgba(71,85,105,.08);color:#94a3b8;border:1px solid rgba(71,85,105,.2);">⬜ Não-crítico · Baixo valor · Baixo risco</div>
+                <div style="padding:.3rem;border-radius:6px;background:rgba(124,58,237,.08);color:#c084fc;border:1px solid rgba(124,58,237,.2);">🟣 Gargalo · Baixo valor · Alto risco</div>
             </div>
-            <div style="position:relative;height:400px;"><canvas id="supplierChart"></canvas></div>
+            <div style="position:relative;height:400px;"><canvas id="kChart"></canvas></div>
         </div>
     </div>
 </div>
 
-<!-- ====== TAB: DIAGNÓSTICO ====== -->
-<div id="tab-diagnostico" class="panel" style="display:none;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+<!-- ===== PCB ===== -->
+<div id="tab-pcb" class="panel" style="display:none;">
+    <div id="pcbEmpty" class="empty" style="display:none;"><div class="empty-icon">🎯</div><p>Selecione um fornecedor na barra acima.</p></div>
+    <div id="pcbContent" class="grid2" style="align-items:start;">
         <div class="card">
-            <div class="card-title">Diagnóstico de Poder — Purchasing Chessboard (Kearney)</div>
-            <div style="margin-bottom:1.5rem;">
-                <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.5rem;">
-                    Poder de Demanda (Comprador)
-                    <span id="vY" class="mono" style="color:#60a5fa;">50%</span>
-                </label>
-                <input type="range" id="y" min="0" max="100" value="50" oninput="updateDiag()">
-                <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem;">Volume de compra, criticidade, capacidade de troca de fornecedor</div>
+            <div class="card-title">Diagnóstico de Poder — Kearney Purchasing Chessboard</div>
+            <div style="margin-bottom:.9rem;padding:.55rem .85rem;background:rgba(59,130,246,.07);border-radius:8px;border:1px solid rgba(59,130,246,.15);">
+                <span style="font-size:.67rem;color:var(--muted);">Fornecedor: </span>
+                <span id="pcbName" style="font-size:.77rem;font-weight:700;color:#60a5fa;">—</span>
             </div>
-            <div style="margin-bottom:1.5rem;">
-                <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.5rem;">
-                    Poder de Oferta (Fornecedor)
-                    <span id="vX" class="mono" style="color:#60a5fa;">50%</span>
-                </label>
-                <input type="range" id="x" min="0" max="100" value="50" oninput="updateDiag()">
-                <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem;">Exclusividade, diferenciação, concentração de mercado</div>
+            <div style="margin-bottom:1.1rem;">
+                <label style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.35rem;">Poder de Demanda (Comprador)<span id="vY" class="mono" style="color:#60a5fa;">50%</span></label>
+                <input type="range" id="pcbY" min="0" max="100" value="50" oninput="updatePCB()">
+                <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Volume de compra, criticidade, capacidade de troca</div>
             </div>
-            <div id="parecerBox" style="padding:1.25rem;background:var(--surface2);border-radius:12px;border-left:4px solid #3b82f6;">
-                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#60a5fa;margin-bottom:.4rem;">Parecer Estratégico — Kearney</div>
-                <div id="resEstrategia" style="font-size:1rem;font-weight:800;margin-bottom:.5rem;text-transform:uppercase;color:#60a5fa;">Ajuste os Sliders</div>
-                <div id="textoParecer" style="font-size:.78rem;color:#94a3b8;line-height:1.6;">Selecione o nível de poder para ver as alavancas sugeridas.</div>
-                <div id="quadranteBadge" style="margin-top:.75rem;"></div>
+            <div style="margin-bottom:1.1rem;">
+                <label style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.35rem;">Poder de Oferta (Fornecedor)<span id="vX" class="mono" style="color:#60a5fa;">50%</span></label>
+                <input type="range" id="pcbX" min="0" max="100" value="50" oninput="updatePCB()">
+                <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Exclusividade, diferenciação, concentração de mercado</div>
             </div>
+            <div id="pcbParecer" style="padding:1rem;background:var(--surface2);border-radius:12px;border-left:4px solid var(--blue);">
+                <div style="font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#60a5fa;margin-bottom:.3rem;">Parecer Estratégico</div>
+                <div id="pcbEstrat" style="font-size:.9rem;font-weight:800;text-transform:uppercase;color:#60a5fa;margin-bottom:.35rem;">Ajuste os sliders</div>
+                <div id="pcbDesc" style="font-size:.74rem;color:#94a3b8;line-height:1.6;">Posicione o nível de poder para ver as alavancas sugeridas.</div>
+                <div id="pcbBadge" style="margin-top:.6rem;"></div>
+            </div>
+            <button class="btn btn-g" style="width:100%;margin-top:.9rem;" onclick="savePCB()">💾 Salvar Diagnóstico</button>
         </div>
         <div class="card">
             <div class="card-title">Purchasing Chessboard — Mapa de Poder</div>
-            <div style="position:relative;height:340px;"><canvas id="mainChart"></canvas></div>
-        </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
-        <div style="border-radius:12px;padding:1rem;background:rgba(71,85,105,.08);border:1px solid rgba(71,85,105,.2);">
-            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#94a3b8;margin-bottom:.5rem;">I. Gerenciar Gastos</div>
-            <div style="font-size:.72rem;color:#64748b;">Comprador fraco · Fornecedor fraco. Eficiência e agregação de volume.</div>
-        </div>
-        <div style="border-radius:12px;padding:1rem;background:rgba(29,78,216,.08);border:1px solid rgba(29,78,216,.2);">
-            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#60a5fa;margin-bottom:.5rem;">II. Alavancar Competição</div>
-            <div style="font-size:.72rem;color:#64748b;">Comprador forte · Fornecedor fraco. Pressão via leilões e rivalidade.</div>
-        </div>
-        <div style="border-radius:12px;padding:1rem;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);">
-            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#f87171;margin-bottom:.5rem;">III. Mudar Natureza</div>
-            <div style="font-size:.72rem;color:#64748b;">Comprador fraco · Fornecedor forte. Quebrar dependência via inovação.</div>
-        </div>
-        <div style="border-radius:12px;padding:1rem;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);">
-            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:#c084fc;margin-bottom:.5rem;">IV. Vantagem Conjunta</div>
-            <div style="font-size:.72rem;color:#64748b;">Comprador forte · Fornecedor forte. Colaboração e integração de cadeia.</div>
+            <div style="position:relative;height:370px;"><canvas id="pcbChart"></canvas></div>
         </div>
     </div>
 </div>
 
-<!-- ====== TAB: CHECKLIST ====== -->
+<!-- ===== CHECKLIST ===== -->
 <div id="tab-checklist" class="panel" style="display:none;">
-    <div style="display:grid;grid-template-columns:260px 1fr;gap:1.5rem;">
-        <div class="card" style="height:fit-content;position:sticky;top:80px;">
-            <div class="card-title">Selecionar Quadrante</div>
-            <div style="display:flex;flex-direction:column;gap:.5rem;" id="checklistNav">
-                <button class="checklist-nav-btn" id="clbtn-all" onclick="showChecklist('all')" style="border:1px solid #3b82f6;background:rgba(59,130,246,.1);color:#60a5fa;">📋 Base Genérica</button>
-                <button class="checklist-nav-btn" id="clbtn-estrategico" onclick="showChecklist('estrategico')" style="border:1px solid var(--border);background:var(--surface2);color:#94a3b8;">🔴 Estratégico</button>
-                <button class="checklist-nav-btn" id="clbtn-gargalo" onclick="showChecklist('gargalo')" style="border:1px solid var(--border);background:var(--surface2);color:#94a3b8;">🟣 Gargalo</button>
-                <button class="checklist-nav-btn" id="clbtn-alavancagem" onclick="showChecklist('alavancagem')" style="border:1px solid var(--border);background:var(--surface2);color:#94a3b8;">🔵 Alavancagem</button>
-                <button class="checklist-nav-btn" id="clbtn-naocritico" onclick="showChecklist('naocritico')" style="border:1px solid var(--border);background:var(--surface2);color:#94a3b8;">⬜ Não-crítico</button>
-            </div>
-            <div style="margin-top:1.5rem;">
+    <div id="clEmpty" class="empty" style="display:none;"><div class="empty-icon">✅</div><p>Selecione um fornecedor na barra acima.</p></div>
+    <div id="clContent" style="display:none;grid-template-columns:240px 1fr;gap:1.5rem;">
+        <div class="card" style="height:fit-content;position:sticky;top:130px;">
+            <div class="card-title">Seções</div>
+            <div id="clNav" style="display:flex;flex-direction:column;gap:.35rem;"></div>
+            <div style="margin-top:1.1rem;">
                 <div class="card-title">Progresso</div>
-                <div id="progressAll" style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">0 / 0 itens</div>
-                <div class="progress-bar-wrap"><div id="progressAllBar" class="progress-bar-fill" style="width:0%"></div></div>
+                <div id="clPText" style="font-size:.7rem;color:var(--muted);margin-bottom:.35rem;">0 / 0</div>
+                <div class="prog-wrap"><div id="clPBar" class="prog-fill" style="width:0%"></div></div>
             </div>
+            <button class="btn btn-g" style="width:100%;margin-top:.9rem;font-size:.72rem;padding:.45rem;" onclick="toast('Checklist salvo!');updateSupBar();renderSupList();">💾 Salvar</button>
         </div>
-        <div class="card"><div id="checklistContent"></div></div>
+        <div class="card"><div id="clBody"></div></div>
     </div>
 </div>
 
-<!-- ====== TAB: GESTÃO DO RELACIONAMENTO ====== -->
+<!-- ===== GESTÃO ===== -->
 <div id="tab-gestao" class="panel" style="display:none;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+    <div id="gestEmpty" class="empty" style="display:none;"><div class="empty-icon">🤝</div><p>Selecione um fornecedor na barra acima.</p></div>
+    <div id="gestContent" class="grid2" style="display:none;align-items:start;">
         <div class="card">
-            <div class="card-title">Avaliação de Fornecedor</div>
-            <div style="margin-bottom:1.25rem;">
-                <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Fornecedor avaliado</label>
-                <input type="text" id="scoreName" class="input-field" placeholder="Nome do fornecedor" oninput="if(radarChart){radarChart.data.datasets[0].label=this.value||'Fornecedor';radarChart.update();}">
+            <div class="card-title">Avaliação de Relacionamento</div>
+            <div style="margin-bottom:.9rem;padding:.55rem .85rem;background:rgba(59,130,246,.07);border-radius:8px;border:1px solid rgba(59,130,246,.15);">
+                <span style="font-size:.67rem;color:var(--muted);">Fornecedor: </span>
+                <span id="gestName" style="font-size:.77rem;font-weight:700;color:#60a5fa;">—</span>
             </div>
-            <div id="scoringCriteria"></div>
-            <div style="margin-top:1.25rem;padding:1rem;background:var(--surface2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:.75rem;color:var(--muted);">Score Total (ponderado)</span>
-                <span id="totalScore" class="score-badge" style="background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">0 / 100</span>
+            <div id="gestCriteria"></div>
+            <div style="margin-top:.9rem;padding:.85rem;background:var(--surface2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:.72rem;color:var(--muted);">Score Total</span>
+                <span id="gestTotal" class="badge ba">0 / 100</span>
             </div>
-            <div id="scoreVerdict" style="margin-top:.75rem;padding:.75rem;border-radius:8px;font-size:.78rem;display:none;"></div>
+            <button class="btn btn-g" style="width:100%;margin-top:.9rem;" onclick="saveGestao()">💾 Salvar Avaliação</button>
         </div>
         <div class="card">
             <div class="card-title">Radar de Performance</div>
-            <div style="position:relative;height:380px;"><canvas id="radarChart"></canvas></div>
+            <div style="position:relative;height:370px;"><canvas id="radarChart"></canvas></div>
         </div>
     </div>
 </div>
 
-<!-- ====== TAB: GUIA ESTRATÉGICO ====== -->
+<!-- ===== GUIA ===== -->
 <div id="tab-guia" class="panel" style="display:none;">
-    <div class="quadrant-guide">
-        <div class="quadrant-guide-header" style="background:rgba(29,78,216,.1);border-bottom:1px solid var(--border);">
-            <span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>
-            <span style="color:#60a5fa;">Alavancagem</span>
-            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Alto valor · Baixo risco</span>
+    <div class="guide-block">
+        <div class="guide-head" style="background:rgba(29,78,216,.1);border-bottom:1px solid var(--border);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>
+            <span style="color:#60a5fa;">Alavancagem — Alto Valor · Baixo Risco</span>
         </div>
-        <div class="quadrant-guide-body">
+        <div class="guide-body">
             <div>
-                <div class="guide-section-title">Objetivo Principal</div>
-                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Explorar posição de poder via pressão de mercado. Usar rivalidade entre fornecedores como alavanca de preço e inovação.</p>
-                <div class="guide-section-title">Alavancas Prioritárias</div>
-                <span class="guide-tag">Globalização</span><span class="guide-tag">Leilão Reverso</span><span class="guide-tag">Target Pricing</span><span class="guide-tag">Make-or-Buy</span>
-                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Contratos com redução progressiva de preço, benchmarking automático e multisourcing.</p>
+                <div class="gsec-title">Objetivo</div>
+                <p style="font-size:.77rem;color:#94a3b8;margin-bottom:.85rem;">Explorar posição de poder via pressão de mercado. Usar rivalidade entre fornecedores como alavanca de preço e inovação.</p>
+                <div class="gsec-title">Alavancas Kearney</div>
+                <span class="gtag">Globalização</span><span class="gtag">Leilão Reverso</span><span class="gtag">Target Pricing</span><span class="gtag">Make-or-Buy</span>
+                <div style="margin-top:.85rem;" class="gsec-title">Contrato Recomendado</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Redução progressiva de preço, benchmarking automático, multisourcing, 12–24 meses.</p>
             </div>
             <div>
-                <div class="guide-section-title">KPIs de Monitoramento</div>
-                <div class="kpi-row"><span>Saving realizado vs. meta</span><span style="color:#60a5fa;font-size:.72rem;">% hard saving</span></div>
-                <div class="kpi-row"><span>Nº fornecedores por categoria</span><span style="color:#60a5fa;font-size:.72rem;">Min. 3 ativos</span></div>
-                <div class="kpi-row"><span>Adesão ao RFP</span><span style="color:#60a5fa;font-size:.72rem;">% respostas válidas</span></div>
-                <div class="kpi-row"><span>Redução de TCO</span><span style="color:#60a5fa;font-size:.72rem;">Custo total vs. anterior</span></div>
-                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Race to the bottom de qualidade, dependência oculta de fornecedores únicos.</p>
+                <div class="gsec-title">KPIs</div>
+                <div class="kpi-row"><span>Hard saving vs. meta</span><span style="color:#60a5fa;font-size:.68rem;">% anual</span></div>
+                <div class="kpi-row"><span>Nº fornecedores/categoria</span><span style="color:#60a5fa;font-size:.68rem;">Mín. 3</span></div>
+                <div class="kpi-row"><span>TCO vs. ano anterior</span><span style="color:#60a5fa;font-size:.68rem;">Redução %</span></div>
+                <div style="margin-top:.85rem;" class="gsec-title">Riscos</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Race to the bottom de qualidade, dependência oculta de fornecedores únicos.</p>
             </div>
         </div>
     </div>
-    <div class="quadrant-guide">
-        <div class="quadrant-guide-header" style="background:rgba(220,38,38,.08);border-bottom:1px solid var(--border);">
-            <span style="width:12px;height:12px;border-radius:3px;background:#dc2626;display:inline-block;"></span>
-            <span style="color:#f87171;">Estratégico</span>
-            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Alto valor · Alto risco</span>
+    <div class="guide-block">
+        <div class="guide-head" style="background:rgba(220,38,38,.08);border-bottom:1px solid var(--border);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#dc2626;display:inline-block;"></span>
+            <span style="color:#f87171;">Estratégico — Alto Valor · Alto Risco</span>
         </div>
-        <div class="quadrant-guide-body">
+        <div class="guide-body">
             <div>
-                <div class="guide-section-title">Objetivo Principal</div>
-                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Criar valor conjunto via parcerias profundas, inovação colaborativa e integração de cadeia de valor.</p>
-                <div class="guide-section-title">Alavancas Prioritárias</div>
-                <span class="guide-tag">Aliança Estratégica</span><span class="guide-tag">Revenue Sharing</span><span class="guide-tag">VMI</span><span class="guide-tag">Supplier Development</span>
-                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Contratos longos (3–5 anos), gain-sharing, roadmap de inovação conjunto e governança formal.</p>
+                <div class="gsec-title">Objetivo</div>
+                <p style="font-size:.77rem;color:#94a3b8;margin-bottom:.85rem;">Criar valor conjunto via parcerias profundas, inovação colaborativa e integração de cadeia.</p>
+                <div class="gsec-title">Alavancas Kearney</div>
+                <span class="gtag">Aliança Estratégica</span><span class="gtag">Revenue Sharing</span><span class="gtag">VMI</span><span class="gtag">Supplier Development</span>
+                <div style="margin-top:.85rem;" class="gsec-title">Contrato Recomendado</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Longo prazo (3–5 anos), gain-sharing, roadmap de inovação conjunto, governança formal.</p>
             </div>
             <div>
-                <div class="guide-section-title">KPIs de Monitoramento</div>
-                <div class="kpi-row"><span>NPS do relacionamento</span><span style="color:#f87171;font-size:.72rem;">Avaliação mútua</span></div>
-                <div class="kpi-row"><span>Projetos conjuntos ativos</span><span style="color:#f87171;font-size:.72rem;">Nº e ROI</span></div>
-                <div class="kpi-row"><span>Saving colaborativo</span><span style="color:#f87171;font-size:.72rem;">% vs. meta</span></div>
-                <div class="kpi-row"><span>OTIF %</span><span style="color:#f87171;font-size:.72rem;">Prazo vs. SLA</span></div>
-                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Captura de valor assimétrica, conflito de interesses, dependência relacional excessiva.</p>
+                <div class="gsec-title">KPIs</div>
+                <div class="kpi-row"><span>NPS do relacionamento</span><span style="color:#f87171;font-size:.68rem;">Avaliação mútua</span></div>
+                <div class="kpi-row"><span>Projetos conjuntos ativos</span><span style="color:#f87171;font-size:.68rem;">Nº e ROI</span></div>
+                <div class="kpi-row"><span>OTIF %</span><span style="color:#f87171;font-size:.68rem;">Prazo vs. SLA</span></div>
+                <div style="margin-top:.85rem;" class="gsec-title">Riscos</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Captura assimétrica de valor, conflito de interesses, dependência relacional excessiva.</p>
             </div>
         </div>
     </div>
-    <div class="quadrant-guide">
-        <div class="quadrant-guide-header" style="background:rgba(124,58,237,.08);border-bottom:1px solid var(--border);">
-            <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;display:inline-block;"></span>
-            <span style="color:#c084fc;">Gargalo</span>
-            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Baixo valor · Alto risco</span>
+    <div class="guide-block">
+        <div class="guide-head" style="background:rgba(124,58,237,.08);border-bottom:1px solid var(--border);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#7c3aed;display:inline-block;"></span>
+            <span style="color:#c084fc;">Gargalo — Baixo Valor · Alto Risco</span>
         </div>
-        <div class="quadrant-guide-body">
+        <div class="guide-body">
             <div>
-                <div class="guide-section-title">Objetivo Principal</div>
-                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Quebrar dependência e monopólios via inovação técnica, re-especificação e desenvolvimento de alternativas.</p>
-                <div class="guide-section-title">Alavancas Prioritárias</div>
-                <span class="guide-tag">Ruptura por Inovação</span><span class="guide-tag">Re-especificação</span><span class="guide-tag">Gestão de Risco</span><span class="guide-tag">Design for Sourcing</span>
-                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Contratos com cláusulas de saída, SLA rigoroso, penalidades por monopolização e plano de backup obrigatório.</p>
+                <div class="gsec-title">Objetivo</div>
+                <p style="font-size:.77rem;color:#94a3b8;margin-bottom:.85rem;">Quebrar dependência e monopólios via inovação técnica, re-especificação e desenvolvimento de alternativas.</p>
+                <div class="gsec-title">Alavancas Kearney</div>
+                <span class="gtag">Ruptura por Inovação</span><span class="gtag">Re-especificação</span><span class="gtag">Gestão de Risco</span><span class="gtag">Design for Sourcing</span>
+                <div style="margin-top:.85rem;" class="gsec-title">Contrato Recomendado</div>
+                <p style="font-size:.77rem;color:#94a3b8;">SLA rigoroso, cláusulas de saída, penalidades, plano de backup obrigatório.</p>
             </div>
             <div>
-                <div class="guide-section-title">KPIs de Monitoramento</div>
-                <div class="kpi-row"><span>Alternativas desenvolvidas</span><span style="color:#c084fc;font-size:.72rem;">Meta: ≥ 1 p/ categoria</span></div>
-                <div class="kpi-row"><span>Concentração único fornecedor</span><span style="color:#c084fc;font-size:.72rem;">% (meta: &lt;60%)</span></div>
-                <div class="kpi-row"><span>Lead time de substituição</span><span style="color:#c084fc;font-size:.72rem;">Dias p/ ativar backup</span></div>
-                <div class="kpi-row"><span>Estoque de segurança</span><span style="color:#c084fc;font-size:.72rem;">Dias de cobertura</span></div>
-                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Lock-in tecnológico, especificações proprietárias, custos de switching elevados.</p>
+                <div class="gsec-title">KPIs</div>
+                <div class="kpi-row"><span>Alternativas desenvolvidas</span><span style="color:#c084fc;font-size:.68rem;">≥ 1/categoria</span></div>
+                <div class="kpi-row"><span>Concentração único forn.</span><span style="color:#c084fc;font-size:.68rem;">&lt;60%</span></div>
+                <div class="kpi-row"><span>Lead time de substituição</span><span style="color:#c084fc;font-size:.68rem;">Dias p/ backup</span></div>
+                <div style="margin-top:.85rem;" class="gsec-title">Riscos</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Lock-in tecnológico, especificações proprietárias, custo de switching elevado.</p>
             </div>
         </div>
     </div>
-    <div class="quadrant-guide">
-        <div class="quadrant-guide-header" style="background:rgba(71,85,105,.08);border-bottom:1px solid var(--border);">
-            <span style="width:12px;height:12px;border-radius:3px;background:#64748b;display:inline-block;"></span>
-            <span style="color:#94a3b8;">Não-crítico</span>
-            <span style="font-size:.65rem;color:var(--muted);font-weight:400;margin-left:auto;">Baixo valor · Baixo risco</span>
+    <div class="guide-block">
+        <div class="guide-head" style="background:rgba(71,85,105,.08);border-bottom:1px solid var(--border);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#64748b;display:inline-block;"></span>
+            <span style="color:#94a3b8;">Não-crítico — Baixo Valor · Baixo Risco</span>
         </div>
-        <div class="quadrant-guide-body">
+        <div class="guide-body">
             <div>
-                <div class="guide-section-title">Objetivo Principal</div>
-                <p style="font-size:.8rem;color:#94a3b8;margin-bottom:1rem;">Maximizar eficiência via agregação, padronização e transparência de dados. Foco em processos, não em relacionamento.</p>
-                <div class="guide-section-title">Alavancas Prioritárias</div>
-                <span class="guide-tag">Gestão de Demanda</span><span class="guide-tag">Co-sourcing</span><span class="guide-tag">Agregação de Volume</span><span class="guide-tag">Mineração Comercial</span>
-                <div style="margin-top:1rem;" class="guide-section-title">Tipo de Contrato Recomendado</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Contratos curtos (6–12 meses) com revisões frequentes. Evitar lock-in.</p>
+                <div class="gsec-title">Objetivo</div>
+                <p style="font-size:.77rem;color:#94a3b8;margin-bottom:.85rem;">Maximizar eficiência via agregação, padronização e transparência de dados. Foco em processo.</p>
+                <div class="gsec-title">Alavancas Kearney</div>
+                <span class="gtag">Gestão de Demanda</span><span class="gtag">Co-sourcing</span><span class="gtag">Agregação de Volume</span><span class="gtag">Mineração Comercial</span>
+                <div style="margin-top:.85rem;" class="gsec-title">Contrato Recomendado</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Curto prazo (6–12 meses), revisões frequentes, sem lock-in.</p>
             </div>
             <div>
-                <div class="guide-section-title">KPIs de Monitoramento</div>
-                <div class="kpi-row"><span>Economia vs. linha de base</span><span style="color:#94a3b8;font-size:.72rem;">% redução anual</span></div>
-                <div class="kpi-row"><span>Compliance de gastos</span><span style="color:#94a3b8;font-size:.72rem;">% uso de contratos</span></div>
-                <div class="kpi-row"><span>Nº de fornecedores ativos</span><span style="color:#94a3b8;font-size:.72rem;">Meta: redução 20%</span></div>
-                <div class="kpi-row"><span>Prazo médio de pagamento</span><span style="color:#94a3b8;font-size:.72rem;">DPO otimizado</span></div>
-                <div style="margin-top:1rem;" class="guide-section-title">Riscos a Monitorar</div>
-                <p style="font-size:.8rem;color:#94a3b8;">Fragmentação de gastos, shadow buying, aprovações sem processo.</p>
+                <div class="gsec-title">KPIs</div>
+                <div class="kpi-row"><span>Economia vs. base</span><span style="color:#94a3b8;font-size:.68rem;">% anual</span></div>
+                <div class="kpi-row"><span>Compliance de gastos</span><span style="color:#94a3b8;font-size:.68rem;">% uso contratos</span></div>
+                <div class="kpi-row"><span>Nº fornecedores ativos</span><span style="color:#94a3b8;font-size:.68rem;">Redução 20%</span></div>
+                <div style="margin-top:.85rem;" class="gsec-title">Riscos</div>
+                <p style="font-size:.77rem;color:#94a3b8;">Fragmentação de gastos, shadow buying, aprovações sem processo.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ====== TAB: TAXONOMIA ====== -->
+<!-- ===== TAXONOMIA ===== -->
 <div id="tab-taxonomia" class="panel" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
-        <div id="cardQ3" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
-            <details open class="rounded-xl overflow-hidden" style="background:var(--surface2);border:1px solid var(--border);"><summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#94a3b8;">I. Gerenciar Gastos ▾</summary><div style="padding:.75rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--border);">Foco em eficiência de processos e transparência de dados.</div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">1. Gestão de Demanda</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A1. Redução de Demanda:</b> Questionar a necessidade fundamental via políticas de austeridade e auditorias.</div><div class="method-item"><b>B1. Gestão de Contratos:</b> Garantir que termos negociados sejam aplicados em todas as transações.</div><div class="method-item"><b>C1. Agregação entre Produtos:</b> Sinergia comercial ao agrupar produtos para um único parceiro.</div><div class="method-item"><b>D1. Agregação entre Unidades:</b> Centralizar demanda de múltiplas localizações para escala regional.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">2. Co-sourcing</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A2. Terceirização (BPO):</b> Delegação de categorias a provedores especializados com escala massiva.</div><div class="method-item"><b>B2. Comunidade de Sourcing:</b> Fóruns internos para compartilhar conhecimento técnico.</div><div class="method-item"><b>C2. Mega Fornecedor:</b> Consolidação de gastos em poucos fornecedores globais.</div><div class="method-item"><b>D2. Consórcios de Compras:</b> União de empresas independentes para compras conjuntas.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">3. Agregação de Volume</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A3. Gestão de Dados Mestre:</b> Harmonizar dados para identificar duplicidades e compras ocultas.</div><div class="method-item"><b>B3. Transparência de Gastos:</b> BI para mapear cada centavo e janelas de consolidação.</div><div class="method-item"><b>C3. Mineração de Custos:</b> Analisar histórico de faturas para preços de referência.</div><div class="method-item"><b>D3. Padronização:</b> Reduzir variedade técnica (SKUs) para aumentar escala.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">4. Mineração Comercial</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A4. Processo RFI/RFP:</b> Coleta factual de dados para eliminar subjetividade.</div><div class="method-item"><b>B4. Licitação Expressiva:</b> Condições variáveis para identificar otimizações.</div><div class="method-item"><b>C4. TCO:</b> Avaliar custo total da aquisição ao descarte.</div><div class="method-item"><b>D4. Desequilíbrios:</b> Aproveitar excesso de capacidade ou crises para fechar contratos.</div></div></details>
+        <div>
+            <div style="padding:.65rem 1rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:.6rem;">I. Gerenciar Gastos</div>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">1. Gestão de Demanda</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A1.</b> Redução de Demanda</div><div class="method-item"><b>B1.</b> Gestão de Contratos</div><div class="method-item"><b>C1.</b> Agregação entre Produtos</div><div class="method-item"><b>D1.</b> Agregação entre Unidades</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">2. Co-sourcing</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A2.</b> Terceirização (BPO)</div><div class="method-item"><b>B2.</b> Comunidade de Sourcing</div><div class="method-item"><b>C2.</b> Mega Fornecedor</div><div class="method-item"><b>D2.</b> Consórcios de Compras</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">3. Agregação de Volume</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A3.</b> Gestão de Dados Mestre</div><div class="method-item"><b>B3.</b> Transparência de Gastos</div><div class="method-item"><b>C3.</b> Mineração de Custos</div><div class="method-item"><b>D3.</b> Padronização</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">4. Mineração Comercial</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A4.</b> Processo RFI/RFP</div><div class="method-item"><b>B4.</b> Licitação Expressiva</div><div class="method-item"><b>C4.</b> TCO</div><div class="method-item"><b>D4.</b> Desequilíbrios de Mercado</div></div></details>
         </div>
-        <div id="cardQ4" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
-            <details open class="rounded-xl overflow-hidden" style="background:rgba(29,78,216,.15);border:1px solid rgba(29,78,216,.3);"><summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#60a5fa;">II. Alavancar Competição ▾</summary><div style="padding:.75rem 1rem;font-size:.72rem;color:#60a5fa;border-top:1px solid rgba(29,78,216,.3);opacity:.8;">Pressão de preços e exploração da rivalidade do mercado.</div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">5. Globalização</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A5. Sourcing Global:</b> Identificar fornecedores mundiais para acessar líderes de custo.</div><div class="method-item"><b>B5. Sourcing em LCC:</b> Focar em regiões com labor/energia baratos.</div><div class="method-item"><b>C5. Modelagem de Preço:</b> Decompor preço em matérias-primas, labor e margem.</div><div class="method-item"><b>D5. Precificação Linear (LPP):</b> Correlacionar preço a drivers técnicos via estatística.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">6. Licitação (Tendering)</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A6. Leilões Reversos:</b> Disputa online em tempo real para forçar custo marginal.</div><div class="method-item"><b>B6. Benchmarking de Preços:</b> Comparar preços com índices externos do setor.</div><div class="method-item"><b>C6. Preços Desagregados:</b> Quebrar sistemas para eliminar margens ocultas.</div><div class="method-item"><b>D6. Inteligência de Mercado:</b> Monitorar ociosidade para ganhar vantagem.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">7. Target Pricing</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A7. Regressão de Custos:</b> Fórmula multivariada para prever preço justo.</div><div class="method-item"><b>B7. Custo de Fatores:</b> Negociar reduções por quedas de macro-insumos.</div><div class="method-item"><b>C7. Gestão Compliance:</b> Garantir compra apenas de fornecedores selecionados.</div><div class="method-item"><b>D7. Consolidação:</b> Reduzir base para focar volume em poucos.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">8. Revisão de Preços</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A8. Agregação Gerações:</b> Capturar economias de curva de aprendizado.</div><div class="method-item"><b>B8. Make or Buy:</b> Capacidade interna como teto de preço para o mercado.</div><div class="method-item"><b>C8. Bestshoring:</b> Otimizar geografia equilibrando custo e riscos geopolíticos.</div><div class="method-item"><b>D8. Ciclo Fechado:</b> Integrar compras ao financeiro para economia chegar ao caixa.</div></div></details>
+        <div>
+            <div style="padding:.65rem 1rem;border-radius:8px;background:rgba(29,78,216,.1);border:1px solid rgba(29,78,216,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#60a5fa;margin-bottom:.6rem;">II. Alavancar Competição</div>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">5. Globalização</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A5.</b> Sourcing Global</div><div class="method-item"><b>B5.</b> Sourcing em LCC</div><div class="method-item"><b>C5.</b> Modelagem de Preço</div><div class="method-item"><b>D5.</b> Precificação Linear</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">6. Licitação (Tendering)</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A6.</b> Leilões Reversos</div><div class="method-item"><b>B6.</b> Benchmarking de Preços</div><div class="method-item"><b>C6.</b> Preços Desagregados</div><div class="method-item"><b>D6.</b> Inteligência de Mercado</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">7. Target Pricing</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A7.</b> Regressão de Custos</div><div class="method-item"><b>B7.</b> Custo de Fatores</div><div class="method-item"><b>C7.</b> Gestão Compliance</div><div class="method-item"><b>D7.</b> Consolidação de Base</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">8. Revisão de Preços</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A8.</b> Agregação de Gerações</div><div class="method-item"><b>B8.</b> Make or Buy</div><div class="method-item"><b>C8.</b> Bestshoring</div><div class="method-item"><b>D8.</b> Ciclo Fechado</div></div></details>
         </div>
-        <div id="cardQ1" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
-            <details open class="rounded-xl overflow-hidden" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);"><summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#f87171;">III. Mudar Natureza ▾</summary><div style="padding:.75rem 1rem;font-size:.72rem;color:#f87171;border-top:1px solid rgba(220,38,38,.3);opacity:.8;">Inovação técnica e ruptura de monopólios.</div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">9. Ruptura por Inovação</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A9. Invenção sob demanda:</b> TRIZ para achar rotas sem infringir patentes.</div><div class="method-item"><b>B9. Rede de Inovação:</b> Co-desenvolver com startups para saltar monopolista.</div><div class="method-item"><b>C9. Avaliação Funcional:</b> Focar no "porquê" para achar alternativas.</div><div class="method-item"><b>D9. Reconfiguração Cadeia:</b> Toll manufacturing para remover margem sobre insumo.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">10. Re-especificação</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A10. Avaliação Specs:</b> Workshops para questionar tolerâncias milimétricas.</div><div class="method-item"><b>B10. Design for Sourcing:</b> Projetar para maximizar base e evitar aprisionamento.</div><div class="method-item"><b>C10. Teardown:</b> Analisar rivais peça a peça para otimizar specs internas.</div><div class="method-item"><b>D10. Design Manufatura:</b> Ajustar desenho para simplificar produção no parceiro.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">11. Mineração Técnica</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A11. Product Benchmark:</b> Melhor relação custo-benefício técnico mundial.</div><div class="method-item"><b>B11. Redução Complexidade:</b> Eliminar variantes e excesso de SKUs.</div><div class="method-item"><b>C11. Tierização:</b> Gerir apenas Tier 1 para reduzir carga administrativa.</div><div class="method-item"><b>D11. Sustentabilidade:</b> Critérios ESG para reduzir material e custo de longo prazo.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">12. Gestão de Risco</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A12. Gestão Gargalos:</b> Fontes alternativas e estoques estratégicos.</div><div class="method-item"><b>B12. Framework Político:</b> Atuar junto a governos contra práticas monopolistas.</div><div class="method-item"><b>C12. Processos Visíveis:</b> VPO para identificar riscos antes da parada fabril.</div><div class="method-item"><b>D12. Custo Central:</b> Entender drivers para limitar preços arbitrários.</div></div></details>
+        <div>
+            <div style="padding:.65rem 1rem;border-radius:8px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#f87171;margin-bottom:.6rem;">III. Mudar Natureza</div>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">9. Ruptura por Inovação</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A9.</b> Invenção sob Demanda (TRIZ)</div><div class="method-item"><b>B9.</b> Rede de Inovação</div><div class="method-item"><b>C9.</b> Avaliação Funcional</div><div class="method-item"><b>D9.</b> Reconfiguração de Cadeia</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">10. Re-especificação</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A10.</b> Avaliação de Specs</div><div class="method-item"><b>B10.</b> Design for Sourcing</div><div class="method-item"><b>C10.</b> Teardown Competitivo</div><div class="method-item"><b>D10.</b> Design para Manufatura</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">11. Mineração Técnica</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A11.</b> Product Benchmark</div><div class="method-item"><b>B11.</b> Redução de Complexidade</div><div class="method-item"><b>C11.</b> Tierização</div><div class="method-item"><b>D11.</b> Sustentabilidade (ESG)</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">12. Gestão de Risco</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A12.</b> Gestão de Gargalos</div><div class="method-item"><b>B12.</b> Framework Político</div><div class="method-item"><b>C12.</b> Processos Visíveis (VPO)</div><div class="method-item"><b>D12.</b> Custo Central</div></div></details>
         </div>
-        <div id="cardQ2" class="space-y-3 border-2 border-transparent p-1 rounded-2xl transition-all">
-            <details open class="rounded-xl overflow-hidden" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);"><summary style="padding:.75rem 1rem;font-size:.75rem;font-weight:800;text-transform:uppercase;cursor:pointer;color:#c084fc;">IV. Vantagem Conjunta ▾</summary><div style="padding:.75rem 1rem;font-size:.72rem;color:#c084fc;border-top:1px solid rgba(124,58,237,.3);opacity:.8;">Parcerias e otimização da cadeia de valor.</div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">13. Parcerias de Valor</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A13. Aliança Estratégica:</b> União profunda com exclusividade e P&D comum.</div><div class="method-item"><b>B13. Parceria por Projeto:</b> Co-desenvolvimento e IP compartilhada.</div><div class="method-item"><b>C13. Revenue Sharing:</b> Fornecedor ganha sobre o sucesso final de vendas.</div><div class="method-item"><b>D13. Profit Sharing:</b> Divisão contratual de ganhos de melhoria contínua.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">14. Cadeia de Valor</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A14. Integração Vertical:</b> Adquirir fornecedor para controle total operacional.</div><div class="method-item"><b>B14. Sourcing por Valor:</b> Selecionar parceiros que agreguem valor intangível.</div><div class="method-item"><b>C14. Deal Inteligente:</b> Contratos adaptáveis a volumes e preços dinâmicos.</div><div class="method-item"><b>D14. Ciclo de Vida:</b> Reduzir custos de garantia e manutenção ao cliente.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">15. Plano Integrado</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A15. Capacid. Colaborativa:</b> Compartilhar planos para evitar ociosidade.</div><div class="method-item"><b>B15. VMI:</b> Fornecedor assume reposição, reduzindo capital de giro.</div><div class="method-item"><b>C15. Estoque Virtual:</b> Visibilidade real da rede como um pulmão único.</div><div class="method-item"><b>D15. Benchmark Cadeia:</b> Avaliar saúde da cadeia frente a concorrentes.</div></div></details>
-            <details class="rounded-xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);"><summary style="padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--text);">16. Custos Conjuntos</summary><div style="padding:1rem;background:var(--surface2);"><div class="method-item"><b>A16. Supplier Development:</b> Investir em mentoria e treinamento do parceiro.</div><div class="method-item"><b>B16. Redução Colaborativa:</b> Equipes mistas atacando desperdícios Lean fabris.</div><div class="method-item"><b>C16. Benchmark Processo:</b> Comparar etapas detalhadas com o topo do mundo.</div><div class="method-item"><b>D16. Supplier Fitness:</b> Programa para reduzir custos fixos do fornecedor.</div></div></details>
+        <div>
+            <div style="padding:.65rem 1rem;border-radius:8px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#c084fc;margin-bottom:.6rem;">IV. Vantagem Conjunta</div>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">13. Parcerias de Valor</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A13.</b> Aliança Estratégica</div><div class="method-item"><b>B13.</b> Parceria por Projeto</div><div class="method-item"><b>C13.</b> Revenue Sharing</div><div class="method-item"><b>D13.</b> Profit Sharing</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">14. Cadeia de Valor</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A14.</b> Integração Vertical</div><div class="method-item"><b>B14.</b> Sourcing por Valor</div><div class="method-item"><b>C14.</b> Deal Inteligente</div><div class="method-item"><b>D14.</b> Ciclo de Vida</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">15. Plano Integrado</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A15.</b> Capacidade Colaborativa</div><div class="method-item"><b>B15.</b> VMI</div><div class="method-item"><b>C15.</b> Estoque Virtual</div><div class="method-item"><b>D15.</b> Benchmark de Cadeia</div></div></details>
+            <details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85península;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">16. Custos Conjuntos</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A16.</b> Supplier Development</div><div class="method-item"><b>B16.</b> Redução Colaborativa</div><div class="method-item"><b>C16.</b> Benchmark de Processo</div><div class="method-item"><b>D16.</b> Supplier Fitness</div></div></details>
         </div>
     </div>
 </div>
 
-<!-- ====== TAB: EXPORTAR PDF ====== -->
-<div id="tab-exportar" class="panel" style="display:none;">
+<!-- ===== RELATÓRIO ===== -->
+<div id="tab-relatorio" class="panel" style="display:none;">
     <div style="max-width:700px;margin:0 auto;">
-        <div class="card" style="margin-bottom:1.5rem;">
-            <div class="card-title">Gerar Relatório PDF</div>
-            <p style="font-size:.82rem;color:#94a3b8;margin-bottom:1.5rem;">Selecione as seções que deseja incluir no PDF. O relatório será gerado via impressão do navegador — salve como PDF.</p>
-            <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem;" id="pdfSections">
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-fornecedores" checked style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">📍 Fornecedores</div><div style="font-size:.7rem;color:var(--muted);">Lista de fornecedores cadastrados e mapa Krajlic</div></div>
-                </label>
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-diagnostico" checked style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">🎯 Diagnóstico de Poder</div><div style="font-size:.7rem;color:var(--muted);">Parecer estratégico atual e posicionamento Kearney</div></div>
-                </label>
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-checklist" checked style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">✅ Checklist de Contrato</div><div style="font-size:.7rem;color:var(--muted);">Itens marcados e progresso do checklist</div></div>
-                </label>
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-gestao" checked style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">🤝 Gestão do Relacionamento</div><div style="font-size:.7rem;color:var(--muted);">Avaliação e score do fornecedor</div></div>
-                </label>
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-guia" style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">📖 Guia Estratégico</div><div style="font-size:.7rem;color:var(--muted);">Estratégias, KPIs e riscos por quadrante</div></div>
-                </label>
-                <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);">
-                    <input type="checkbox" id="pdf-taxonomia" style="accent-color:#3b82f6;width:16px;height:16px;">
-                    <div><div style="font-size:.82rem;font-weight:700;">🗂 Taxonomia (64 Métodos)</div><div style="font-size:.7rem;color:var(--muted);">Referência completa dos métodos Kearney</div></div>
-                </label>
+        <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Configurar Relatório</div>
+            <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.1rem;">
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Título</label><input id="rTitle" class="ifield" value="Relatório — Gestão de Fornecedores"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Empresa / Turma</label><input id="rOrg" class="ifield" placeholder="Ex: MBA Turma 2025"></div>
             </div>
-            <div style="margin-bottom:1rem;">
-                <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Título do Relatório</label>
-                <input type="text" id="pdfTitle" class="input-field" value="Relatório — Gestão de Fornecedores" placeholder="Título do documento">
+            <div class="card-title">Seções</div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem;" id="rSecs">
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-sumario" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">📊 Sumário Executivo</div><div style="font-size:.67rem;color:var(--muted);">Tabela consolidada de todos os fornecedores</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-kraljic" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">📍 Avaliação Kraljic</div><div style="font-size:.67rem;color:var(--muted);">Posição na matriz por fornecedor</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-pcb" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🎯 Diagnóstico PCB (Kearney)</div><div style="font-size:.67rem;color:var(--muted);">Poder de demanda/oferta e quadrante Kearney</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-checklist" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">✅ Checklist de Contrato</div><div style="font-size:.67rem;color:var(--muted);">Itens marcados por fornecedor</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-gestao" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🤝 Gestão do Relacionamento</div><div style="font-size:.67rem;color:var(--muted);">Score de avaliação por fornecedor</div></div></label>
             </div>
-            <div style="margin-bottom:1.5rem;">
-                <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem;">Empresa / Turma</label>
-                <input type="text" id="pdfOrg" class="input-field" placeholder="Ex: MBA Turma 2025">
-            </div>
-            <button class="btn btn-primary" style="width:100%;padding:.85rem;" onclick="generatePDF()">🖨 Gerar e Imprimir PDF</button>
+            <div class="card-title">Fornecedores a Incluir</div>
+            <div id="rSupList" style="margin-bottom:1.1rem;"><p style="font-size:.74rem;color:var(--muted);">Nenhum fornecedor cadastrado.</p></div>
+            <button class="btn btn-p" style="width:100%;padding:.8rem;" onclick="generatePDF()">🖨 Gerar Relatório PDF</button>
         </div>
-        <div class="card" style="background:rgba(59,130,246,.05);border-color:rgba(59,130,246,.2);">
-            <div style="font-size:.75rem;color:#60a5fa;font-weight:700;margin-bottom:.5rem;">💡 Como salvar como PDF</div>
-            <ol style="font-size:.75rem;color:#94a3b8;padding-left:1.25rem;line-height:2;">
-                <li>Clique em "Gerar e Imprimir PDF"</li>
-                <li>Na janela de impressão, em <b style="color:var(--text);">Destino</b>, selecione <b style="color:var(--text);">"Salvar como PDF"</b></li>
-                <li>Ajuste o layout para <b style="color:var(--text);">Paisagem</b> se necessário</li>
+        <div class="card" style="background:rgba(59,130,246,.04);border-color:rgba(59,130,246,.18);">
+            <div style="font-size:.72rem;color:#60a5fa;font-weight:700;margin-bottom:.35rem;">💡 Como salvar como PDF</div>
+            <ol style="font-size:.72rem;color:#94a3b8;padding-left:1.1rem;line-height:2.1;">
+                <li>Clique em "Gerar Relatório PDF"</li>
+                <li>Na janela → <b style="color:var(--text);">Destino</b> → <b style="color:var(--text);">Salvar como PDF</b></li>
+                <li>Ajuste orientação para <b style="color:var(--text);">Paisagem</b> se necessário</li>
                 <li>Clique em Salvar</li>
             </ol>
         </div>
@@ -450,531 +418,510 @@
 </div>
 
 <script>
-// ============ TABS ============
-function showTab(name, el) {
-    document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-' + name).style.display = 'block';
-    if (el) el.classList.add('active');
-    if (name === 'gestao') { setTimeout(buildScoring, 50); }
-    if (name === 'diagnostico') { setTimeout(initDiagChart, 50); }
-}
-
-// ============ CNPJ MASK ============
-function maskCNPJ(el) {
-    let v = el.value.replace(/\D/g, '').slice(0,14);
-    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
-    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
-    v = v.replace(/(\d{4})(\d)/, '$1-$2');
-    el.value = v;
-}
-
-// ============ DIAGNÓSTICO — KEARNEY PURCHASING CHESSBOARD ============
-// x = Poder de Oferta (Fornecedor), y = Poder de Demanda (Comprador)
-function getKearneyQuadrant(x, y) {
-    if (y >= 50 && x < 50)  return { name: 'II. Alavancar Competição', color: '#60a5fa', badge: 'badge-q4', desc: 'Comprador forte, fornecedor fraco. Pressione margens via rivalidade, leilões reversos e target pricing (Alavancas 5–8).' };
-    if (y >= 50 && x >= 50) return { name: 'IV. Vantagem Conjunta',    color: '#c084fc', badge: 'badge-q2', desc: 'Alto poder mútuo. Foque em colaboração, integração de cadeia e parcerias estratégicas de longo prazo (Alavancas 13–16).' };
-    if (y < 50  && x < 50)  return { name: 'I. Gerenciar Gastos',      color: '#94a3b8', badge: 'badge-q3', desc: 'Baixo poder mútuo. Priorize eficiência, padronização e agregação de volume interno (Alavancas 1–4).' };
-    return                           { name: 'III. Mudar Natureza',      color: '#f87171', badge: 'badge-q1', desc: 'Fornecedor forte, comprador fraco. Quebre a dependência via inovação técnica, re-especificação e fontes alternativas (Alavancas 9–12).' };
-}
-
-// ============ KRALJIC — usado na aba Fornecedores ============
-// x = Risco/Complexidade, y = Valor/Impacto
-function getKrajlicQuadrant(x, y) {
-    if (y >= 50 && x >= 50) return { name: 'Estratégico', color: '#f87171', badge: 'badge-q1', desc: 'Alto valor e alto risco.' };
-    if (y >= 50 && x < 50)  return { name: 'Alavancagem', color: '#60a5fa', badge: 'badge-q4', desc: 'Alto valor e baixo risco.' };
-    if (y < 50  && x >= 50) return { name: 'Gargalo',     color: '#c084fc', badge: 'badge-q2', desc: 'Baixo valor e alto risco.' };
-    return                           { name: 'Não-crítico', color: '#94a3b8', badge: 'badge-q3', desc: 'Baixo valor e baixo risco.' };
-}
-
-let mainChart = null;
-
-function initDiagChart() {
-    if (mainChart) { updateDiag(); return; }
-    const ctx = document.getElementById('mainChart');
-    if (!ctx) return;
-    mainChart = new Chart(ctx.getContext('2d'), {
-        type: 'scatter',
-        data: { datasets: [{ label: 'Posição', data: [{x:50,y:50}], backgroundColor: '#60a5fa', pointRadius: 18, pointHoverRadius: 22 }] },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {
-                x: { min:0, max:100, title:{display:true,text:'Poder de Oferta (Fornecedor) →',color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} },
-                y: { min:0, max:100, title:{display:true,text:'Poder de Demanda (Comprador) →',color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} }
-            },
-            plugins: { legend:{display:false} }
-        },
-        plugins: [kearneyBgPlugin]
-    });
-    updateDiag();
-}
-
-const kearneyBgPlugin = {
-    id: 'kearneyBg',
-    beforeDraw(chart) {
-        const {ctx, chartArea:{left,right,top,bottom}, scales:{x,y}} = chart;
-        const mx = x.getPixelForValue(50), my = y.getPixelForValue(50);
-        // top-left: Alavancar Competição (comprador forte, fornecedor fraco)
-        // top-right: Vantagem Conjunta (ambos fortes)
-        // btm-left: Gerenciar Gastos (ambos fracos)
-        // btm-right: Mudar Natureza (fornecedor forte, comprador fraco)
-        [
-            {x:left, y:top,  w:mx-left, h:my-top,    c:'rgba(29,78,216,.1)'},
-            {x:mx,   y:top,  w:right-mx,h:my-top,    c:'rgba(124,58,237,.1)'},
-            {x:left, y:my,   w:mx-left, h:bottom-my, c:'rgba(71,85,105,.1)'},
-            {x:mx,   y:my,   w:right-mx,h:bottom-my, c:'rgba(220,38,38,.1)'},
-        ].forEach(f => { ctx.fillStyle=f.c; ctx.fillRect(f.x,f.y,f.w,f.h); });
-        ctx.font = 'bold 9px Syne, sans-serif';
-        ctx.fillStyle='#60a5fa'; ctx.fillText('II. ALAVANCAR COMPETIÇÃO', left+8, my-10);
-        ctx.fillStyle='#c084fc'; ctx.fillText('IV. VANTAGEM CONJUNTA',    mx+8,   top+14);
-        ctx.fillStyle='#94a3b8'; ctx.fillText('I. GERENCIAR GASTOS',      left+8, bottom-8);
-        ctx.fillStyle='#f87171'; ctx.fillText('III. MUDAR NATUREZA',      mx+8,   bottom-8);
-    }
-};
-
-function updateDiag() {
-    const x = +document.getElementById('x').value;
-    const y = +document.getElementById('y').value;
-    document.getElementById('vX').innerText = x + '%';
-    document.getElementById('vY').innerText = y + '%';
-    if (mainChart) {
-        mainChart.data.datasets[0].data[0] = {x, y};
-        mainChart.update();
-    }
-    const q = getKearneyQuadrant(x, y);
-    document.getElementById('resEstrategia').innerText = q.name;
-    document.getElementById('resEstrategia').style.color = q.color;
-    document.getElementById('textoParecer').innerText = q.desc;
-    document.getElementById('quadranteBadge').innerHTML = `<span class="score-badge ${q.badge}">${q.name}</span>`;
-    document.getElementById('parecerBox').style.borderLeftColor = q.color;
-}
-
-// ============ SUPPLIER MAP ============
+// ================================================================
+// CORE DATA
+// ================================================================
+const COLORS = ['#60a5fa','#f87171','#c084fc','#34d399','#fbbf24','#fb923c','#a78bfa','#38bdf8','#e879f9','#4ade80'];
 let suppliers = [];
-const supColors = ['#60a5fa','#f87171','#c084fc','#34d399','#fbbf24','#fb923c','#a78bfa','#38bdf8','#e879f9','#4ade80'];
-let supplierChart = null;
+let curId = null;
+let kChart = null, pcbChart = null, radarChart = null;
+let curClSec = 'base';
 
-function initSupplierChart() {
-    const ctx = document.getElementById('supplierChart');
-    if (!ctx || supplierChart) return;
-    supplierChart = new Chart(ctx.getContext('2d'), {
-        type: 'scatter',
-        data: { datasets: [] },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {
-                x: { min:0, max:100, title:{display:true,text:'Risco / Complexidade →',color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} },
-                y: { min:0, max:100, title:{display:true,text:'Valor / Impacto →',color:'#64748b'}, grid:{color:'#1e2d45'}, ticks:{color:'#64748b'} }
-            },
-            plugins: { legend:{display:true, labels:{color:'#94a3b8',boxWidth:10,font:{size:10}}} }
-        },
-        plugins: [quadrantBgPlugin]
-    });
-}
-
-function addSupplier() {
-    initSupplierChart();
-    const name = document.getElementById('supName').value.trim();
-    const cnpj = document.getElementById('supCNPJ').value.trim();
-    const cat  = document.getElementById('supCat').value.trim();
-    const x    = Math.min(100, Math.max(0, +document.getElementById('supX').value));
-    const y    = Math.min(100, Math.max(0, +document.getElementById('supY').value));
-    if (!name) { alert('Informe o nome do fornecedor.'); return; }
-    const color = supColors[suppliers.length % supColors.length];
-    const q = getKrajlicQuadrant(x, y);
-    suppliers.push({name, cnpj, cat, x, y, color, quad: q.name});
-    supplierChart.data.datasets.push({
-        label: name, data:[{x,y}],
-        backgroundColor: color, pointRadius: 14, pointHoverRadius: 18
-    });
-    supplierChart.update();
-    renderSupplierList();
-    document.getElementById('supName').value = '';
-    document.getElementById('supCNPJ').value = '';
-    document.getElementById('supCat').value = '';
-}
-
-function removeSupplier(i) {
-    suppliers.splice(i, 1);
-    supplierChart.data.datasets.splice(i, 1);
-    supplierChart.update();
-    renderSupplierList();
-}
-
-function renderSupplierList() {
-    const el = document.getElementById('supplierItems');
-    if (!suppliers.length) { el.innerHTML='<p style="font-size:.75rem;color:var(--muted);">Nenhum fornecedor cadastrado ainda.</p>'; return; }
-    el.innerHTML = suppliers.map((s,i) => `
-        <div class="supplier-pill">
-            <div class="supplier-dot" style="background:${s.color}"></div>
-            <div style="flex:1;">
-                <div style="font-weight:700;font-size:.82rem;">${s.name}</div>
-                <div style="font-size:.65rem;color:var(--muted);">
-                    ${s.cnpj ? s.cnpj + ' · ' : ''}${s.cat || 'Sem categoria'} · <span style="color:${s.color}">${s.quad}</span>
-                </div>
-            </div>
-            <button class="btn-danger" onclick="removeSupplier(${i})">✕</button>
-        </div>`).join('');
-}
-
-// Init supplier chart on load (tab is visible first)
-window.addEventListener('load', () => { initSupplierChart(); initChecklistView(); });
-
-// ============ SCORING ============
-const scoringCriteria = [
+const CRITERIA = [
     {label:'Qualidade do produto/serviço', weight:20},
-    {label:'Prazo de entrega (OTIF)', weight:15},
-    {label:'Competitividade de preço', weight:20},
-    {label:'Capacidade financeira', weight:10},
-    {label:'Inovação e tecnologia', weight:15},
-    {label:'Sustentabilidade (ESG)', weight:10},
-    {label:'Comunicação e suporte', weight:10},
+    {label:'Prazo de entrega (OTIF)',       weight:15},
+    {label:'Competitividade de preço',      weight:20},
+    {label:'Capacidade financeira',         weight:10},
+    {label:'Inovação e tecnologia',         weight:15},
+    {label:'Sustentabilidade (ESG)',        weight:10},
+    {label:'Comunicação e suporte',         weight:10},
 ];
-let radarChart = null;
-let scoringBuilt = false;
 
-function buildScoring() {
-    if (scoringBuilt) { calcScore(); return; }
-    scoringBuilt = true;
-    const el = document.getElementById('scoringCriteria');
-    el.innerHTML = scoringCriteria.map((c,i) => `
-        <div class="scoring-slider-row">
-            <div class="scoring-label">${c.label}<br><span style="color:var(--muted);font-size:.65rem;">peso ${c.weight}%</span></div>
-            <input type="range" min="0" max="10" value="5" id="sc${i}" oninput="calcScore()" style="flex:1;">
-            <div class="scoring-val" id="scv${i}">5</div>
-        </div>`).join('');
-    setTimeout(calcScore, 50);
-}
-
-function calcScore() {
-    let total = 0;
-    const vals = scoringCriteria.map((c,i) => {
-        const el = document.getElementById('sc'+i);
-        if (!el) return 5;
-        const v = +el.value;
-        const vEl = document.getElementById('scv'+i);
-        if (vEl) vEl.innerText = v;
-        total += (v/10)*c.weight;
-        return v;
-    });
-    total = Math.round(total);
-    const scoreEl = document.getElementById('totalScore');
-    if (scoreEl) scoreEl.innerText = `${total} / 100`;
-    const verdictEl = document.getElementById('scoreVerdict');
-    if (verdictEl) {
-        verdictEl.style.display='block';
-        if (total>=80) { verdictEl.style.cssText='display:block;background:rgba(52,211,153,.1);color:#34d399;padding:.75rem;border-radius:8px;font-size:.78rem;margin-top:.75rem;'; verdictEl.innerHTML='🟢 <b>Fornecedor Estratégico</b> — Alto potencial para parceria de longo prazo.'; }
-        else if (total>=60) { verdictEl.style.cssText='display:block;background:rgba(251,191,36,.1);color:#fbbf24;padding:.75rem;border-radius:8px;font-size:.78rem;margin-top:.75rem;'; verdictEl.innerHTML='🟡 <b>Fornecedor Qualificado</b> — Bom desempenho. Desenvolver gaps identificados.'; }
-        else if (total>=40) { verdictEl.style.cssText='display:block;background:rgba(251,146,60,.1);color:#fb923c;padding:.75rem;border-radius:8px;font-size:.78rem;margin-top:.75rem;'; verdictEl.innerHTML='🟠 <b>Em Desenvolvimento</b> — Necessita plano de melhoria estruturado.'; }
-        else { verdictEl.style.cssText='display:block;background:rgba(220,38,38,.1);color:#f87171;padding:.75rem;border-radius:8px;font-size:.78rem;margin-top:.75rem;'; verdictEl.innerHTML='🔴 <b>Fornecedor Crítico</b> — Risco alto. Buscar alternativas e plano de contingência.'; }
-    }
-    // Radar
-    const radarEl = document.getElementById('radarChart');
-    if (!radarEl) return;
-    const nomeForn = document.getElementById('scoreName')?.value || 'Fornecedor';
-    const radarData = {
-        labels: scoringCriteria.map(c => c.label.split(' ').slice(0,2).join(' ')),
-        datasets:[{ label: nomeForn, data: vals, fill:true,
-            backgroundColor:'rgba(96,165,250,.15)', borderColor:'#60a5fa',
-            pointBackgroundColor:'#60a5fa', pointRadius:4 }]
-    };
-    if (radarChart) {
-        radarChart.data = radarData; radarChart.update();
-    } else {
-        radarChart = new Chart(radarEl.getContext('2d'), {
-            type:'radar', data: radarData,
-            options:{ responsive:true, maintainAspectRatio:false,
-                scales:{r:{min:0,max:10,ticks:{color:'#64748b',stepSize:2,backdropColor:'transparent'},
-                    grid:{color:'#1e2d45'}, pointLabels:{color:'#94a3b8',font:{size:9}}}},
-                plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}}
-            }
-        });
-    }
-}
-
-// ============ CHECKLIST ============
-const checklists = {
-    all: { title:'📋 Checklist Base — Qualquer Contrato', color:'#60a5fa',
-        sections:[
-            { title:'Identificação e Objeto', items:[
-                'Razão social, CNPJ e endereço completo das partes',
-                'Objeto do contrato claramente definido (produto/serviço)',
-                'Prazo de vigência com datas de início e término',
-                'Valor total ou forma de cálculo da remuneração',
-            ]},
-            { title:'Obrigações e Responsabilidades', items:[
-                'Obrigações do fornecedor detalhadas (escopo, prazo, qualidade)',
-                'Obrigações do comprador (pagamento, informações, acesso)',
-                'Definição de SLA — Service Level Agreement',
-                'Gestão de mudanças de escopo (Change Order)',
-            ]},
-            { title:'Pagamento e Finanças', items:[
-                'Condições e prazo de pagamento',
-                'Indexador de reajuste (IPCA, IGP-M, outro)',
-                'Multas por atraso de pagamento e de entrega',
-                'Responsabilidade por impostos e encargos',
-            ]},
-            { title:'Propriedade e Confidencialidade', items:[
-                'Cláusula de confidencialidade (NDA)',
-                'Propriedade intelectual — quem detém a IP gerada',
-                'Proteção de dados (LGPD/GDPR se aplicável)',
-            ]},
-            { title:'Rescisão e Resolução de Conflitos', items:[
-                'Condições para rescisão (com e sem justa causa)',
-                'Prazo de aviso prévio para rescisão',
-                'Foro de eleição ou câmara de arbitragem',
-                'Penalidades por descumprimento',
-            ]},
-        ]
-    },
-    estrategico: { title:'🔴 Estratégico — Alto Valor · Alto Risco', color:'#f87171', extra:'Fornecedor crítico para o negócio. Foco em parceria, inovação e governança.',
-        sections:[{ title:'Cláusulas Específicas — Estratégico', items:[
-            'Contrato de longo prazo (3–5 anos) com revisão anual estruturada',
-            'Mecanismo de gain-sharing: divisão de economias geradas conjuntamente',
-            'Roadmap de inovação conjunto com metas e responsabilidades',
-            'Comitê de governança com reuniões de revisão trimestrais',
-            'KPIs estratégicos com dashboard compartilhado em tempo real',
-            'Cláusula de continuidade: mínimo 6 meses de aviso para saída',
-            'Plano de desenvolvimento do fornecedor (Supplier Development)',
-            'Compartilhamento de previsão de demanda (S&OP integrado)',
-            'Responsabilidade compartilhada por metas de ESG',
-            'Exclusividade parcial em categorias estratégicas definidas',
-        ]}]
-    },
-    gargalo: { title:'🟣 Gargalo — Baixo Valor · Alto Risco', color:'#c084fc', extra:'Alta dependência com baixo impacto financeiro. Foco em reduzir vulnerabilidade.',
-        sections:[{ title:'Cláusulas Específicas — Gargalo', items:[
-            'Plano de contingência e fornecedor backup documentado no contrato',
-            'Limitação de concentração: nenhum fornecedor >70% do volume crítico',
-            'Propriedade das especificações técnicas e moldes permanece com o comprador',
-            'Obrigação de transferência de tecnologia em caso de rescisão',
-            'Estoque mínimo de segurança a ser mantido pelo fornecedor',
-            'Cláusula de inovação: compromisso de apresentar 1 proposta/ano',
-            'Auditoria técnica anual na planta do fornecedor',
-            'Definição de lead time máximo para ativação de fornecedor reserva',
-            'Penalidade por não cumprimento de prazo de entrega > X dias',
-        ]}]
-    },
-    alavancagem: { title:'🔵 Alavancagem — Alto Valor · Baixo Risco', color:'#60a5fa', extra:'Poder do comprador. Aproveite para pressionar preços e condições.',
-        sections:[{ title:'Cláusulas Específicas — Alavancagem', items:[
-            'Cláusula de benchmarking anual com direito de renegociação automática',
-            'Most Favored Customer (preço igual ou melhor que qualquer cliente)',
-            'Abertura de livro de custos (open book) para categorias relevantes',
-            'Cláusula de redução progressiva de preços (2–5% a.a.)',
-            'Garantia de multisourcing (nenhum fornecedor >60% do volume)',
-            'Penalidade automática por perda de competitividade de mercado',
-            'Direito de realizar leilão reverso após 12 meses de contrato',
-            'Contrato de curto prazo (12–24 meses) para manter flexibilidade',
-        ]}]
-    },
-    naocritico: { title:'⬜ Não-crítico — Baixo Valor · Baixo Risco', color:'#94a3b8', extra:'Baixo impacto e risco. Foco em eficiência administrativa.',
-        sections:[{ title:'Cláusulas Específicas — Não-crítico', items:[
-            'Cláusula de revisão periódica de preços (mensal/trimestral)',
-            'Possibilidade de migração para outro fornecedor sem penalidade após 30 dias',
-            'Exigência de catálogo/tabela de preços sempre atualizada',
-            'Autorização para compras por múltiplos centros de custo',
-            'Relatório mensal de consumo e gastos por centro de custo',
-            'Prazo de entrega máximo definido (ex: 48h para itens padrão)',
-            'Cláusula de padronização de SKUs e itens fornecidos',
-            'Contrato curto (6–12 meses) com renovação automática condicionada a desempenho',
-        ]}]
-    }
+const CL = {
+    base:[
+        {title:'Identificação e Objeto',items:['Razão social, CNPJ e endereço completo das partes','Objeto do contrato claramente definido (produto/serviço)','Prazo de vigência com datas de início e término','Valor total ou forma de cálculo da remuneração']},
+        {title:'Obrigações',items:['Obrigações do fornecedor (escopo, prazo, qualidade)','Obrigações do comprador (pagamento, informações, acesso)','Definição de SLA — Service Level Agreement','Gestão de mudanças de escopo (Change Order)']},
+        {title:'Pagamento',items:['Condições e prazo de pagamento','Indexador de reajuste (IPCA, IGP-M, outro)','Multas por atraso de pagamento e de entrega','Responsabilidade por impostos e encargos']},
+        {title:'Confidencialidade e IP',items:['Cláusula de confidencialidade (NDA)','Propriedade intelectual — quem detém a IP gerada','Proteção de dados (LGPD/GDPR se aplicável)']},
+        {title:'Rescisão',items:['Condições para rescisão (com e sem justa causa)','Prazo de aviso prévio para rescisão','Foro de eleição ou câmara de arbitragem','Penalidades por descumprimento']},
+    ],
+    estrategico:[{title:'Cláusulas — Estratégico',items:['Contrato de longo prazo (3–5 anos) com revisão anual','Gain-sharing: divisão de economias geradas conjuntamente','Roadmap de inovação conjunto com metas e prazos','Comitê de governança com reuniões trimestrais','KPIs estratégicos com dashboard compartilhado','Aviso mínimo de 6 meses para encerramento','Plano de Supplier Development acordado','S&OP integrado (previsão de demanda compartilhada)','Metas de ESG compartilhadas']}],
+    alavancagem:[{title:'Cláusulas — Alavancagem',items:['Benchmarking anual com direito de renegociação','Most Favored Customer (melhor preço do mercado)','Open book para categorias relevantes','Redução progressiva de preços (2–5% a.a.)','Multisourcing: nenhum fornecedor >60% do volume','Direito de leilão reverso após 12 meses','Contrato curto (12–24 meses) para manter flexibilidade']}],
+    gargalo:[{title:'Cláusulas — Gargalo',items:['Fornecedor backup documentado no contrato','Concentração máxima: 70% do volume crítico','Specs técnicas e moldes pertencem ao comprador','Transferência de tecnologia em caso de rescisão','Estoque mínimo de segurança pelo fornecedor','Auditoria técnica anual na planta','Lead time máximo para ativação de reserva']}],
+    naocritico:[{title:'Cláusulas — Não-crítico',items:['Revisão periódica de preços (trimestral)','Migração sem penalidade após 30 dias','Catálogo/tabela de preços sempre atualizado','Autorização para múltiplos centros de custo','Relatório mensal de consumo','Prazo de entrega máximo definido (ex: 48h)','Contrato curto (6–12 meses), renovação automática']}],
 };
-let checkStates = {};
-let currentChecklistKey = 'all';
 
-function initChecklistView() { renderChecklist('all'); }
-
-function showChecklist(key) {
-    currentChecklistKey = key;
-    document.querySelectorAll('.checklist-nav-btn').forEach(b => {
-        b.style.borderColor = 'var(--border)'; b.style.background = 'var(--surface2)'; b.style.color = '#94a3b8';
-    });
-    const btn = document.getElementById('clbtn-' + key);
-    if (btn) { const c = checklists[key].color; btn.style.borderColor=c; btn.style.background=`rgba(${hexRGB(c)},.12)`; btn.style.color=c; }
-    renderChecklist(key);
+// ================================================================
+// UTILS
+// ================================================================
+function maskCNPJ(el){
+    let v=el.value.replace(/\D/g,'').slice(0,14);
+    v=v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+       .replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+    el.value=v;
 }
 
-function renderChecklist(key) {
-    const cl = checklists[key];
-    const baseSecCount = key==='all' ? 0 : checklists.all.sections.length;
-    const sections = key==='all' ? cl.sections : [...checklists.all.sections, ...cl.sections];
-    let html = `<div style="margin-bottom:1.5rem;">
-        <div style="font-size:1rem;font-weight:800;color:${cl.color};margin-bottom:.3rem;">${cl.title}</div>
-        ${cl.extra ? `<div style="font-size:.78rem;color:var(--muted);">${cl.extra}</div>` : ''}
-    </div>`;
-    let tot=0, chk=0;
-    sections.forEach((sec,si) => {
-        const sk = key+'_'+si;
-        if (!checkStates[sk]) checkStates[sk]={};
-        html += `<div style="margin-bottom:1.5rem;">
-            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.6rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);">${sec.title}</div>`;
-        sec.items.forEach((item,ii) => {
-            const id=`cl_${key}_${si}_${ii}`;
-            const checked=checkStates[sk][ii]||false;
-            if(checked) chk++; tot++;
-            html+=`<div class="checklist-item${checked?' checked':''}" id="wrap_${id}">
-                <input type="checkbox" id="${id}" ${checked?'checked':''} onchange="toggleCheck('${key}',${si},${ii},'${id}')">
-                <label for="${id}">${item}</label>
-            </div>`;
+function kQuad(x,y){
+    if(y>=50&&x>=50) return {n:'Estratégico',c:'#f87171',cls:'be'};
+    if(y>=50&&x<50)  return {n:'Alavancagem',c:'#60a5fa',cls:'ba'};
+    if(y<50 &&x>=50) return {n:'Gargalo',    c:'#c084fc',cls:'bg'};
+    return                  {n:'Não-crítico', c:'#94a3b8',cls:'bn'};
+}
+
+function pcbQuad(x,y){
+    if(y>=50&&x<50)  return {n:'II. Alavancar Competição',c:'#60a5fa',cls:'bp2',d:'Comprador forte, fornecedor fraco. Pressione margens via rivalidade, leilões reversos e target pricing (Alavancas 5–8).'};
+    if(y>=50&&x>=50) return {n:'IV. Vantagem Conjunta',   c:'#c084fc',cls:'bp4',d:'Alto poder mútuo. Colaboração, integração de cadeia e parcerias estratégicas de longo prazo (Alavancas 13–16).'};
+    if(y<50 &&x<50)  return {n:'I. Gerenciar Gastos',     c:'#94a3b8',cls:'bp3',d:'Baixo poder mútuo. Eficiência, padronização e agregação de volume interno (Alavancas 1–4).'};
+    return                  {n:'III. Mudar Natureza',     c:'#f87171',cls:'bp1',d:'Fornecedor forte, comprador fraco. Quebrar dependência via inovação e re-especificação (Alavancas 9–12).'};
+}
+
+function getSup(id){return suppliers.find(s=>s.id===id);}
+function cur(){return getSup(curId);}
+
+function toast(msg){
+    let t=document.getElementById('_toast');
+    if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;bottom:2rem;right:2rem;background:#10b981;color:white;padding:.6rem 1.2rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;font-family:Syne,sans-serif;transition:opacity .4s;opacity:0;';document.body.appendChild(t);}
+    t.innerText=msg;t.style.opacity='1';setTimeout(()=>{t.style.opacity='0';},2000);
+}
+
+// ================================================================
+// TABS
+// ================================================================
+function showTab(name,el){
+    document.querySelectorAll('.panel').forEach(p=>{p.style.display='none';p.classList.remove('active');});
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    const panel=document.getElementById('tab-'+name);
+    panel.style.display='block';panel.classList.add('active');
+    if(el) el.classList.add('active');
+    if(name==='pcb'){setTimeout(()=>{initPCBChart();updatePCBForSup();},80);}
+    if(name==='checklist'){renderChecklist();}
+    if(name==='gestao'){renderGestao();}
+    if(name==='relatorio'){renderRptSupList();}
+}
+
+// ================================================================
+// SUPPLIERS
+// ================================================================
+function addSup(){
+    const name=document.getElementById('sName').value.trim();
+    if(!name){alert('Informe o nome do fornecedor.');return;}
+    const kx=Math.min(100,Math.max(0,+document.getElementById('sX').value));
+    const ky=Math.min(100,Math.max(0,+document.getElementById('sY').value));
+    const q=kQuad(kx,ky);
+    const s={
+        id:Date.now()+'',
+        name, cnpj:document.getElementById('sCNPJ').value.trim(),
+        cat:document.getElementById('sCat').value.trim(),
+        kx,ky,kquad:q.n,
+        pcbX:50,pcbY:50,pcbQuad:null,
+        checklist:{}, scores:Array(CRITERIA.length).fill(5),
+        color:COLORS[suppliers.length%COLORS.length]
+    };
+    suppliers.push(s);
+    ['sName','sCNPJ','sCat'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sX').value=50; document.getElementById('sY').value=50;
+    renderSupList(); updateGlobalSel(); updateKChart(); selectSup(s.id);
+    toast('Fornecedor adicionado!');
+}
+
+function removeSup(id){
+    suppliers=suppliers.filter(s=>s.id!==id);
+    if(curId===id){curId=null;updateSupBar();}
+    renderSupList();updateGlobalSel();updateKChart();
+}
+
+function selectSup(id){
+    curId=id||null;
+    document.getElementById('globalSel').value=id||'';
+    updateSupBar(); updatePCBForSup(); renderChecklist(); renderGestao();
+}
+
+function updateSupBar(){
+    const s=cur();
+    document.getElementById('gBadgeK').innerHTML='';
+    document.getElementById('gBadgePCB').innerHTML='';
+    document.getElementById('phaseDots').style.display='none';
+    if(!s) return;
+    const q=kQuad(s.kx,s.ky);
+    document.getElementById('gBadgeK').innerHTML=`<span class="badge ${q.cls}">Kraljic: ${q.n}</span>`;
+    if(s.pcbQuad){const pq=pcbQuad(s.pcbX,s.pcbY);document.getElementById('gBadgePCB').innerHTML=`<span class="badge ${pq.cls}" style="margin-left:.2rem;">PCB: ${pq.n}</span>`;}
+    document.getElementById('phaseDots').style.display='flex';
+    document.getElementById('pd1').className='pdot-circle done';
+    document.getElementById('pd2').className='pdot-circle'+(s.pcbQuad?' done':'');
+    const clDone=Object.values(s.checklist).some(v=>typeof v==='object'&&Object.values(v).some(x=>x));
+    document.getElementById('pd3').className='pdot-circle'+(clDone?' done':'');
+    const gDone=s.scores&&s.scores.some(v=>v!==5);
+    document.getElementById('pd4').className='pdot-circle'+(gDone?' done':'');
+}
+
+function updateGlobalSel(){
+    const sel=document.getElementById('globalSel');
+    const cur_val=sel.value;
+    sel.innerHTML='<option value="">— Cadastre na aba Kraljic —</option>';
+    suppliers.forEach(s=>{
+        const o=document.createElement('option');
+        o.value=s.id;o.textContent=s.name+' ('+kQuad(s.kx,s.ky).n+')';
+        sel.appendChild(o);
+    });
+    if(cur_val) sel.value=cur_val;
+}
+
+function renderSupList(){
+    const el=document.getElementById('supList');
+    if(!suppliers.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Nenhum fornecedor ainda.</p></div>';return;}
+    el.innerHTML=suppliers.map(s=>{
+        const q=kQuad(s.kx,s.ky);
+        const clDone=Object.values(s.checklist).some(v=>typeof v==='object'&&Object.values(v).some(x=>x));
+        const gDone=s.scores&&s.scores.some(v=>v!==5);
+        return `<div class="sup-pill${s.id===curId?' sel':''}" onclick="selectSup('${s.id}')">
+            <div class="sup-dot" style="background:${s.color}"></div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:.79rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</div>
+                <div style="font-size:.61rem;color:var(--muted);">${s.cnpj?s.cnpj+' · ':''}${s.cat||'—'} · <span style="color:${q.c}">${q.n}</span></div>
+            </div>
+            <div class="phase-icons">
+                <span class="pi done" title="Kraljic">📍</span>
+                <span class="pi${s.pcbQuad?' done':''}" title="PCB">🎯</span>
+                <span class="pi${clDone?' done':''}" title="Checklist">✅</span>
+                <span class="pi${gDone?' done':''}" title="Relacionamento">🤝</span>
+            </div>
+            <button class="btn-danger" onclick="event.stopPropagation();removeSup('${s.id}')">✕</button>
+        </div>`;
+    }).join('');
+}
+
+// ================================================================
+// KRALJIC CHART
+// ================================================================
+const kBgPlugin={id:'kBg',beforeDraw(chart){
+    const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=chart;
+    const mx=x.getPixelForValue(50),my=y.getPixelForValue(50);
+    [{x:left,y:top,w:mx-left,h:my-top,c:'rgba(29,78,216,.09)'},{x:mx,y:top,w:right-mx,h:my-top,c:'rgba(220,38,38,.09)'},
+     {x:left,y:my,w:mx-left,h:bottom-my,c:'rgba(71,85,105,.09)'},{x:mx,y:my,w:right-mx,h:bottom-my,c:'rgba(124,58,237,.09)'}]
+    .forEach(f=>{ctx.fillStyle=f.c;ctx.fillRect(f.x,f.y,f.w,f.h);});
+    ctx.font='bold 9px Syne,sans-serif';
+    ctx.fillStyle='#60a5fa';ctx.fillText('ALAVANCAGEM',left+6,my-8);
+    ctx.fillStyle='#f87171';ctx.fillText('ESTRATÉGICO',mx+6,top+13);
+    ctx.fillStyle='#94a3b8';ctx.fillText('NÃO-CRÍTICO',left+6,bottom-6);
+    ctx.fillStyle='#c084fc';ctx.fillText('GARGALO',mx+6,bottom-6);
+}};
+
+function updateKChart(){
+    if(!kChart){initKChart();return;}
+    kChart.data.datasets=suppliers.map(s=>({label:s.name,data:[{x:s.kx,y:s.ky}],backgroundColor:s.color,pointRadius:14,pointHoverRadius:18}));
+    kChart.update();
+}
+function initKChart(){
+    const ctx=document.getElementById('kChart');if(!ctx||kChart) return;
+    kChart=new Chart(ctx.getContext('2d'),{type:'scatter',data:{datasets:[]},
+        options:{responsive:true,maintainAspectRatio:false,
+            scales:{x:{min:0,max:100,title:{display:true,text:'Risco / Complexidade →',color:'#64748b'},grid:{color:'#1e2d45'},ticks:{color:'#64748b'}},
+                    y:{min:0,max:100,title:{display:true,text:'Valor / Impacto →',color:'#64748b'},grid:{color:'#1e2d45'},ticks:{color:'#64748b'}}},
+            plugins:{legend:{labels:{color:'#94a3b8',boxWidth:10,font:{size:10}}}}},plugins:[kBgPlugin]});
+    updateKChart();
+}
+
+// ================================================================
+// PCB CHART
+// ================================================================
+const pcbBgPlugin={id:'pcbBg',beforeDraw(chart){
+    const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=chart;
+    const mx=x.getPixelForValue(50),my=y.getPixelForValue(50);
+    [{x:left,y:top,w:mx-left,h:my-top,c:'rgba(29,78,216,.09)'},{x:mx,y:top,w:right-mx,h:my-top,c:'rgba(124,58,237,.09)'},
+     {x:left,y:my,w:mx-left,h:bottom-my,c:'rgba(71,85,105,.09)'},{x:mx,y:my,w:right-mx,h:bottom-my,c:'rgba(220,38,38,.09)'}]
+    .forEach(f=>{ctx.fillStyle=f.c;ctx.fillRect(f.x,f.y,f.w,f.h);});
+    ctx.font='bold 8px Syne,sans-serif';
+    ctx.fillStyle='#60a5fa';ctx.fillText('II. ALAVANCAR COMP.',left+6,my-8);
+    ctx.fillStyle='#c084fc';ctx.fillText('IV. VANTAGEM CONJUNTA',mx+6,top+13);
+    ctx.fillStyle='#94a3b8';ctx.fillText('I. GERENCIAR GASTOS',left+6,bottom-6);
+    ctx.fillStyle='#f87171';ctx.fillText('III. MUDAR NATUREZA',mx+6,bottom-6);
+}};
+
+function initPCBChart(){
+    const ctx=document.getElementById('pcbChart');if(!ctx||pcbChart)return;
+    pcbChart=new Chart(ctx.getContext('2d'),{type:'scatter',
+        data:{datasets:[{label:'Posição',data:[{x:50,y:50}],backgroundColor:'#60a5fa',pointRadius:18,pointHoverRadius:22}]},
+        options:{responsive:true,maintainAspectRatio:false,
+            scales:{x:{min:0,max:100,title:{display:true,text:'Poder de Oferta (Fornecedor) →',color:'#64748b'},grid:{color:'#1e2d45'},ticks:{color:'#64748b'}},
+                    y:{min:0,max:100,title:{display:true,text:'Poder de Demanda (Comprador) →',color:'#64748b'},grid:{color:'#1e2d45'},ticks:{color:'#64748b'}}},
+            plugins:{legend:{display:false}}},plugins:[pcbBgPlugin]});
+}
+
+function updatePCBForSup(){
+    const s=cur();
+    const empty=document.getElementById('pcbEmpty'),content=document.getElementById('pcbContent');
+    if(!s){if(empty)empty.style.display='block';if(content)content.style.display='none';return;}
+    if(empty)empty.style.display='none';if(content)content.style.display='grid';
+    document.getElementById('pcbName').innerText=s.name;
+    document.getElementById('pcbX').value=s.pcbX;
+    document.getElementById('pcbY').value=s.pcbY;
+    updatePCB();
+}
+
+function updatePCB(){
+    const x=+document.getElementById('pcbX').value,y=+document.getElementById('pcbY').value;
+    document.getElementById('vX').innerText=x+'%';document.getElementById('vY').innerText=y+'%';
+    const q=pcbQuad(x,y);
+    document.getElementById('pcbEstrat').innerText=q.n;document.getElementById('pcbEstrat').style.color=q.c;
+    document.getElementById('pcbDesc').innerText=q.d;
+    document.getElementById('pcbBadge').innerHTML=`<span class="badge ${q.cls}">${q.n}</span>`;
+    document.getElementById('pcbParecer').style.borderLeftColor=q.c;
+    if(pcbChart){pcbChart.data.datasets[0].data[0]={x,y};pcbChart.data.datasets[0].backgroundColor=q.c;pcbChart.update();}
+}
+
+function savePCB(){
+    const s=cur();if(!s)return;
+    s.pcbX=+document.getElementById('pcbX').value;s.pcbY=+document.getElementById('pcbY').value;
+    s.pcbQuad=pcbQuad(s.pcbX,s.pcbY).n;
+    updateSupBar();renderSupList();toast('Diagnóstico PCB salvo!');
+}
+
+// ================================================================
+// CHECKLIST
+// ================================================================
+function renderChecklist(){
+    const s=cur();
+    const empty=document.getElementById('clEmpty'),content=document.getElementById('clContent');
+    if(!s){if(empty)empty.style.display='block';if(content)content.style.display='none';return;}
+    if(empty)empty.style.display='none';if(content)content.style.display='grid';
+    const qMap={Estratégico:'estrategico',Alavancagem:'alavancagem',Gargalo:'gargalo','Não-crítico':'naocritico'};
+    const qKey=qMap[s.kquad]||'naocritico';
+    const qColor=kQuad(s.kx,s.ky).c;
+    const qName=s.kquad;
+    const navItems=[
+        {key:'base',label:'📋 Base Genérica',color:'#60a5fa'},
+        {key:qKey, label:`⭐ ${qName} (recomendado)`,color:qColor},
+        ...[{k:'estrategico',l:'Estratégico'},{k:'alavancagem',l:'Alavancagem'},{k:'gargalo',l:'Gargalo'},{k:'naocritico',l:'Não-crítico'}]
+            .filter(x=>x.k!==qKey)
+            .map(x=>({key:x.k,label:x.l,color:'#475569'}))
+    ];
+    document.getElementById('clNav').innerHTML=navItems.map(n=>{
+        const active=curClSec===n.key;
+        return `<button onclick="switchClSec('${n.key}')" style="text-align:left;padding:.55rem .8rem;border-radius:7px;border:1px solid ${active?n.color:'var(--border)'};background:${active?'rgba(96,165,250,.1)':'var(--surface2)'};color:${active?n.color:'#94a3b8'};cursor:pointer;font-size:.73rem;font-weight:700;font-family:'Syne',sans-serif;width:100%;transition:all .2s;">${n.label}</button>`;
+    }).join('');
+    renderClBody(s,qKey);
+}
+
+function switchClSec(key){curClSec=key;renderChecklist();}
+
+function renderClBody(s,qKey){
+    const isBase=curClSec==='base';
+    const sections=isBase?CL.base:[...CL.base,...(CL[curClSec]||[])];
+    let tot=0,chk=0,html='';
+    const q=kQuad(s.kx,s.ky);
+    html+=`<div style="font-size:.88rem;font-weight:800;color:${q.c};margin-bottom:1.1rem;">Checklist — ${s.name}</div>`;
+    sections.forEach((sec,si)=>{
+        const sk=curClSec+'_'+si;
+        if(!s.checklist[sk]) s.checklist[sk]={};
+        html+=`<div style="margin-bottom:1.1rem;"><div style="font-size:.59rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;padding-bottom:.25rem;border-bottom:1px solid var(--border);">${sec.title}</div>`;
+        sec.items.forEach((item,ii)=>{
+            const uid=`cl_${s.id}_${curClSec}_${si}_${ii}`;
+            const checked=(s.checklist[sk][ii]||false);
+            if(checked)chk++;tot++;
+            html+=`<div class="cl-item${checked?' checked':''}" id="wrap_${uid}"><input type="checkbox" id="${uid}" ${checked?'checked':''} onchange="toggleCl('${s.id}','${curClSec}',${si},${ii},'${uid}')"><label for="${uid}">${item}</label></div>`;
         });
         html+='</div>';
     });
-    document.getElementById('checklistContent').innerHTML=html;
-    updateProgress(tot,chk);
+    document.getElementById('clBody').innerHTML=html;
+    document.getElementById('clPText').innerText=`${chk} / ${tot}`;
+    document.getElementById('clPBar').style.width=tot?(chk/tot*100)+'%':'0%';
 }
 
-function toggleCheck(key,si,ii,id) {
-    const sk=key+'_'+si;
-    if(!checkStates[sk]) checkStates[sk]={};
-    checkStates[sk][ii]=document.getElementById(id).checked;
-    const wrap=document.getElementById('wrap_'+id);
-    if(wrap) { checkStates[sk][ii]?wrap.classList.add('checked'):wrap.classList.remove('checked'); }
-    let tot=0,chk=0;
-    document.querySelectorAll('#checklistContent input[type=checkbox]').forEach(c=>{tot++;if(c.checked)chk++;});
-    updateProgress(tot,chk);
+function toggleCl(supId,sec,si,ii,uid){
+    const s=getSup(supId);if(!s)return;
+    const sk=sec+'_'+si;
+    if(!s.checklist[sk]) s.checklist[sk]={};
+    s.checklist[sk][ii]=document.getElementById(uid).checked;
+    const wrap=document.getElementById('wrap_'+uid);
+    if(wrap){s.checklist[sk][ii]?wrap.classList.add('checked'):wrap.classList.remove('checked');}
+    let t=0,c=0;
+    document.querySelectorAll('#clBody input[type=checkbox]').forEach(cb=>{t++;if(cb.checked)c++;});
+    document.getElementById('clPText').innerText=`${c} / ${t}`;
+    document.getElementById('clPBar').style.width=t?(c/t*100)+'%':'0%';
+    updateSupBar();
 }
 
-function updateProgress(tot,chk) {
-    document.getElementById('progressAll').innerText=`${chk} / ${tot} itens`;
-    document.getElementById('progressAllBar').style.width=tot?(chk/tot*100)+'%':'0%';
+// ================================================================
+// GESTÃO
+// ================================================================
+function renderGestao(){
+    const s=cur();
+    const empty=document.getElementById('gestEmpty'),content=document.getElementById('gestContent');
+    if(!s){if(empty)empty.style.display='block';if(content)content.style.display='none';return;}
+    if(empty)empty.style.display='none';if(content)content.style.display='grid';
+    document.getElementById('gestName').innerText=s.name;
+    if(!s.scores) s.scores=Array(CRITERIA.length).fill(5);
+    document.getElementById('gestCriteria').innerHTML=CRITERIA.map((c,i)=>`
+        <div class="scoring-row">
+            <div class="scoring-label">${c.label}<br><span style="font-size:.61rem;color:var(--muted);">peso ${c.weight}%</span></div>
+            <input type="range" min="0" max="10" value="${s.scores[i]}" id="gsc${i}" oninput="calcGestao()" style="flex:1;accent-color:#3b82f6;">
+            <div class="scoring-val" id="gscv${i}">${s.scores[i]}</div>
+        </div>`).join('');
+    setTimeout(calcGestao,50);
 }
 
-function hexRGB(hex) {
-    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return `${r},${g},${b}`;
+function calcGestao(){
+    const s=cur();if(!s)return;
+    let total=0;
+    const vals=CRITERIA.map((c,i)=>{
+        const el=document.getElementById('gsc'+i);if(!el)return 5;
+        const v=+el.value;
+        const ve=document.getElementById('gscv'+i);if(ve)ve.innerText=v;
+        s.scores[i]=v;total+=(v/10)*c.weight;return v;
+    });
+    total=Math.round(total);
+    const te=document.getElementById('gestTotal');if(te)te.innerText=`${total} / 100`;
+    const radarEl=document.getElementById('radarChart');if(!radarEl)return;
+    const rd={labels:CRITERIA.map(c=>c.label.split(' ').slice(0,2).join(' ')),
+        datasets:[{label:s.name,data:vals,fill:true,backgroundColor:'rgba(96,165,250,.15)',borderColor:'#60a5fa',pointBackgroundColor:'#60a5fa',pointRadius:4}]};
+    if(radarChart){radarChart.data=rd;radarChart.update();}
+    else{radarChart=new Chart(radarEl.getContext('2d'),{type:'radar',data:rd,options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:10,ticks:{color:'#64748b',stepSize:2,backdropColor:'transparent'},grid:{color:'#1e2d45'},pointLabels:{color:'#94a3b8',font:{size:9}}}},plugins:{legend:{labels:{color:'#94a3b8'}}}}});}
 }
 
-// ============ PDF EXPORT ============
-function generatePDF() {
-    const sections = {
-        fornecedores: document.getElementById('pdf-fornecedores').checked,
-        diagnostico:  document.getElementById('pdf-diagnostico').checked,
-        checklist:    document.getElementById('pdf-checklist').checked,
-        gestao:       document.getElementById('pdf-gestao').checked,
-        guia:         document.getElementById('pdf-guia').checked,
-        taxonomia:    document.getElementById('pdf-taxonomia').checked,
-    };
-    const title = document.getElementById('pdfTitle').value || 'Relatório — Gestão de Fornecedores';
-    const org   = document.getElementById('pdfOrg').value || '';
+function saveGestao(){const s=cur();if(!s)return;toast('Avaliação salva!');updateSupBar();renderSupList();}
 
-    // Build print content
-    let html = `
-    <html><head><meta charset="UTF-8">
+// ================================================================
+// REPORT
+// ================================================================
+function renderRptSupList(){
+    const el=document.getElementById('rSupList');
+    if(!suppliers.length){el.innerHTML='<p style="font-size:.73rem;color:var(--muted);">Nenhum fornecedor cadastrado.</p>';return;}
+    el.innerHTML=suppliers.map(s=>{
+        const q=kQuad(s.kx,s.ky);
+        return `<label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.55rem .8rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin-bottom:.35rem;">
+            <input type="checkbox" id="rs-sup-${s.id}" checked style="accent-color:var(--blue);width:14px;height:14px;">
+            <div class="sup-dot" style="background:${s.color}"></div>
+            <div style="flex:1;"><div style="font-size:.78rem;font-weight:700;">${s.name}</div>
+            <div style="font-size:.63rem;color:var(--muted);">${s.cat||'—'} · <span style="color:${q.c}">${q.n}</span>${s.pcbQuad?` · ${s.pcbQuad}`:''}</div></div>
+        </label>`;
+    }).join('');
+}
+
+function generatePDF(){
+    const title=document.getElementById('rTitle').value||'Relatório — Gestão de Fornecedores';
+    const org=document.getElementById('rOrg').value||'';
+    const incS=document.getElementById('rs-sumario').checked;
+    const incK=document.getElementById('rs-kraljic').checked;
+    const incP=document.getElementById('rs-pcb').checked;
+    const incC=document.getElementById('rs-checklist').checked;
+    const incG=document.getElementById('rs-gestao').checked;
+    const sups=suppliers.filter(s=>document.getElementById('rs-sup-'+s.id)?.checked);
+    if(!sups.length){alert('Selecione ao menos um fornecedor.');return;}
+
+    const pcbClsMap={'II. Alavancar Competição':'bp2','IV. Vantagem Conjunta':'bp4','I. Gerenciar Gastos':'bp3','III. Mudar Natureza':'bp1'};
+    const kClsMap={Estratégico:'be',Alavancagem:'ba',Gargalo:'bg','Não-crítico':'bn'};
+
+    let h=`<html><head><meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        *{box-sizing:border-box;} body{font-family:'Syne',sans-serif;color:#1e293b;padding:2rem;font-size:12px;}
-        h1{font-size:1.4rem;font-weight:800;color:#1e3a8a;margin-bottom:.25rem;}
-        h2{font-size:1rem;font-weight:800;color:#1e3a8a;margin:1.5rem 0 .75rem;border-bottom:2px solid #e2e8f0;padding-bottom:.35rem;text-transform:uppercase;letter-spacing:.05em;}
-        h3{font-size:.85rem;font-weight:700;color:#334155;margin:.75rem 0 .4rem;}
-        table{width:100%;border-collapse:collapse;margin-bottom:1rem;}
-        th{background:#1e3a8a;color:white;padding:.4rem .75rem;font-size:.75rem;text-align:left;}
-        td{border:1px solid #e2e8f0;padding:.4rem .75rem;font-size:.78rem;vertical-align:top;}
-        tr:nth-child(even) td{background:#f8fafc;}
-        .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700;}
-        .q-estrategico{background:#fee2e2;color:#dc2626;}
-        .q-alavancagem{background:#dbeafe;color:#1d4ed8;}
-        .q-gargalo{background:#ede9fe;color:#7c3aed;}
-        .q-naocritico{background:#f1f5f9;color:#475569;}
-        .cl-item{padding:.3rem 0;font-size:.78rem;border-bottom:1px solid #f1f5f9;}
-        .cl-item.chk{color:#94a3b8;text-decoration:line-through;}
-        .score-row{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #f1f5f9;font-size:.78rem;}
-        .page-break{page-break-after:always;}
-        .header{border-bottom:3px solid #1e3a8a;padding-bottom:1rem;margin-bottom:1.5rem;}
-        .sub{font-size:.72rem;color:#64748b;}
-    </style></head><body>
-    <div class="header">
-        <h1>${title}</h1>
-        <div class="sub">${org ? org + ' · ' : ''}Prof. Thiago Lima · MBA & Consultoria · ${new Date().toLocaleDateString('pt-BR')}</div>
-    </div>`;
+    <style>*{box-sizing:border-box;}body{font-family:'Syne',sans-serif;color:#1e293b;margin:0;font-size:12px;}
+    .page{padding:2rem;page-break-after:always;}.page:last-child{page-break-after:avoid;}
+    h1{font-size:1.4rem;font-weight:800;color:#1e3a8a;margin-bottom:.25rem;}
+    .sub{font-size:.7rem;color:#64748b;padding-bottom:1rem;border-bottom:3px solid #1e3a8a;margin-bottom:1.5rem;}
+    h2{font-size:.95rem;font-weight:800;color:#1e3a8a;margin:1.3rem 0 .5rem;border-bottom:2px solid #e2e8f0;padding-bottom:.25rem;text-transform:uppercase;}
+    h3{font-size:.82rem;font-weight:700;color:#334155;margin:.75rem 0 .3rem;padding-left:.5rem;border-left:3px solid #3b82f6;}
+    table{width:100%;border-collapse:collapse;margin-bottom:.9rem;}
+    th{background:#1e3a8a;color:white;padding:.38rem .65rem;font-size:.7rem;text-align:left;}
+    td{border:1px solid #e2e8f0;padding:.35rem .65rem;font-size:.74rem;vertical-align:top;}
+    tr:nth-child(even) td{background:#f8fafc;}
+    .badge{display:inline-block;padding:.18rem .5rem;border-radius:999px;font-size:.67rem;font-weight:700;}
+    .be{background:#fee2e2;color:#dc2626;}.ba{background:#dbeafe;color:#1d4ed8;}
+    .bg{background:#ede9fe;color:#7c3aed;}.bn{background:#f1f5f9;color:#475569;}
+    .bp1{background:#fee2e2;color:#dc2626;}.bp2{background:#dbeafe;color:#1d4ed8;}
+    .bp3{background:#f1f5f9;color:#475569;}.bp4{background:#ede9fe;color:#7c3aed;}
+    .cl{padding:.22rem 0;border-bottom:1px solid #f1f5f9;font-size:.74rem;}
+    .cl-done{color:#94a3b8;text-decoration:line-through;}
+    .sec-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:.5rem 0 .2rem;}
+    </style></head><body>`;
 
-    // FORNECEDORES
-    if (sections.fornecedores) {
-        html += `<h2>📍 Fornecedores Cadastrados</h2>`;
-        if (suppliers.length === 0) {
-            html += `<p style="color:#94a3b8;font-style:italic;">Nenhum fornecedor cadastrado.</p>`;
-        } else {
-            html += `<table><thead><tr><th>#</th><th>Fornecedor</th><th>CNPJ</th><th>Categoria</th><th>Quadrante</th><th>Valor/Impacto (Y)</th><th>Risco/Complexidade (X)</th></tr></thead><tbody>`;
-            suppliers.forEach((s,i) => {
-                const qClass = 'q-'+s.quad.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,'');
-                html += `<tr><td>${i+1}</td><td><b>${s.name}</b></td><td>${s.cnpj||'—'}</td><td>${s.cat||'—'}</td><td><span class="badge ${qClass}">${s.quad}</span></td><td>${s.y}</td><td>${s.x}</td></tr>`;
-            });
-            html += `</tbody></table>`;
+    // CAPA + SUMÁRIO
+    h+=`<div class="page"><h1>${title}</h1><div class="sub">${org?org+' · ':''}Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos · ${new Date().toLocaleDateString('pt-BR')}</div>`;
+    if(incS){
+        h+=`<h2>📊 Sumário Executivo</h2>
+        <table><thead><tr><th>#</th><th>Fornecedor</th><th>CNPJ</th><th>Categoria</th><th>Kraljic</th><th>PCB (Kearney)</th><th>Score</th></tr></thead><tbody>`;
+        sups.forEach((s,i)=>{
+            const kq=kQuad(s.kx,s.ky);
+            const pq=s.pcbQuad?pcbQuad(s.pcbX,s.pcbY):null;
+            let score='—';
+            if(s.scores){let t=0;CRITERIA.forEach((c,j)=>{t+=(s.scores[j]/10)*c.weight;});score=Math.round(t)+'/100';}
+            h+=`<tr><td>${i+1}</td><td><b>${s.name}</b></td><td>${s.cnpj||'—'}</td><td>${s.cat||'—'}</td>
+            <td><span class="badge ${kClsMap[kq.n]||'bn'}">${kq.n}</span></td>
+            <td>${pq?`<span class="badge ${pcbClsMap[pq.n]||'bp3'}">${pq.n}</span>`:'—'}</td>
+            <td>${score}</td></tr>`;
+        });
+        h+=`</tbody></table>`;
+    }
+    h+=`</div>`;
+
+    // DOSSIÊ POR FORNECEDOR
+    sups.forEach((s,idx)=>{
+        const kq=kQuad(s.kx,s.ky);
+        h+=`<div class="page"><h1 style="font-size:1.1rem;">Dossiê #${idx+1} — ${s.name}</h1>
+        <div class="sub">${s.cnpj?'CNPJ: '+s.cnpj+' · ':''}${s.cat?'Categoria: '+s.cat:''}${s.cnpj||s.cat?' · ':''}</div>`;
+
+        if(incK){
+            h+=`<h2>📍 Avaliação Kraljic</h2>
+            <table><thead><tr><th>Parâmetro</th><th>Valor</th></tr></thead><tbody>
+            <tr><td>Valor / Impacto (Y)</td><td>${s.ky}</td></tr>
+            <tr><td>Risco / Complexidade (X)</td><td>${s.kx}</td></tr>
+            <tr><td>Quadrante</td><td><span class="badge ${kClsMap[kq.n]||'bn'}">${kq.n}</span></td></tr>
+            </tbody></table>`;
         }
-    }
 
-    // DIAGNÓSTICO
-    if (sections.diagnostico) {
-        const x = document.getElementById('x')?.value || 50;
-        const y = document.getElementById('y')?.value || 50;
-        const q = getKrajlicQuadrant(+x, +y);
-        html += `<h2>🎯 Diagnóstico de Poder</h2>
-        <table><thead><tr><th>Parâmetro</th><th>Valor</th></tr></thead><tbody>
-        <tr><td>Valor / Impacto (Comprador)</td><td>${y}%</td></tr>
-        <tr><td>Risco / Complexidade (Fornecedor)</td><td>${x}%</td></tr>
-        <tr><td>Quadrante Recomendado</td><td><b>${q.name}</b></td></tr>
-        <tr><td>Estratégia</td><td>${q.desc}</td></tr>
-        </tbody></table>`;
-    }
+        if(incP){
+            if(s.pcbQuad){
+                const pq=pcbQuad(s.pcbX,s.pcbY);
+                h+=`<h2>🎯 Diagnóstico PCB — Kearney</h2>
+                <table><thead><tr><th>Parâmetro</th><th>Valor</th></tr></thead><tbody>
+                <tr><td>Poder de Demanda (Comprador)</td><td>${s.pcbY}%</td></tr>
+                <tr><td>Poder de Oferta (Fornecedor)</td><td>${s.pcbX}%</td></tr>
+                <tr><td>Quadrante</td><td><span class="badge ${pcbClsMap[pq.n]||'bp3'}">${pq.n}</span></td></tr>
+                <tr><td>Estratégia Sugerida</td><td>${pq.d}</td></tr>
+                </tbody></table>`;
+            } else {h+=`<h2>🎯 Diagnóstico PCB</h2><p style="font-size:.76rem;color:#94a3b8;font-style:italic;">Diagnóstico não realizado para este fornecedor.</p>`;}
+        }
 
-    // CHECKLIST
-    if (sections.checklist) {
-        html += `<h2>✅ Checklist de Contrato</h2>`;
-        ['all','estrategico','gargalo','alavancagem','naocritico'].forEach(key => {
-            const cl = checklists[key];
-            const sections_cl = key==='all' ? cl.sections : cl.sections;
-            let hasAny = false;
-            sections_cl.forEach((sec,si) => {
-                const sk=key+'_'+si;
-                if (checkStates[sk] && Object.keys(checkStates[sk]).length) hasAny = true;
-            });
-            if (!hasAny && key !== 'all') return;
-            html += `<h3>${cl.title}</h3>`;
-            sections_cl.forEach((sec,si) => {
-                const sk=key+'_'+si;
-                html+=`<div style="font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;margin:.5rem 0 .25rem;">${sec.title}</div>`;
-                sec.items.forEach((item,ii) => {
-                    const checked=(checkStates[sk]||{})[ii]||false;
-                    html+=`<div class="cl-item${checked?' chk':''}">${checked?'☑':'☐'} ${item}</div>`;
+        if(incC){
+            h+=`<h2>✅ Checklist de Contrato</h2>`;
+            const qKeyMap={Estratégico:'estrategico',Alavancagem:'alavancagem',Gargalo:'gargalo','Não-crítico':'naocritico'};
+            const qk=qKeyMap[s.kquad]||'naocritico';
+            const allSecs=[...CL.base,...(CL[qk]||[])];
+            allSecs.forEach((sec,si)=>{
+                const isBase=si<CL.base.length;
+                const sk=(isBase?'base':qk)+'_'+(isBase?si:si-CL.base.length);
+                h+=`<div class="sec-lbl">${sec.title}</div>`;
+                sec.items.forEach((item,ii)=>{
+                    const checked=(s.checklist[sk]||{})[ii]||false;
+                    h+=`<div class="cl${checked?' cl-done':''}">${checked?'☑':'☐'} ${item}</div>`;
                 });
             });
-        });
-    }
+        }
 
-    // GESTÃO DO RELACIONAMENTO
-    if (sections.gestao) {
-        const nome = document.getElementById('scoreName')?.value || '—';
-        html += `<h2>🤝 Gestão do Relacionamento</h2>`;
-        html += `<p style="font-size:.82rem;margin-bottom:.75rem;"><b>Fornecedor avaliado:</b> ${nome}</p>`;
-        html += `<table><thead><tr><th>Critério</th><th>Peso</th><th>Nota (0–10)</th><th>Score Ponderado</th></tr></thead><tbody>`;
-        let total = 0;
-        scoringCriteria.forEach((c,i) => {
-            const v = +( document.getElementById('sc'+i)?.value || 5);
-            const sc = Math.round((v/10)*c.weight*10)/10;
-            total += sc;
-            html+=`<tr><td>${c.label}</td><td>${c.weight}%</td><td>${v}</td><td>${sc.toFixed(1)}</td></tr>`;
-        });
-        html+=`</tbody><tfoot><tr><td colspan="3"><b>Score Total</b></td><td><b>${Math.round(total)} / 100</b></td></tr></tfoot></table>`;
-    }
+        if(incG&&s.scores){
+            let total=0;
+            h+=`<h2>🤝 Gestão do Relacionamento</h2>
+            <table><thead><tr><th>Critério</th><th>Peso</th><th>Nota (0–10)</th><th>Contribuição</th></tr></thead><tbody>`;
+            CRITERIA.forEach((c,i)=>{
+                const v=s.scores[i]||5,sc=Math.round((v/10)*c.weight*10)/10;total+=sc;
+                h+=`<tr><td>${c.label}</td><td>${c.weight}%</td><td>${v}</td><td>${sc.toFixed(1)}</td></tr>`;
+            });
+            h+=`</tbody><tfoot><tr><td colspan="3"><b>Score Total</b></td><td><b>${Math.round(total)} / 100</b></td></tr></tfoot></table>`;
+        }
 
-    // GUIA ESTRATÉGICO
-    if (sections.guia) {
-        html += `<h2>📖 Guia Estratégico por Quadrante</h2>
-        <table><thead><tr><th>Quadrante</th><th>Objetivo</th><th>Tipo de Contrato</th><th>KPIs</th></tr></thead><tbody>
-        <tr><td><b>Estratégico</b></td><td>Parceria profunda e valor conjunto</td><td>3–5 anos, gain-sharing, roadmap conjunto</td><td>NPS, Projetos ativos, OTIF</td></tr>
-        <tr><td><b>Alavancagem</b></td><td>Pressão de preços via rivalidade</td><td>Redução progressiva, benchmarking, multisourcing</td><td>Hard saving, Nº fornecedores, TCO</td></tr>
-        <tr><td><b>Gargalo</b></td><td>Quebrar dependência e monopólios</td><td>SLA rigoroso, saída, plano backup obrigatório</td><td>Alternativas, Concentração, Lead time</td></tr>
-        <tr><td><b>Não-crítico</b></td><td>Eficiência e padronização</td><td>6–12 meses, revisão frequente, sem lock-in</td><td>Economia, Compliance, Nº fornecedores</td></tr>
-        </tbody></table>`;
-    }
+        h+=`</div>`;
+    });
 
-    html += `</body></html>`;
-
-    const win = window.open('','_blank');
-    win.document.write(html);
-    win.document.close();
-    win.onload = () => win.print();
+    h+=`</body></html>`;
+    const win=window.open('','_blank');
+    win.document.write(h);win.document.close();win.onload=()=>win.print();
 }
+
+// ================================================================
+// INIT
+// ================================================================
+window.addEventListener('load',()=>{
+    initKChart();
+});
 </script>
 </body>
 </html>
+
