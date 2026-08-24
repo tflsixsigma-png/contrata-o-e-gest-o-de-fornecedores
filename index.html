@@ -34,6 +34,9 @@
         .tab{padding:.5rem .9rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;transition:all .2s;color:var(--muted);white-space:nowrap;}
         .tab:hover{color:var(--text);background:var(--surface2);}
         .tab.active{background:var(--bg);color:#60a5fa;border-color:var(--border);}
+        a.tab-link{text-decoration:none;color:var(--muted);display:inline-block;}
+        a.tab-link:hover{color:var(--text);background:var(--surface2);}
+        a.tab-link .tl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#C9A961;margin-right:.35rem;vertical-align:1px;}
         .tab-div{width:1px;background:var(--border);margin:.4rem .1rem;}
 
         .panel{display:none;padding:1.5rem 2rem;max-width:1400px;margin:0 auto;}
@@ -136,6 +139,9 @@
     <div class="tab" onclick="showTab('taxonomia',this)">🗂 Taxonomia (64)</div>
     <div class="tab-div"></div>
     <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
+    <div class="tab-div"></div>
+    <a class="tab tab-link" href="laboratorio-encontro2.html" title="Atividade em grupo do Encontro 2 — caso Aurora Alimentos"><span class="tl-dot"></span>Laboratório E2</a>
+    <a class="tab tab-link" href="central-inteligencia.html" title="Ferramenta: análise de mercado da sua categoria com Market Intelligence Report"><span class="tl-dot"></span>Inteligência de Mercado</a>
 </div>
 
 <!-- ===== KRALJIC ===== -->
@@ -924,4 +930,3 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
-
