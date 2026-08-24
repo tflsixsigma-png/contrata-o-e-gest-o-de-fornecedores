@@ -272,12 +272,21 @@
 
 <!-- ===== PCB ===== -->
 <div id="tab-pcb" class="panel" style="display:none;">
-    <div id="pcbEmpty" class="empty" style="display:none;"><div class="empty-icon">🎯</div><p>Selecione uma categoria na barra acima.</p></div>
+    <div id="pcbEmpty" class="empty" style="display:none;"><div class="empty-icon">🎯</div><p>Cadastre uma categoria na primeira aba.</p></div>
+    <div id="pcbCtxBar" class="card" style="margin-bottom:1rem;padding:.85rem 1.2rem;">
+        <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#60a5fa;display:block;margin-bottom:.3rem;">Diagnosticando o poder de</label>
+                <select id="pcbCtxCat" class="ifield" onchange="pcbCtxChange()"></select></div>
+            <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Fornecedor específico (opcional)</label>
+                <select id="pcbCtxForn" class="ifield" onchange="updatePCBForSup()"><option value="">— a categoria como um todo —</option></select></div>
+            <div style="min-width:260px;font-size:.62rem;color:var(--muted);line-height:1.5;">O diagnóstico da <b style="color:#94a3b8;">categoria</b> orienta estratégia e checklist; os diagnósticos por <b style="color:#94a3b8;">fornecedor</b> revelam assimetrias de poder dentro da mesma base.</div>
+        </div>
+    </div>
     <div id="pcbContent" class="grid2" style="align-items:start;">
         <div class="card">
             <div class="card-title">Diagnóstico de Poder — Kearney Purchasing Chessboard</div>
             <div style="margin-bottom:.9rem;padding:.55rem .85rem;background:rgba(59,130,246,.07);border-radius:8px;border:1px solid rgba(59,130,246,.15);">
-                <span style="font-size:.67rem;color:var(--muted);">Categoria: </span>
+                <span style="font-size:.67rem;color:var(--muted);">Diagnóstico de: </span>
                 <span id="pcbName" style="font-size:.77rem;font-weight:700;color:#60a5fa;">—</span>
             </div>
             <div style="margin-bottom:1.1rem;">
@@ -564,7 +573,7 @@ function showTab(name,el){
     if(name==='categorias'){renderSupList();}
     if(name==='riscos'){renderRisks();riskCtxSyncFromGlobal();renderRisks();}
     if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
-    if(name==='pcb'){setTimeout(()=>{initPCBChart();updatePCBForSup();},80);}
+    if(name==='pcb'){setTimeout(()=>{try{initPCBChart();}catch(e){}pcbCtxRefresh();updatePCBForSup();},80);}
     if(name==='checklist'){renderChecklist();}
     if(name==='gestao'){renderGestao();}
     if(name==='taxonomia'){renderTaxonomia();}
@@ -719,14 +728,42 @@ function initPCBChart(){
             plugins:{legend:{display:false}}},plugins:[pcbBgPlugin]});
 }
 
+function pcbCtxRefresh(){
+    const catSel=document.getElementById('pcbCtxCat');
+    if(!catSel)return;
+    catSel.innerHTML=suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+    if(cur()) catSel.value=curId;
+    const s=getSup(catSel.value);
+    const fSel=document.getElementById('pcbCtxForn');
+    const fv=fSel.value;
+    const forns=s&&s.forn?s.forn.split(',').map(f=>f.trim()).filter(Boolean):[];
+    fSel.innerHTML='<option value="">— a categoria como um todo —</option>'+forns.map(f=>`<option value="${f}">${f}</option>`).join('');
+    if([...fSel.options].some(o=>o.value===fv)) fSel.value=fv;
+}
+function pcbCtxChange(){
+    const id=document.getElementById('pcbCtxCat').value;
+    if(id&&id!==curId){curId=id;document.getElementById('globalSel').value=id;updateSupBar();}
+    document.getElementById('pcbCtxForn').value='';
+    pcbCtxRefresh();
+    updatePCBForSup();
+}
+function pcbRec(s,forn){
+    if(!forn) return {x:s.pcbX,y:s.pcbY,feito:!!s.pcbQuad};
+    if(!s.pcbForn)s.pcbForn={};
+    const r=s.pcbForn[forn];
+    return r?{x:r.x,y:r.y,feito:true}:{x:50,y:50,feito:false};
+}
 function updatePCBForSup(){
     const s=cur();
-    const empty=document.getElementById('pcbEmpty'),content=document.getElementById('pcbContent');
-    if(!s){if(empty)empty.style.display='block';if(content)content.style.display='none';return;}
-    if(empty)empty.style.display='none';if(content)content.style.display='grid';
-    document.getElementById('pcbName').innerText=s.name;
-    document.getElementById('pcbX').value=s.pcbX;
-    document.getElementById('pcbY').value=s.pcbY;
+    const empty=document.getElementById('pcbEmpty'),content=document.getElementById('pcbContent'),bar=document.getElementById('pcbCtxBar');
+    if(!s){if(empty)empty.style.display='block';if(content)content.style.display='none';if(bar)bar.style.display='none';return;}
+    if(empty)empty.style.display='none';if(content)content.style.display='grid';if(bar)bar.style.display='block';
+    pcbCtxRefresh();
+    const forn=document.getElementById('pcbCtxForn').value;
+    const rec=pcbRec(s,forn);
+    document.getElementById('pcbName').innerText=forn?`${s.name} — ${forn}`:s.name;
+    document.getElementById('pcbX').value=rec.x;
+    document.getElementById('pcbY').value=rec.y;
     updatePCB();
 }
 
@@ -738,14 +775,36 @@ function updatePCB(){
     document.getElementById('pcbDesc').innerText=q.d;
     document.getElementById('pcbBadge').innerHTML=`<span class="badge ${q.cls}">${q.n}</span>`;
     document.getElementById('pcbParecer').style.borderLeftColor=q.c;
-    if(pcbChart){pcbChart.data.datasets[0].data[0]={x,y};pcbChart.data.datasets[0].backgroundColor=q.c;pcbChart.update();}
+    if(pcbChart){
+        const s=cur();
+        const forn=document.getElementById('pcbCtxForn')?document.getElementById('pcbCtxForn').value:'';
+        const ds=[{label:(forn?forn+' (editando)':(s?s.name:'Posição')),data:[{x,y}],backgroundColor:q.c,pointRadius:16,pointHoverRadius:20}];
+        if(s){
+            if(forn&&s.pcbQuad) ds.push({label:s.name+' (categoria)',data:[{x:s.pcbX,y:s.pcbY}],backgroundColor:'#64748b',pointRadius:10,pointStyle:'rectRot'});
+            if(s.pcbForn) Object.entries(s.pcbForn).forEach(([f,r])=>{
+                if(f!==forn) ds.push({label:f,data:[{x:r.x,y:r.y}],backgroundColor:'#334155',pointRadius:8});
+            });
+        }
+        pcbChart.data.datasets=ds;
+        pcbChart.options.plugins.legend.display=ds.length>1;
+        pcbChart.options.plugins.legend.labels={color:'#94a3b8',font:{size:9}};
+        pcbChart.update();
+    }
 }
 
 function savePCB(){
     const s=cur();if(!s)return;
-    s.pcbX=+document.getElementById('pcbX').value;s.pcbY=+document.getElementById('pcbY').value;
-    s.pcbQuad=pcbQuad(s.pcbX,s.pcbY).n;
-    updateSupBar();renderSupList();toast('Diagnóstico PCB salvo!');
+    const forn=document.getElementById('pcbCtxForn').value;
+    const px=+document.getElementById('pcbX').value,py=+document.getElementById('pcbY').value;
+    if(forn){
+        if(!s.pcbForn)s.pcbForn={};
+        s.pcbForn[forn]={x:px,y:py,quad:pcbQuad(px,py).n};
+        toast('Diagnóstico de '+forn+' salvo!');
+    }else{
+        s.pcbX=px;s.pcbY=py;s.pcbQuad=pcbQuad(px,py).n;
+        toast('Diagnóstico da categoria salvo!');
+    }
+    updateSupBar();renderSupList();updatePCB();
 }
 
 // ================================================================
@@ -958,6 +1017,7 @@ function generatePDF(){
                 <table><thead><tr><th>Parâmetro</th><th>Valor</th></tr></thead><tbody>
                 <tr><td>Poder de Demanda (Comprador)</td><td>${s.pcbY}%</td></tr>
                 <tr><td>Poder de Oferta (Fornecedor)</td><td>${s.pcbX}%</td></tr>
+                ${s.pcbForn&&Object.keys(s.pcbForn).length?`</tbody></table><h3>Diagnósticos por fornecedor</h3><table><thead><tr><th>Fornecedor</th><th>Demanda</th><th>Oferta</th><th>Quadrante</th></tr></thead><tbody>${Object.entries(s.pcbForn).map(([f,r])=>`<tr><td>${f}</td><td>${r.y}%</td><td>${r.x}%</td><td><span class="badge ${pcbClsMap[r.quad]||'bp3'}">${r.quad}</span></td></tr>`).join('')}`:''}
                 <tr><td>Quadrante</td><td><span class="badge ${pcbClsMap[pq.n]||'bp3'}">${pq.n}</span></td></tr>
                 <tr><td>Estratégia Sugerida</td><td>${pq.d}</td></tr>
                 </tbody></table>`;
