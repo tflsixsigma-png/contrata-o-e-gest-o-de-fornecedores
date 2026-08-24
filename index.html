@@ -118,7 +118,7 @@
 <div class="sup-bar">
     <div class="sup-bar-label">Categoria:</div>
     <select class="sup-select" id="globalSel" onchange="selectSup(this.value)">
-        <option value="">— Cadastre a categoria na aba Kraljic —</option>
+        <option value="">— Cadastre na aba Categorias —</option>
     </select>
     <div id="gBadgeK"></div>
     <div id="gBadgePCB"></div>
@@ -132,14 +132,14 @@
 
 <!-- TABS -->
 <div class="tabs">
-    <div class="tab active" onclick="showTab('riscos',this)">⚠️ Avaliação de Riscos</div>
-    <div class="tab" onclick="showTab('kraljic',this)">📍 Avaliação Kraljic</div>
+    <div class="tab active" onclick="showTab('categorias',this)">📦 Categorias</div>
+    <div class="tab" onclick="showTab('riscos',this)">⚠️ Avaliação de Riscos</div>
+    <div class="tab" onclick="showTab('kraljic',this)">📍 Matriz Kraljic</div>
     <div class="tab" onclick="showTab('pcb',this)">🎯 Diagnóstico PCB</div>
-    <div class="tab" onclick="showTab('taxonomia',this)">🗂 Taxonomia (64)</div>
+    <div class="tab" onclick="showTab('taxonomia',this)">🗂 Estratégias (64)</div>
+    <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
     <div class="tab" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
     <div class="tab" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
-    <div class="tab-div"></div>
-    <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
     <div class="tab-div"></div>
     <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
     <div class="tab-div"></div>
@@ -148,8 +148,38 @@
 </div>
 
 <!-- ===== KRALJIC ===== -->
+<!-- ===== CATEGORIAS ===== -->
+<div id="tab-categorias" class="panel active">
+    <div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:.73rem;color:#94a3b8;line-height:1.6;">
+        <b style="color:var(--text);">Fluxo de trabalho:</b>
+        <span style="color:#60a5fa;font-weight:700;">① Cadastre a categoria</span> →
+        <span style="color:#60a5fa;font-weight:700;">② avalie os riscos</span> (eles definem o eixo de risco da Kraljic) →
+        <span style="color:#60a5fa;font-weight:700;">③ confira o posicionamento na matriz</span> →
+        <span style="color:#60a5fa;font-weight:700;">④ diagnostique o poder (PCB)</span> →
+        <span style="color:#60a5fa;font-weight:700;">⑤ selecione estratégias e alavancas</span> → relatório.
+    </div>
+    <div class="grid2" style="align-items:start;">
+        <div class="card">
+            <div class="card-title">Cadastrar Categoria</div>
+            <div style="display:flex;flex-direction:column;gap:.7rem;">
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Embalagens Flexíveis, Frete Rodoviário, TI"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Fornecedores associados (separe por vírgula)</label><input id="sForn" class="ifield" placeholder="Ex: FlexPack, Polifilm, Embalatec"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Spend anual (R$) — opcional</label><input id="sSpend" class="ifield" placeholder="Ex: 48.000.000"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Valor/Impacto para o negócio (Y) 0–100</label><input id="sY" type="number" class="ifield" min="0" max="100" value="50">
+                <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Materialidade do spend, criticidade para a operação e impacto no produto final.</div></div>
+                <div style="padding:.5rem .7rem;border-radius:8px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);font-size:.64rem;color:#fbbf24;">O eixo <b>Risco/Complexidade (X)</b> não é digitado: ele migra automaticamente da <b>Avaliação de Riscos</b> desta categoria.</div>
+                <button class="btn btn-p" onclick="addSup()">+ Cadastrar Categoria</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Categorias Cadastradas</div>
+            <div id="supList"><div class="empty"><div class="empty-icon">📋</div><p>Nenhuma categoria ainda.</p></div></div>
+        </div>
+    </div>
+</div>
+
 <!-- ===== RISCOS ===== -->
-<div id="tab-riscos" class="panel active">
+<div id="tab-riscos" class="panel" style="display:none;">
     <div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:.73rem;color:#94a3b8;line-height:1.6;">
         <b style="color:var(--text);">Passos para identificar os riscos da empresa:</b>
         <span style="color:#60a5fa;font-weight:700;">① Classificar os tipos de risco</span> →
@@ -172,7 +202,7 @@
                             <option>Externo à rede da cadeia</option>
                         </select></div>
                     </div>
-                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Categoria afetada (opcional — cadastre na aba Kraljic)</label><input id="rkCat" class="ifield" list="riskCatList" placeholder="Ex: Embalagens Flexíveis"><datalist id="riskCatList"></datalist></div>
+                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Categoria afetada — migra para a Kraljic</label><select id="rkCat" class="ifield"><option value="">— risco geral (não vinculado) —</option></select></div>
                     <div class="grid2" style="gap:.6rem;">
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Probabilidade (1–5)</label><select id="rkProb" class="ifield"><option value="1">1 · Rara</option><option value="2">2 · Improvável</option><option value="3" selected>3 · Possível</option><option value="4">4 · Provável</option><option value="5">5 · Quase certa</option></select></div>
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Impacto (1–5)</label><select id="rkImp" class="ifield"><option value="1">1 · Insignificante</option><option value="2">2 · Menor</option><option value="3" selected>3 · Moderado</option><option value="4">4 · Maior</option><option value="5">5 · Severo</option></select></div>
@@ -213,25 +243,6 @@
 
 <div id="tab-kraljic" class="panel" style="display:none;">
     <div class="grid2" style="align-items:start;">
-        <div>
-            <div class="card" style="margin-bottom:1rem;">
-                <div class="card-title">Cadastrar Categoria</div>
-                <div style="display:flex;flex-direction:column;gap:.7rem;">
-                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Embalagens Flexíveis, Frete Rodoviário, TI"></div>
-                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Fornecedores associados (separe por vírgula)</label><input id="sForn" class="ifield" placeholder="Ex: FlexPack, Polifilm, Embalatec"></div>
-                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Spend anual (R$) — opcional</label><input id="sSpend" class="ifield" placeholder="Ex: 48.000.000"></div>
-                    <div class="grid2" style="gap:.6rem;">
-                        <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Valor/Impacto (Y) 0–100</label><input id="sY" type="number" class="ifield" min="0" max="100" value="50"></div>
-                        <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Risco/Complexidade (X) 0–100</label><input id="sX" type="number" class="ifield" min="0" max="100" value="50"></div>
-                    </div>
-                    <button class="btn btn-p" onclick="addSup()">+ Adicionar ao Mapa</button>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">Categorias Cadastradas</div>
-                <div id="supList"><div class="empty"><div class="empty-icon">📋</div><p>Nenhuma categoria ainda.</p></div></div>
-            </div>
-        </div>
         <div class="card">
             <div class="card-title">Matriz Kraljic — Valor/Impacto × Risco/Complexidade</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.75rem;font-size:.62rem;text-align:center;">
@@ -241,6 +252,11 @@
                 <div style="padding:.3rem;border-radius:6px;background:rgba(124,58,237,.08);color:#c084fc;border:1px solid rgba(124,58,237,.2);">🟣 Gargalo · Baixo valor · Alto risco</div>
             </div>
             <div style="position:relative;height:400px;"><canvas id="kChart"></canvas></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Origem do eixo X — migrado da Avaliação de Riscos</div>
+            <div style="font-size:.66rem;color:var(--muted);margin-bottom:.7rem;line-height:1.55;">Para cada categoria, X = média entre o <b>maior score</b> e o <b>score médio</b> dos seus riscos (P×I), convertida para 0–100. Sem riscos registrados, a categoria fica provisoriamente em X = 50.</div>
+            <div id="kInfo"></div>
         </div>
     </div>
 </div>
@@ -423,7 +439,7 @@
 </div>
 
 <!-- ===== TAXONOMIA ===== -->
-<div id="tab-taxonomia" class="panel" style="display:none;"><div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:.73rem;color:#94a3b8;line-height:1.6;"><b style="color:var(--text);">Como ler o tabuleiro:</b> o Purchasing Chessboard (Kearney) parte do diagnóstico de poder (aba PCB) e desce em três níveis — <b style="color:#60a5fa;">4 estratégias</b> → <b style="color:#60a5fa;">16 alavancas</b> → <b style="color:#60a5fa;">64 métodos</b>. Abra cada alavanca para ver seus quatro métodos e quando usá-los. Nenhum método é bom ou ruim em si: ele é adequado — ou não — ao quadrante de poder da sua categoria.</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;"><div><div style="padding:.65rem 1rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:.35rem;">I. Gerenciar Gastos</div><div style="font-size:.63rem;color:var(--muted);margin-bottom:.6rem;line-height:1.45;">Baixo poder mútuo — o valor vem de eficiência interna, dados e agregação de volume.</div><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">1. Gestão de Demanda</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A1.</b> Redução de Demanda<div class="method-desc">Questionar a necessidade real e eliminar consumo evitável — a compra mais barata é a que deixa de acontecer.</div></div><div class="method-item"><b>B1.</b> Gestão de Contratos<div class="method-desc">Garantir que o negociado seja o praticado: capturar descontos e rebates e eliminar a compra fora de contrato.</div></div><div class="method-item"><b>C1.</b> Agregação entre Produtos<div class="method-desc">Somar volumes de itens semelhantes usados em produtos diferentes para ganhar escala numa única negociação.</div></div><div class="method-item"><b>D1.</b> Agregação entre Unidades<div class="method-desc">Consolidar o volume de várias plantas e unidades num contrato corporativo único.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">2. Co-sourcing</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A2.</b> Terceirização (BPO)<div class="method-desc">Transferir a execução de compras não estratégicas a um operador especializado, liberando o time para o que é crítico.</div></div><div class="method-item"><b>B2.</b> Comunidade de Sourcing<div class="method-desc">Comprar em conjunto com empresas não concorrentes para alcançar escala que nenhuma teria sozinha.</div></div><div class="method-item"><b>C2.</b> Mega Fornecedor<div class="method-desc">Concentrar várias categorias em um integrador de grande porte, trocando variedade de fornecedores por escala e simplicidade.</div></div><div class="method-item"><b>D2.</b> Consórcios de Compras<div class="method-desc">Aderir a grupos formais que negociam tabelas e condições para todos os associados.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">3. Agregação de Volume</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A3.</b> Gestão de Dados Mestre<div class="method-desc">Sanear cadastros de itens e fornecedores — sem dado limpo, o volume real da empresa fica invisível à negociação.</div></div><div class="method-item"><b>B3.</b> Transparência de Gastos<div class="method-desc">Spend analysis completa por categoria, fornecedor e unidade: a base factual de todas as demais alavancas.</div></div><div class="method-item"><b>C3.</b> Mineração de Custos<div class="method-desc">Varrer a base de gastos atrás de anomalias, duplicidades e oportunidades escondidas em transações.</div></div><div class="method-item"><b>D3.</b> Padronização<div class="method-desc">Reduzir a variedade de especificações para concentrar volume em menos itens — e em melhores preços.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">4. Mineração Comercial</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A4.</b> Processo RFI/RFP<div class="method-desc">Estruturar o levantamento de mercado (RFI) e as propostas formais (RFP) para ampliar a base comparável de ofertas.</div></div><div class="method-item"><b>B4.</b> Licitação Expressiva<div class="method-desc">Concentrar volume em eventos competitivos grandes o suficiente para atrair o interesse real do mercado.</div></div><div class="method-item"><b>C4.</b> TCO<div class="method-desc">Comparar propostas pelo custo total de propriedade — aquisição, utilização, fim de vida e risco — e não pelo preço.</div></div><div class="method-item"><b>D4.</b> Desequilíbrios de Mercado<div class="method-desc">Cronometrar as compras para janelas de sobreoferta, ociosidade ou queda de insumo no mercado fornecedor.</div></div></div></details></div><div><div style="padding:.65rem 1rem;border-radius:8px;background:rgba(29,78,216,.1);border:1px solid rgba(29,78,216,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#60a5fa;margin-bottom:.35rem;">II. Alavancar Competição</div><div style="font-size:.63rem;color:var(--muted);margin-bottom:.6rem;line-height:1.45;">Comprador forte — o valor vem de colocar o mercado para disputar o seu volume.</div><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">5. Globalização</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A5.</b> Sourcing Global<div class="method-desc">Ampliar a base para fornecedores internacionais qualificados, aumentando alternativas e referência de preço.</div></div><div class="method-item"><b>B5.</b> Sourcing em LCC<div class="method-desc">Buscar países de custo competitivo ponderando logística, qualidade, câmbio e risco — best cost, não low cost.</div></div><div class="method-item"><b>C5.</b> Modelagem de Preço<div class="method-desc">Construir o preço “de fora para dentro” com drivers de custo regionais e comparar com o preço cotado.</div></div><div class="method-item"><b>D5.</b> Precificação Linear<div class="method-desc">Correlacionar preço × desempenho entre as propostas (LPP) e expor os itens que fogem da reta.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">6. Licitação (Tendering)</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A6.</b> Leilões Reversos<div class="method-desc">Disputa eletrônica em tempo real — funciona para itens bem especificados, com vários ofertantes qualificados.</div></div><div class="method-item"><b>B6.</b> Benchmarking de Preços<div class="method-desc">Comparar preços pagos com referências externas e entre unidades internas para localizar descolamentos.</div></div><div class="method-item"><b>C6.</b> Preços Desagregados<div class="method-desc">Cotar as parcelas do preço em separado — produto, frete, embalagem, serviços — e negociar cada uma.</div></div><div class="method-item"><b>D6.</b> Inteligência de Mercado<div class="method-desc">Monitorar capacidade, custos e movimentos do mercado fornecedor para chegar à mesa sabendo mais que o vendedor.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">7. Target Pricing</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A7.</b> Regressão de Custos<div class="method-desc">Estimar estatisticamente o preço-alvo a partir dos atributos técnicos do item.</div></div><div class="method-item"><b>B7.</b> Custo de Fatores<div class="method-desc">Recompor o custo a partir de matéria-prima, mão de obra e energia (should cost) e negociar sobre essa base.</div></div><div class="method-item"><b>C7.</b> Gestão Compliance<div class="method-desc">Garantir aderência a contratos, políticas e preços negociados — vazamento de compliance é saving perdido.</div></div><div class="method-item"><b>D7.</b> Consolidação de Base<div class="method-desc">Reduzir o número de fornecedores concentrando o volume nos de melhor desempenho e custo.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">8. Revisão de Preços</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A8.</b> Agregação de Gerações<div class="method-desc">Negociar a geração atual e a futura do produto num mesmo acordo, capturando a curva de aprendizagem.</div></div><div class="method-item"><b>B8.</b> Make or Buy<div class="method-desc">Comparar produzir internamente × comprar — e usar a alternativa viável como alavanca de negociação.</div></div><div class="method-item"><b>C8.</b> Bestshoring<div class="method-desc">Rever periodicamente a melhor origem (nacional, nearshore, offshore) conforme custos e câmbio mudam.</div></div><div class="method-item"><b>D8.</b> Ciclo Fechado<div class="method-desc">Recuperar materiais, sucata e embalagens no circuito para reduzir o custo líquido da categoria.</div></div></div></details></div><div><div style="padding:.65rem 1rem;border-radius:8px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#f87171;margin-bottom:.35rem;">III. Mudar Natureza</div><div style="font-size:.63rem;color:var(--muted);margin-bottom:.6rem;line-height:1.45;">Fornecedor forte — o valor vem de quebrar a dependência por inovação e re-especificação.</div><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">9. Ruptura por Inovação</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A9.</b> Invenção sob Demanda (TRIZ)<div class="method-desc">Aplicar métodos estruturados de inovação para contornar a solução dominante do fornecedor forte.</div></div><div class="method-item"><b>B9.</b> Rede de Inovação<div class="method-desc">Buscar alternativas em startups, universidades e fornecedores de setores adjacentes.</div></div><div class="method-item"><b>C9.</b> Avaliação Funcional<div class="method-desc">Especificar pela função exigida, e não pela solução — abrindo espaço para substitutos que o incumbente não controla.</div></div><div class="method-item"><b>D9.</b> Reconfiguração de Cadeia<div class="method-desc">Redesenhar quem faz o quê na cadeia (etapas, elos, integração) para reduzir a dependência estrutural.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">10. Re-especificação</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A10.</b> Avaliação de Specs<div class="method-desc">Desafiar requisitos superdimensionados que prendem a compra a um único fornecedor (over-specification).</div></div><div class="method-item"><b>B10.</b> Design for Sourcing<div class="method-desc">Envolver Compras no desenvolvimento do produto para nascer com alternativas de fornecimento.</div></div><div class="method-item"><b>C10.</b> Teardown Competitivo<div class="method-desc">Desmontar produtos próprios e de concorrentes para expor custos, materiais e alternativas de projeto.</div></div><div class="method-item"><b>D10.</b> Design para Manufatura<div class="method-desc">Simplificar o projeto para que mais fabricantes sejam capazes de produzi-lo — mais oferta, menos poder do incumbente.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">11. Mineração Técnica</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A11.</b> Product Benchmark<div class="method-desc">Comparar tecnicamente produtos concorrentes para pressionar especificação, desempenho e preço.</div></div><div class="method-item"><b>B11.</b> Redução de Complexidade<div class="method-desc">Cortar variantes, opções e códigos que fragmentam o volume e encarecem a cadeia.</div></div><div class="method-item"><b>C11.</b> Tierização<div class="method-desc">Reposicionar a compra entre níveis da cadeia — ex.: comprar do tier 2 e direcionar o tier 1.</div></div><div class="method-item"><b>D11.</b> Sustentabilidade (ESG)<div class="method-desc">Usar critérios ESG para requalificar a base, antecipar regulação e criar diferenciação de longo prazo.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">12. Gestão de Risco</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A12.</b> Gestão de Gargalos<div class="method-desc">Mapear itens críticos e construir alternativas, estoques estratégicos e planos de contingência.</div></div><div class="method-item"><b>B12.</b> Framework Político<div class="method-desc">Monitorar e gerir riscos regulatórios e geopolíticos das origens de fornecimento.</div></div><div class="method-item"><b>C12.</b> Processos Visíveis (VPO)<div class="method-desc">Ganhar visibilidade da operação do fornecedor — capacidade, fila, qualidade — antes que o problema chegue.</div></div><div class="method-item"><b>D12.</b> Custo Central<div class="method-desc">Gerir centralmente os drivers voláteis de custo, como hedge de commodities e exposição cambial.</div></div></div></details></div><div><div style="padding:.65rem 1rem;border-radius:8px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);font-size:.7rem;font-weight:800;text-transform:uppercase;color:#c084fc;margin-bottom:.35rem;">IV. Vantagem Conjunta</div><div style="font-size:.63rem;color:var(--muted);margin-bottom:.6rem;line-height:1.45;">Alto poder mútuo — o valor vem da colaboração estruturada de longo prazo.</div><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">13. Parcerias de Valor</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A13.</b> Aliança Estratégica<div class="method-desc">Relação de longo prazo com governança formal, metas conjuntas e investimentos mútuos.</div></div><div class="method-item"><b>B13.</b> Parceria por Projeto<div class="method-desc">Colaboração delimitada a um projeto, com riscos, aportes e ganhos definidos em contrato.</div></div><div class="method-item"><b>C13.</b> Revenue Sharing<div class="method-desc">Remunerar o fornecedor por parcela da receita gerada — alinhando o interesse dele ao resultado do negócio.</div></div><div class="method-item"><b>D13.</b> Profit Sharing<div class="method-desc">Dividir contratualmente os ganhos de eficiência e redução de custo obtidos em conjunto.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">14. Cadeia de Valor</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A14.</b> Integração Vertical<div class="method-desc">Internalizar elos críticos — ou assumir participação societária — para capturar valor e controle.</div></div><div class="method-item"><b>B14.</b> Sourcing por Valor<div class="method-desc">Decidir pelo valor total ao negócio (receita, risco, inovação), não apenas pelo custo da compra.</div></div><div class="method-item"><b>C14.</b> Deal Inteligente<div class="method-desc">Estruturar acordos com opções, gatilhos e flexibilidade para capturar cenários futuros.</div></div><div class="method-item"><b>D14.</b> Ciclo de Vida<div class="method-desc">Contratar pelo desempenho ao longo da vida útil — disponibilidade, manutenção e descarte incluídos.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">15. Plano Integrado</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A15.</b> Capacidade Colaborativa<div class="method-desc">Planejar capacidade em conjunto e reservar espaço produtivo do fornecedor para a sua demanda.</div></div><div class="method-item"><b>B15.</b> VMI<div class="method-desc">Estoque gerido pelo fornecedor com base no consumo real — menos ruptura, menos capital parado.</div></div><div class="method-item"><b>C15.</b> Estoque Virtual<div class="method-desc">Visibilidade única dos estoques ao longo da cadeia, eliminando buffers duplicados em cada elo.</div></div><div class="method-item"><b>D15.</b> Benchmark de Cadeia<div class="method-desc">Comparar a cadeia integrada — não empresas isoladas — com as melhores práticas do setor.</div></div></div></details><details style="border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);"><summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">16. Custos Conjuntos</summary><div style="padding:.75rem;background:var(--surface2);"><div class="method-item"><b>A16.</b> Supplier Development<div class="method-desc">Investir no desenvolvimento do fornecedor (qualidade, produtividade, gestão) e dividir o ganho gerado.</div></div><div class="method-item"><b>B16.</b> Redução Colaborativa<div class="method-desc">Workshops conjuntos de redução de custo — o kaizen aplicado à interface cliente-fornecedor.</div></div><div class="method-item"><b>C16.</b> Benchmark de Processo<div class="method-desc">Comparar os processos produtivos do fornecedor com referências e financiar o fechamento das lacunas.</div></div><div class="method-item"><b>D16.</b> Supplier Fitness<div class="method-desc">Programa estruturado para elevar a saúde operacional e financeira dos fornecedores-chave.</div></div></div></details></div></div></div>
+<div id="tab-taxonomia" class="panel" style="display:none;"><div id="taxWrap"></div></div>
 
 <!-- ===== RELATÓRIO ===== -->
 <div id="tab-relatorio" class="panel" style="display:none;">
@@ -442,6 +458,7 @@
                 <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-checklist" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">✅ Checklist de Contrato</div><div style="font-size:.67rem;color:var(--muted);">Itens marcados por categoria</div></div></label>
                 <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-gestao" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🤝 Gestão do Relacionamento</div><div style="font-size:.67rem;color:var(--muted);">Score de avaliação por categoria</div></div></label>
             </div>
+            <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-tax" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">🗂 Estratégias Selecionadas</div><div style="font-size:.67rem;color:var(--muted);">Métodos do Chessboard marcados por categoria</div></div></label>
             <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-riscos" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">⚠️ Registro de Riscos</div><div style="font-size:.67rem;color:var(--muted);">Ameaças mapeadas com probabilidade × impacto</div></div></label>
             <div class="card-title">Categorias a Incluir</div>
             <div id="rSupList" style="margin-bottom:1.1rem;"><p style="font-size:.74rem;color:var(--muted);">Nenhuma categoria cadastrada.</p></div>
@@ -535,12 +552,14 @@ function showTab(name,el){
     const panel=document.getElementById('tab-'+name);
     panel.style.display='block';panel.classList.add('active');
     if(el) el.classList.add('active');
+    if(name==='categorias'){renderSupList();}
     if(name==='riscos'){renderRisks();}
-    if(name==='kraljic'){setTimeout(()=>{if(kChart){kChart.resize();updateKChart();}else{initKChart();}},80);}
+    if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
     if(name==='pcb'){setTimeout(()=>{initPCBChart();updatePCBForSup();},80);}
     if(name==='checklist'){renderChecklist();}
     if(name==='gestao'){renderGestao();}
-    if(name==='relatorio'){renderRptSupList();}
+    if(name==='taxonomia'){renderTaxonomia();}
+    if(name==='relatorio'){syncKraljicX();renderRptSupList();}
 }
 
 // ================================================================
@@ -549,7 +568,7 @@ function showTab(name,el){
 function addSup(){
     const name=document.getElementById('sName').value.trim();
     if(!name){alert('Informe o nome da categoria.');return;}
-    const kx=Math.min(100,Math.max(0,+document.getElementById('sX').value));
+    const kx=50;
     const ky=Math.min(100,Math.max(0,+document.getElementById('sY').value));
     const q=kQuad(kx,ky);
     const s={
@@ -563,9 +582,9 @@ function addSup(){
     };
     suppliers.push(s);
     ['sName','sForn','sSpend'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('sX').value=50; document.getElementById('sY').value=50;
+    document.getElementById('sY').value=50;
     renderSupList(); updateGlobalSel(); updateKChart(); selectSup(s.id);
-    toast('Categoria adicionada!');refreshRiskCatList();
+    toast('Categoria cadastrada! Agora avalie os riscos dela.');refreshRiskCatList();syncKraljicX();
 }
 
 function removeSup(id){
@@ -601,7 +620,7 @@ function updateSupBar(){
 function updateGlobalSel(){
     const sel=document.getElementById('globalSel');
     const cur_val=sel.value;
-    sel.innerHTML='<option value="">— Cadastre a categoria na aba Kraljic —</option>';
+    sel.innerHTML='<option value="">— Cadastre na aba Categorias —</option>';
     suppliers.forEach(s=>{
         const o=document.createElement('option');
         o.value=s.id;o.textContent=s.name+' ('+kQuad(s.kx,s.ky).n+')';
@@ -878,6 +897,7 @@ function generatePDF(){
     </style></head><body>`;
 
     const incR=document.getElementById('rs-riscos')?document.getElementById('rs-riscos').checked:false;
+    const incT=document.getElementById('rs-tax')?document.getElementById('rs-tax').checked:false;
 
     // CAPA + SUMÁRIO
     h+=`<div class="page"><h1>${title}</h1><div class="sub">${org?org+' · ':''}Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos · ${new Date().toLocaleDateString('pt-BR')}</div>`;
@@ -935,6 +955,15 @@ function generatePDF(){
             } else {h+=`<h2>🎯 Diagnóstico PCB</h2><p style="font-size:.76rem;color:#94a3b8;font-style:italic;">Diagnóstico não realizado para esta categoria.</p>`;}
         }
 
+        if(incT&&s.tax&&s.tax.length){
+            h+=`<h2>🗂 Estratégias e Alavancas Selecionadas (Purchasing Chessboard)</h2>`;
+            TAX_ESTRAT.forEach(est=>{
+                const ms=TAX_DATA.filter(m=>m.est===est.t&&s.tax.includes(m.c));
+                if(!ms.length)return;
+                h+=`<h3>${est.t}</h3>`;
+                ms.forEach(m=>{h+=`<div class="cl">☑ <b>${m.c}. ${m.n}</b> — ${m.al}. ${m.d}</div>`;});
+            });
+        }
         if(incC){
             h+=`<h2>✅ Checklist de Contrato</h2>`;
             const qKeyMap={Estratégico:'estrategico',Alavancagem:'alavancagem',Gargalo:'gargalo','Não-crítico':'naocritico'};
@@ -970,6 +999,95 @@ function generatePDF(){
     win.document.write(h);win.document.close();win.onload=()=>win.print();
 }
 
+
+
+// ================================================================
+// TAXONOMIA SELECIONÁVEL (64 métodos → relatório)
+// ================================================================
+const TAX_DATA=[{"c": "A1", "n": "Redução de Demanda", "d": "Questionar a necessidade real e eliminar consumo evitável — a compra mais barata é a que deixa de acontecer.", "al": "1. Gestão de Demanda", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "B1", "n": "Gestão de Contratos", "d": "Garantir que o negociado seja o praticado: capturar descontos e rebates e eliminar a compra fora de contrato.", "al": "1. Gestão de Demanda", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "C1", "n": "Agregação entre Produtos", "d": "Somar volumes de itens semelhantes usados em produtos diferentes para ganhar escala numa única negociação.", "al": "1. Gestão de Demanda", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "D1", "n": "Agregação entre Unidades", "d": "Consolidar o volume de várias plantas e unidades num contrato corporativo único.", "al": "1. Gestão de Demanda", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "A2", "n": "Terceirização (BPO)", "d": "Transferir a execução de compras não estratégicas a um operador especializado, liberando o time para o que é crítico.", "al": "2. Co-sourcing", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "B2", "n": "Comunidade de Sourcing", "d": "Comprar em conjunto com empresas não concorrentes para alcançar escala que nenhuma teria sozinha.", "al": "2. Co-sourcing", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "C2", "n": "Mega Fornecedor", "d": "Concentrar várias categorias em um integrador de grande porte, trocando variedade de fornecedores por escala e simplicidade.", "al": "2. Co-sourcing", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "D2", "n": "Consórcios de Compras", "d": "Aderir a grupos formais que negociam tabelas e condições para todos os associados.", "al": "2. Co-sourcing", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "A3", "n": "Gestão de Dados Mestre", "d": "Sanear cadastros de itens e fornecedores — sem dado limpo, o volume real da empresa fica invisível à negociação.", "al": "3. Agregação de Volume", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "B3", "n": "Transparência de Gastos", "d": "Spend analysis completa por categoria, fornecedor e unidade: a base factual de todas as demais alavancas.", "al": "3. Agregação de Volume", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "C3", "n": "Mineração de Custos", "d": "Varrer a base de gastos atrás de anomalias, duplicidades e oportunidades escondidas em transações.", "al": "3. Agregação de Volume", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "D3", "n": "Padronização", "d": "Reduzir a variedade de especificações para concentrar volume em menos itens — e em melhores preços.", "al": "3. Agregação de Volume", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "A4", "n": "Processo RFI/RFP", "d": "Estruturar o levantamento de mercado (RFI) e as propostas formais (RFP) para ampliar a base comparável de ofertas.", "al": "4. Mineração Comercial", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "B4", "n": "Licitação Expressiva", "d": "Concentrar volume em eventos competitivos grandes o suficiente para atrair o interesse real do mercado.", "al": "4. Mineração Comercial", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "C4", "n": "TCO", "d": "Comparar propostas pelo custo total de propriedade — aquisição, utilização, fim de vida e risco — e não pelo preço.", "al": "4. Mineração Comercial", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "D4", "n": "Desequilíbrios de Mercado", "d": "Cronometrar as compras para janelas de sobreoferta, ociosidade ou queda de insumo no mercado fornecedor.", "al": "4. Mineração Comercial", "est": "I. Gerenciar Gastos", "cor": "#94a3b8"}, {"c": "A5", "n": "Sourcing Global", "d": "Ampliar a base para fornecedores internacionais qualificados, aumentando alternativas e referência de preço.", "al": "5. Globalização", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "B5", "n": "Sourcing em LCC", "d": "Buscar países de custo competitivo ponderando logística, qualidade, câmbio e risco — best cost, não low cost.", "al": "5. Globalização", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "C5", "n": "Modelagem de Preço", "d": "Construir o preço “de fora para dentro” com drivers de custo regionais e comparar com o preço cotado.", "al": "5. Globalização", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "D5", "n": "Precificação Linear", "d": "Correlacionar preço × desempenho entre as propostas (LPP) e expor os itens que fogem da reta.", "al": "5. Globalização", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "A6", "n": "Leilões Reversos", "d": "Disputa eletrônica em tempo real — funciona para itens bem especificados, com vários ofertantes qualificados.", "al": "6. Licitação (Tendering)", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "B6", "n": "Benchmarking de Preços", "d": "Comparar preços pagos com referências externas e entre unidades internas para localizar descolamentos.", "al": "6. Licitação (Tendering)", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "C6", "n": "Preços Desagregados", "d": "Cotar as parcelas do preço em separado — produto, frete, embalagem, serviços — e negociar cada uma.", "al": "6. Licitação (Tendering)", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "D6", "n": "Inteligência de Mercado", "d": "Monitorar capacidade, custos e movimentos do mercado fornecedor para chegar à mesa sabendo mais que o vendedor.", "al": "6. Licitação (Tendering)", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "A7", "n": "Regressão de Custos", "d": "Estimar estatisticamente o preço-alvo a partir dos atributos técnicos do item.", "al": "7. Target Pricing", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "B7", "n": "Custo de Fatores", "d": "Recompor o custo a partir de matéria-prima, mão de obra e energia (should cost) e negociar sobre essa base.", "al": "7. Target Pricing", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "C7", "n": "Gestão Compliance", "d": "Garantir aderência a contratos, políticas e preços negociados — vazamento de compliance é saving perdido.", "al": "7. Target Pricing", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "D7", "n": "Consolidação de Base", "d": "Reduzir o número de fornecedores concentrando o volume nos de melhor desempenho e custo.", "al": "7. Target Pricing", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "A8", "n": "Agregação de Gerações", "d": "Negociar a geração atual e a futura do produto num mesmo acordo, capturando a curva de aprendizagem.", "al": "8. Revisão de Preços", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "B8", "n": "Make or Buy", "d": "Comparar produzir internamente × comprar — e usar a alternativa viável como alavanca de negociação.", "al": "8. Revisão de Preços", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "C8", "n": "Bestshoring", "d": "Rever periodicamente a melhor origem (nacional, nearshore, offshore) conforme custos e câmbio mudam.", "al": "8. Revisão de Preços", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "D8", "n": "Ciclo Fechado", "d": "Recuperar materiais, sucata e embalagens no circuito para reduzir o custo líquido da categoria.", "al": "8. Revisão de Preços", "est": "II. Alavancar Competição", "cor": "#60a5fa"}, {"c": "A9", "n": "Invenção sob Demanda (TRIZ)", "d": "Aplicar métodos estruturados de inovação para contornar a solução dominante do fornecedor forte.", "al": "9. Ruptura por Inovação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "B9", "n": "Rede de Inovação", "d": "Buscar alternativas em startups, universidades e fornecedores de setores adjacentes.", "al": "9. Ruptura por Inovação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "C9", "n": "Avaliação Funcional", "d": "Especificar pela função exigida, e não pela solução — abrindo espaço para substitutos que o incumbente não controla.", "al": "9. Ruptura por Inovação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "D9", "n": "Reconfiguração de Cadeia", "d": "Redesenhar quem faz o quê na cadeia (etapas, elos, integração) para reduzir a dependência estrutural.", "al": "9. Ruptura por Inovação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "A10", "n": "Avaliação de Specs", "d": "Desafiar requisitos superdimensionados que prendem a compra a um único fornecedor (over-specification).", "al": "10. Re-especificação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "B10", "n": "Design for Sourcing", "d": "Envolver Compras no desenvolvimento do produto para nascer com alternativas de fornecimento.", "al": "10. Re-especificação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "C10", "n": "Teardown Competitivo", "d": "Desmontar produtos próprios e de concorrentes para expor custos, materiais e alternativas de projeto.", "al": "10. Re-especificação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "D10", "n": "Design para Manufatura", "d": "Simplificar o projeto para que mais fabricantes sejam capazes de produzi-lo — mais oferta, menos poder do incumbente.", "al": "10. Re-especificação", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "A11", "n": "Product Benchmark", "d": "Comparar tecnicamente produtos concorrentes para pressionar especificação, desempenho e preço.", "al": "11. Mineração Técnica", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "B11", "n": "Redução de Complexidade", "d": "Cortar variantes, opções e códigos que fragmentam o volume e encarecem a cadeia.", "al": "11. Mineração Técnica", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "C11", "n": "Tierização", "d": "Reposicionar a compra entre níveis da cadeia — ex.: comprar do tier 2 e direcionar o tier 1.", "al": "11. Mineração Técnica", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "D11", "n": "Sustentabilidade (ESG)", "d": "Usar critérios ESG para requalificar a base, antecipar regulação e criar diferenciação de longo prazo.", "al": "11. Mineração Técnica", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "A12", "n": "Gestão de Gargalos", "d": "Mapear itens críticos e construir alternativas, estoques estratégicos e planos de contingência.", "al": "12. Gestão de Risco", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "B12", "n": "Framework Político", "d": "Monitorar e gerir riscos regulatórios e geopolíticos das origens de fornecimento.", "al": "12. Gestão de Risco", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "C12", "n": "Processos Visíveis (VPO)", "d": "Ganhar visibilidade da operação do fornecedor — capacidade, fila, qualidade — antes que o problema chegue.", "al": "12. Gestão de Risco", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "D12", "n": "Custo Central", "d": "Gerir centralmente os drivers voláteis de custo, como hedge de commodities e exposição cambial.", "al": "12. Gestão de Risco", "est": "III. Mudar Natureza", "cor": "#f87171"}, {"c": "A13", "n": "Aliança Estratégica", "d": "Relação de longo prazo com governança formal, metas conjuntas e investimentos mútuos.", "al": "13. Parcerias de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "B13", "n": "Parceria por Projeto", "d": "Colaboração delimitada a um projeto, com riscos, aportes e ganhos definidos em contrato.", "al": "13. Parcerias de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "C13", "n": "Revenue Sharing", "d": "Remunerar o fornecedor por parcela da receita gerada — alinhando o interesse dele ao resultado do negócio.", "al": "13. Parcerias de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "D13", "n": "Profit Sharing", "d": "Dividir contratualmente os ganhos de eficiência e redução de custo obtidos em conjunto.", "al": "13. Parcerias de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "A14", "n": "Integração Vertical", "d": "Internalizar elos críticos — ou assumir participação societária — para capturar valor e controle.", "al": "14. Cadeia de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "B14", "n": "Sourcing por Valor", "d": "Decidir pelo valor total ao negócio (receita, risco, inovação), não apenas pelo custo da compra.", "al": "14. Cadeia de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "C14", "n": "Deal Inteligente", "d": "Estruturar acordos com opções, gatilhos e flexibilidade para capturar cenários futuros.", "al": "14. Cadeia de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "D14", "n": "Ciclo de Vida", "d": "Contratar pelo desempenho ao longo da vida útil — disponibilidade, manutenção e descarte incluídos.", "al": "14. Cadeia de Valor", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "A15", "n": "Capacidade Colaborativa", "d": "Planejar capacidade em conjunto e reservar espaço produtivo do fornecedor para a sua demanda.", "al": "15. Plano Integrado", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "B15", "n": "VMI", "d": "Estoque gerido pelo fornecedor com base no consumo real — menos ruptura, menos capital parado.", "al": "15. Plano Integrado", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "C15", "n": "Estoque Virtual", "d": "Visibilidade única dos estoques ao longo da cadeia, eliminando buffers duplicados em cada elo.", "al": "15. Plano Integrado", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "D15", "n": "Benchmark de Cadeia", "d": "Comparar a cadeia integrada — não empresas isoladas — com as melhores práticas do setor.", "al": "15. Plano Integrado", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "A16", "n": "Supplier Development", "d": "Investir no desenvolvimento do fornecedor (qualidade, produtividade, gestão) e dividir o ganho gerado.", "al": "16. Custos Conjuntos", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "B16", "n": "Redução Colaborativa", "d": "Workshops conjuntos de redução de custo — o kaizen aplicado à interface cliente-fornecedor.", "al": "16. Custos Conjuntos", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "C16", "n": "Benchmark de Processo", "d": "Comparar os processos produtivos do fornecedor com referências e financiar o fechamento das lacunas.", "al": "16. Custos Conjuntos", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}, {"c": "D16", "n": "Supplier Fitness", "d": "Programa estruturado para elevar a saúde operacional e financeira dos fornecedores-chave.", "al": "16. Custos Conjuntos", "est": "IV. Vantagem Conjunta", "cor": "#c084fc"}];
+const TAX_ESTRAT=[
+ {t:'I. Gerenciar Gastos',cor:'#94a3b8',estilo:'background:var(--surface2);border:1px solid var(--border);',tag:'Baixo poder mútuo — o valor vem de eficiência interna, dados e agregação de volume.'},
+ {t:'II. Alavancar Competição',cor:'#60a5fa',estilo:'background:rgba(29,78,216,.1);border:1px solid rgba(29,78,216,.25);',tag:'Comprador forte — o valor vem de colocar o mercado para disputar o seu volume.'},
+ {t:'III. Mudar Natureza',cor:'#f87171',estilo:'background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);',tag:'Fornecedor forte — o valor vem de quebrar a dependência por inovação e re-especificação.'},
+ {t:'IV. Vantagem Conjunta',cor:'#c084fc',estilo:'background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);',tag:'Alto poder mútuo — o valor vem da colaboração estruturada de longo prazo.'}
+];
+function toggleTax(code){
+    const s=cur(); if(!s)return;
+    if(!s.tax)s.tax=[];
+    const i=s.tax.indexOf(code);
+    if(i>=0)s.tax.splice(i,1);else s.tax.push(code);
+    renderTaxonomia();
+}
+function renderTaxonomia(){
+    const wrap=document.getElementById('taxWrap'); if(!wrap)return;
+    const s=cur();
+    let head;
+    if(s){
+        if(!s.tax)s.tax=[];
+        const pq=s.pcbQuad?pcbQuad(s.pcbX,s.pcbY):null;
+        head=`<div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:.73rem;color:#94a3b8;line-height:1.6;">
+        Selecionando estratégias para <b style="color:#60a5fa;">${s.name}</b> — ${s.tax.length} método(s) marcado(s), que irão para o relatório.
+        ${pq?`Quadrante de poder diagnosticado no PCB: <b style="color:${pq.c};">${pq.n}</b> — comece por essas alavancas.`:'Dica: faça antes o Diagnóstico PCB para saber em qual estratégia concentrar as escolhas.'}
+        <span style="display:block;margin-top:.25rem;">4 estratégias → 16 alavancas → 64 métodos. Marque as caixas dos métodos candidatos.</span></div>`;
+    }else{
+        head=`<div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);font-size:.73rem;color:#fbbf24;">Selecione uma categoria na barra acima para marcar estratégias — ou navegue apenas como referência.</div>`;
+    }
+    let grid='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">';
+    TAX_ESTRAT.forEach(est=>{
+        const alavs={};
+        TAX_DATA.filter(m=>m.est===est.t).forEach(m=>{(alavs[m.al]=alavs[m.al]||[]).push(m);});
+        const nSel=s?TAX_DATA.filter(m=>m.est===est.t&&s.tax.includes(m.c)).length:0;
+        grid+=`<div><div style="padding:.65rem 1rem;border-radius:8px;${est.estilo}font-size:.7rem;font-weight:800;text-transform:uppercase;color:${est.cor};margin-bottom:.35rem;display:flex;justify-content:space-between;align-items:center;">${est.t}${nSel?`<span class="badge" style="background:${est.cor}22;color:${est.cor};">${nSel}</span>`:''}</div>
+        <div style="font-size:.63rem;color:var(--muted);margin-bottom:.6rem;line-height:1.45;">${est.tag}</div>`;
+        Object.entries(alavs).forEach(([al,ms])=>{
+            const nAl=s?ms.filter(m=>s.tax.includes(m.c)).length:0;
+            grid+=`<details ${nAl?'open':''} style="border-radius:10px;overflow:hidden;border:1px solid ${nAl?est.cor+'66':'var(--border)'};margin-bottom:.4rem;background:var(--surface);">
+            <summary style="padding:.55rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;color:var(--text);">${al}${nAl?` <span style="color:${est.cor};">· ${nAl} ✓</span>`:''}</summary>
+            <div style="padding:.75rem;background:var(--surface2);">`;
+            ms.forEach(m=>{
+                const sel=s&&s.tax.includes(m.c);
+                grid+=`<label class="method-item" style="display:block;cursor:${s?'pointer':'default'};${sel?'color:'+est.cor+';':''}">
+                <input type="checkbox" ${sel?'checked':''} ${s?'':'disabled'} onchange="toggleTax('${m.c}')" style="margin-right:.4rem;vertical-align:-1px;accent-color:${est.cor};"><b>${m.c}.</b> ${m.n}
+                <div class="method-desc">${m.d}</div></label>`;
+            });
+            grid+='</div></details>';
+        });
+        grid+='</div>';
+    });
+    grid+='</div>';
+    wrap.innerHTML=head+grid;
+}
+// ================================================================
+// MIGRAÇÃO RISCOS → EIXO X DA KRALJIC
+// ================================================================
+function syncKraljicX(){
+    suppliers.forEach(s=>{
+        const rs=risks.filter(r=>r.cat===s.name);
+        if(rs.length){
+            const scores=rs.map(r=>r.p*r.i);
+            const mx=Math.max(...scores);
+            const med=scores.reduce((a,b)=>a+b,0)/scores.length;
+            s.kx=Math.round(((0.5*mx+0.5*med)/25)*100);
+        }
+        s.kquad=kQuad(s.kx,s.ky).n;
+    });
+}
+function renderKInfo(){
+    const el=document.getElementById('kInfo'); if(!el)return;
+    if(!suppliers.length){el.innerHTML='<div class="empty"><div class="empty-icon">📦</div><p>Cadastre categorias na primeira aba.</p></div>';return;}
+    el.innerHTML=suppliers.map(s=>{
+        const rs=risks.filter(r=>r.cat===s.name);
+        const q=kQuad(s.kx,s.ky);
+        return `<div style="display:flex;align-items:center;gap:.7rem;padding:.55rem .2rem;border-bottom:1px solid var(--border);">
+            <div class="sup-dot" style="background:${s.color}"></div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:.76rem;font-weight:700;">${s.name}</div>
+                <div style="font-size:.62rem;color:var(--muted);">${rs.length?rs.length+' risco(s) → X = '+s.kx:'⚠ sem riscos registrados → X provisório = 50'} · Y = ${s.ky}</div>
+            </div>
+            <span class="badge" style="color:${q.c};background:${q.c}18;border:1px solid ${q.c}44;">${q.n}</span>
+        </div>`;
+    }).join('');
+}
 // ================================================================
 // RISCOS (Manuj & Mentzer, 2008 + naturais)
 // ================================================================
@@ -1002,8 +1120,11 @@ function initRiskUI(){
  refreshRiskCatList();
 }
 function refreshRiskCatList(){
- const dl=document.getElementById('riskCatList');
- if(dl) dl.innerHTML=suppliers.map(s=>`<option value="${s.name}">`).join('');
+ const sel=document.getElementById('rkCat');
+ if(!sel)return;
+ const v=sel.value;
+ sel.innerHTML='<option value="">— risco geral (não vinculado) —</option>'+suppliers.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+ if([...sel.options].some(o=>o.value===v)) sel.value=v;
 }
 function addRisk(){
  const d=document.getElementById('rkDesc').value.trim();
@@ -1017,10 +1138,10 @@ function addRisk(){
   i:+document.getElementById('rkImp').value,
   resp:document.getElementById('rkResp').value.trim()
  });
- document.getElementById('rkDesc').value='';document.getElementById('rkResp').value='';document.getElementById('rkCat').value='';
- renderRisks(); toast('Risco registrado!');
+ document.getElementById('rkDesc').value='';document.getElementById('rkResp').value='';
+ renderRisks(); syncKraljicX(); toast(document.getElementById('rkCat').value?'Risco registrado — eixo X da categoria atualizado.':'Risco registrado!');
 }
-function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();}
+function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKraljicX();}
 function renderRisks(){
  initRiskUI();
  const el=document.getElementById('riskList'); if(!el)return;
@@ -1062,8 +1183,8 @@ function renderRiskMatrix(){
 // INIT
 // ================================================================
 window.addEventListener('load',()=>{
+    renderSupList();
     renderRisks();
-    try{initKChart();}catch(e){/* Chart.js indisponível — o gráfico inicia ao abrir a aba */}
 });
 </script>
 </body>
