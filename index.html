@@ -188,6 +188,16 @@
         Use a referência ao lado para os passos ① e ②; registre no formulário o passo ③ — a ameaça concreta — e avalie
         <b style="color:var(--text);">probabilidade × impacto</b>. <span class="mono" style="font-size:.65rem;">Tipologia: Manuj &amp; Mentzer (2008) + riscos naturais.</span>
     </div>
+    <div class="card" style="margin-bottom:1rem;padding:.85rem 1.2rem;">
+        <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#60a5fa;display:block;margin-bottom:.3rem;">Avaliando os riscos de</label>
+                <select id="rkCtxCat" class="ifield" onchange="riskCtxChange()"></select></div>
+            <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Fornecedor específico (opcional)</label>
+                <select id="rkCtxForn" class="ifield"><option value="">— a categoria como um todo —</option></select></div>
+            <div style="min-width:200px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Exibir no registro e na matriz</label>
+                <select id="rkView" class="ifield" onchange="renderRisks()"><option value="cat">Só a categoria selecionada</option><option value="all">Todos os riscos</option></select></div>
+        </div>
+    </div>
     <div class="grid2" style="align-items:start;">
         <div>
             <div class="card" style="margin-bottom:1rem;">
@@ -202,7 +212,6 @@
                             <option>Externo à rede da cadeia</option>
                         </select></div>
                     </div>
-                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Categoria afetada — migra para a Kraljic</label><select id="rkCat" class="ifield"><option value="">— risco geral (não vinculado) —</option></select></div>
                     <div class="grid2" style="gap:.6rem;">
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Probabilidade (1–5)</label><select id="rkProb" class="ifield"><option value="1">1 · Rara</option><option value="2">2 · Improvável</option><option value="3" selected>3 · Possível</option><option value="4">4 · Provável</option><option value="5">5 · Quase certa</option></select></div>
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Impacto (1–5)</label><select id="rkImp" class="ifield"><option value="1">1 · Insignificante</option><option value="2">2 · Menor</option><option value="3" selected>3 · Moderado</option><option value="4">4 · Maior</option><option value="5">5 · Severo</option></select></div>
@@ -553,7 +562,7 @@ function showTab(name,el){
     panel.style.display='block';panel.classList.add('active');
     if(el) el.classList.add('active');
     if(name==='categorias'){renderSupList();}
-    if(name==='riscos'){renderRisks();}
+    if(name==='riscos'){renderRisks();riskCtxSyncFromGlobal();renderRisks();}
     if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
     if(name==='pcb'){setTimeout(()=>{initPCBChart();updatePCBForSup();},80);}
     if(name==='checklist'){renderChecklist();}
@@ -903,10 +912,10 @@ function generatePDF(){
     h+=`<div class="page"><h1>${title}</h1><div class="sub">${org?org+' · ':''}Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos · ${new Date().toLocaleDateString('pt-BR')}</div>`;
     if(incR&&risks.length){
         h+=`<h2>⚠️ Registro de Riscos (probabilidade × impacto)</h2>
-        <table><thead><tr><th>Ameaça</th><th>Tipo</th><th>Perspectiva</th><th>Categoria</th><th>P</th><th>I</th><th>Score</th><th>Mitigação</th></tr></thead><tbody>`;
+        <table><thead><tr><th>Ameaça</th><th>Tipo</th><th>Perspectiva</th><th>Categoria</th><th>Fornecedor</th><th>P</th><th>I</th><th>Score</th><th>Mitigação</th></tr></thead><tbody>`;
         [...risks].sort((a,b)=>(b.p*b.i)-(a.p*a.i)).forEach(r=>{
             const sc=r.p*r.i,sv=sevInfo(sc);
-            h+=`<tr><td>${r.desc}</td><td>${r.tipo}</td><td>${r.persp}</td><td>${r.cat||'—'}</td><td>${r.p}</td><td>${r.i}</td><td><b style="color:${sv.c}">${sc} · ${sv.l}</b></td><td>${r.resp||'—'}</td></tr>`;
+            h+=`<tr><td>${r.desc}</td><td>${r.tipo}</td><td>${r.persp}</td><td>${r.cat||'—'}</td><td>${r.forn||'—'}</td><td>${r.p}</td><td>${r.i}</td><td><b style="color:${sv.c}">${sc} · ${sv.l}</b></td><td>${r.resp||'—'}</td></tr>`;
         });
         h+=`</tbody></table>`;
     }
@@ -1120,11 +1129,35 @@ function initRiskUI(){
  refreshRiskCatList();
 }
 function refreshRiskCatList(){
- const sel=document.getElementById('rkCat');
+ const sel=document.getElementById('rkCtxCat');
  if(!sel)return;
  const v=sel.value;
- sel.innerHTML='<option value="">— risco geral (não vinculado) —</option>'+suppliers.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+ sel.innerHTML='<option value="">— riscos gerais (sem categoria) —</option>'+suppliers.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
  if([...sel.options].some(o=>o.value===v)) sel.value=v;
+ refreshRiskFornList();
+}
+function refreshRiskFornList(){
+ const cat=document.getElementById('rkCtxCat'), sel=document.getElementById('rkCtxForn');
+ if(!cat||!sel)return;
+ const v=sel.value;
+ const s=suppliers.find(o=>o.name===cat.value);
+ const forns=s&&s.forn?s.forn.split(',').map(f=>f.trim()).filter(Boolean):[];
+ sel.innerHTML='<option value="">— a categoria como um todo —</option>'+forns.map(f=>`<option value="${f}">${f}</option>`).join('');
+ if([...sel.options].some(o=>o.value===v)) sel.value=v;
+}
+function riskCtxChange(){
+ refreshRiskFornList();
+ const cat=document.getElementById('rkCtxCat').value;
+ const s=suppliers.find(o=>o.name===cat);
+ if(s&&curId!==s.id){curId=s.id;document.getElementById('globalSel').value=s.id;updateSupBar();}
+ renderRisks();
+}
+function riskCtxSyncFromGlobal(){
+ const sel=document.getElementById('rkCtxCat');
+ if(!sel)return;
+ const s=cur();
+ sel.value=s?s.name:'';
+ refreshRiskFornList();
 }
 function addRisk(){
  const d=document.getElementById('rkDesc').value.trim();
@@ -1133,29 +1166,38 @@ function addRisk(){
   id:Date.now()+'',desc:d,
   tipo:document.getElementById('rkTipo').value,
   persp:document.getElementById('rkPersp').value,
-  cat:document.getElementById('rkCat').value.trim(),
+  cat:document.getElementById('rkCtxCat').value,
+  forn:document.getElementById('rkCtxForn').value,
   p:+document.getElementById('rkProb').value,
   i:+document.getElementById('rkImp').value,
   resp:document.getElementById('rkResp').value.trim()
  });
  document.getElementById('rkDesc').value='';document.getElementById('rkResp').value='';
- renderRisks(); syncKraljicX(); toast(document.getElementById('rkCat').value?'Risco registrado — eixo X da categoria atualizado.':'Risco registrado!');
+ renderRisks(); syncKraljicX(); toast(document.getElementById('rkCtxCat').value?'Risco registrado — eixo X da categoria atualizado.':'Risco geral registrado!');
 }
 function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKraljicX();}
+function riskFiltered(){
+ const view=document.getElementById('rkView');
+ const cat=document.getElementById('rkCtxCat');
+ if(view&&cat&&view.value==='cat') return risks.filter(r=>r.cat===cat.value);
+ return risks;
+}
 function renderRisks(){
  initRiskUI();
  const el=document.getElementById('riskList'); if(!el)return;
- document.getElementById('rkCount').innerText=risks.length?`· ${risks.length} registrado(s)`:'';
- if(!risks.length){el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>Nenhum risco registrado ainda.</p></div>';}
+ const lista=riskFiltered();
+ const filtrado=lista.length!==risks.length;
+ document.getElementById('rkCount').innerText=risks.length?`· ${lista.length}${filtrado?' de '+risks.length:''} exibido(s)`:'';
+ if(!lista.length){el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>'+(risks.length?'Nenhum risco neste filtro — troque para “Todos os riscos”.':'Nenhum risco registrado ainda.')+'</p></div>';}
  else{
-  const ord=[...risks].sort((a,b)=>(b.p*b.i)-(a.p*a.i));
+  const ord=[...lista].sort((a,b)=>(b.p*b.i)-(a.p*a.i));
   el.innerHTML=ord.map(r=>{
    const sc=r.p*r.i,sv=sevInfo(sc);
    return `<div style="display:flex;gap:.7rem;align-items:flex-start;padding:.6rem .2rem;border-bottom:1px solid var(--border);">
     <span class="badge" style="background:${sv.c}22;color:${sv.c};border:1px solid ${sv.c}55;white-space:nowrap;">${sc} · ${sv.l}</span>
     <div style="flex:1;min-width:0;">
      <div style="font-size:.76rem;font-weight:700;">${r.desc}</div>
-     <div style="font-size:.62rem;color:var(--muted);margin-top:.15rem;">${r.tipo} · ${r.persp}${r.cat?' · 📦 '+r.cat:''} · P${r.p} × I${r.i}</div>
+     <div style="font-size:.62rem;color:var(--muted);margin-top:.15rem;">${r.tipo} · ${r.persp}${r.cat?' · 📦 '+r.cat:''}${r.forn?' · 🏭 '+r.forn:''} · P${r.p} × I${r.i}</div>
      ${r.resp?`<div style="font-size:.64rem;color:#94a3b8;margin-top:.2rem;">🛡 ${r.resp}</div>`:''}
     </div>
     <button class="btn-danger" onclick="removeRisk('${r.id}')">✕</button></div>`;
@@ -1171,7 +1213,7 @@ function renderRiskMatrix(){
   h+=`<div style="display:flex;align-items:center;color:var(--muted);">I${i}</div>`;
   for(let p=1;p<=5;p++){
    const sc=p*i,sv=sevInfo(sc);
-   const n=risks.filter(r=>r.p===p&&r.i===i).length;
+   const n=riskFiltered().filter(r=>r.p===p&&r.i===i).length;
    h+=`<div title="P${p} × I${i} = ${sc}" style="height:44px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;background:${sv.c}${n?'':'1a'};color:${n?'#0a0f1e':sv.c+'66'};border:1px solid ${sv.c}44;">${n||''}</div>`;
   }
  }
