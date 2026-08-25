@@ -320,10 +320,26 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.5; }
 .gauge-pin { position: absolute; top: -7px; width: 4px; height: 30px; background: var(--ink); border-radius: 2px; transition: left .4s ease; }
 .gauge-ends { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 8px; text-transform: uppercase; letter-spacing: .08em; }
 
-/* string de busca */
-.string-out {
-  background: var(--dark); color: var(--gold-d); font-family: var(--mono); font-size: 13px;
-  padding: 14px 18px; border-radius: 8px; margin-top: 12px; word-break: break-word; line-height: 1.6;
+/* gerador de prompt */
+.prompt-bloco { margin-top: 16px; position: relative; }
+.prompt-bloco .pb-tag {
+  font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.prompt-bloco .pb-tag span { color: var(--muted); font-weight: 400; letter-spacing: .08em; }
+.prompt-bloco .mini-btn {
+  position: absolute; top: 0; right: 0; cursor: pointer; background: none; border: 1px solid var(--border);
+  border-radius: 999px; padding: 3px 12px; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold);
+}
+.prompt-bloco .mini-btn:hover { border-color: var(--gold); background: #EFEBE0; }
+.prompt-bloco.auto .pb-auto {
+  background: #EFEBE0; border: 1px solid #E0DACA; border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0;
+  padding: 12px 16px; font-size: 13.5px; color: var(--ink); white-space: pre-wrap; line-height: 1.55;
+}
+.prompt-out {
+  background: var(--dark); color: #D8DCE3; font-family: var(--mono); font-size: 12.5px;
+  padding: 16px 20px; border-radius: 8px; white-space: pre-wrap; line-height: 1.6; max-height: 340px; overflow: auto;
 }
 .copy-hint { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: .1em; margin-top: 6px; }
 
@@ -388,7 +404,7 @@ function novoDossie() {
     kits: [
       { t: "", rel: "ntk" }
     ],
-    strings: { chave: "", sinonimos: "", obrigatorios: "", excluir: "" },
+    prompt: { persona: "", contexto: "", formato: "", restricoes: "" },
     fontes: [],
     rfi: [],
     hhi: [{ n: "", s: "" }, { n: "", s: "" }, { n: "", s: "" }],
@@ -428,7 +444,7 @@ const FORCAS_DEF = [
    ===================================================================== */
 const FASES = [
   { id: "dossie", n: "0", t: "Dossiê da categoria", entrega: "contexto registrado" },
-  { id: "definir", n: "1", t: "Identificar e definir", entrega: "KITs e strings de pesquisa" },
+  { id: "definir", n: "1", t: "Identificar e definir", entrega: "KITs e prompt de pesquisa" },
   { id: "pesquisar", n: "2", t: "Pesquisar e registrar", entrega: "fontes qualificadas" },
   { id: "analisar", n: "3", t: "Analisar", entrega: "HHI · Forças · PESTAL · CBD" },
   { id: "documentar", n: "4", t: "Documentar", entrega: "Market Intelligence Report" }
@@ -465,7 +481,8 @@ function completude() {
   const chk = v => { tot++; if (String(v || "").trim()) ok++; };
   chk(D.dossie.categoria); chk(D.dossie.objetivo);
   tot++; if (D.kits.some(k => k.t.trim())) ok++;
-  chk(D.strings.chave);
+  chk(D.prompt.persona);
+  tot++; if (D.kits.some(k => k.t.trim() && k.rel !== "des")) ok++;
   tot++; if (D.fontes.length) ok++;
   tot++; if (D.hhi.filter(h => num(h.s) > 0).length >= 2) ok++;
   chk(D.forcas.nota);
@@ -520,21 +537,22 @@ function fDossie() {
    ===================================================================== */
 function fDefinir() {
   const kitsRows = D.kits.map((k, i) => `
-    <tr><td><input type="text" value="${esc(k.t)}" onchange="D.kits[${i}].t=this.value"
+    <tr><td><input type="text" value="${esc(k.t)}" onchange="D.kits[${i}].t=this.value;promptOut()"
         placeholder="Ex.: capacidade e ociosidade dos produtores nacionais"></td>
-      <td style="width:190px"><select onchange="D.kits[${i}].rel=this.value">
+      <td style="width:190px"><select onchange="D.kits[${i}].rel=this.value;promptOut()">
         <option value="ntk" ${k.rel === "ntk" ? "selected" : ""}>Need to know</option>
         <option value="n2k" ${k.rel === "n2k" ? "selected" : ""}>Nice to know</option>
         <option value="des" ${k.rel === "des" ? "selected" : ""}>Não priorizar</option>
       </select></td>
       <td style="width:40px"><button class="del" title="Remover" onclick="D.kits.splice(${i},1);render()">×</button></td></tr>`).join("");
-  const s = D.strings;
+  const p = D.prompt;
   $("#fase").innerHTML = `
     <div class="fase-head"><h2>Identificar e definir</h2><span class="entrega">entrega · <b>${FASES[1].entrega}</b></span></div>
     <div class="card">
       <h3>KITs — Key Intelligence Topics</h3>
       <p style="color:var(--body);margin-top:8px">As perguntas que a análise precisa responder. Classifique a relevância:
-      só o <b>need to know</b> entra no monitoramento de rotina — monitorar tudo é o mesmo que não monitorar nada.</p>
+      só o <b>need to know</b> entra no monitoramento de rotina — monitorar tudo é o mesmo que não monitorar nada.
+      Os tópicos classificados como <b>need to know</b> e <b>nice to know</b> migram automaticamente para a tarefa do prompt abaixo.</p>
       <table class="dyn-table"><thead><tr><th>Tópico a monitorar</th><th>Relevância</th><th></th></tr></thead>
       <tbody>${kitsRows}</tbody></table>
       <button class="add-row" onclick="D.kits.push({t:'',rel:'ntk'});render()">+ adicionar KIT</button>
@@ -542,56 +560,144 @@ function fDefinir() {
       concorrentes pelo mesmo insumo, tecnologia, regulação, driver de custo, importação e cenário macro.</p>
     </div>
     <div class="card">
-      <h3>Construtor de string de pesquisa</h3>
-      <p style="color:var(--body);margin-top:8px">Transforme os KITs em sentenças de busca com operadores. A string
-      alimenta buscadores e alertas automáticos — pesquisa pontual vira vigilância de rotina.</p>
-      <div class="duo">
-        <div class="campo"><label>Termo principal (entre aspas se composto)</label>
-          <input type="text" data-bind="strings.chave" value="${esc(s.chave)}" oninput="stringOut()" placeholder='Ex.: "filme BOPP"'></div>
-        <div class="campo"><label>Sinônimos / variações — separe por vírgula (vira OR)</label>
-          <input type="text" data-bind="strings.sinonimos" value="${esc(s.sinonimos)}" oninput="stringOut()" placeholder="Ex.: polipropileno biorientado, BOPP film"></div>
-        <div class="campo"><label>Termos obrigatórios — separe por vírgula (vira AND)</label>
-          <input type="text" data-bind="strings.obrigatorios" value="${esc(s.obrigatorios)}" oninput="stringOut()" placeholder="Ex.: preço, capacidade, antidumping"></div>
-        <div class="campo"><label>Excluir — separe por vírgula (vira −termo)</label>
-          <input type="text" data-bind="strings.excluir" value="${esc(s.excluir)}" oninput="stringOut()" placeholder="Ex.: vaga, emprego, curso"></div>
+      <h3>Gerador de prompt para pesquisa assistida por IA</h3>
+      <p style="color:var(--body);margin-top:8px">Um prompt bem construído tem quatro partes: <b>Persona</b> (quem responde),
+      <b>Tarefa</b> (o que fazer), <b>Contexto</b> (o que já se sabe) e <b>Formato</b> (como entregar).
+      A tarefa é montada a partir dos seus KITs; complete as demais partes e copie o prompt para a ferramenta de IA que utilizar.</p>
+
+      <div class="prompt-bloco">
+        <div class="pb-tag">Persona</div>
+        <textarea data-bind="prompt.persona" oninput="promptOut()" style="min-height:60px"
+          placeholder="Quem deve responder? Ex.: analista sênior de inteligência de mercado em Suprimentos, com experiência em petroquímicos e embalagens.">${esc(p.persona)}</textarea>
+        <button class="mini-btn" onclick="sugerirPersona()">sugerir</button>
       </div>
-      <div class="string-out" id="stringOut"></div>
-      <p class="copy-hint">Selecione e copie · teste primeiro no buscador (filtro Notícias) · depois cadastre a mesma
-      sentença como alerta automático e padronize a frequência.</p>
+
+      <div class="prompt-bloco auto">
+        <div class="pb-tag">Tarefa <span>· gerada a partir dos KITs</span></div>
+        <div id="tarefaAuto" class="pb-auto"></div>
+      </div>
+
+      <div class="prompt-bloco">
+        <div class="pb-tag">Contexto</div>
+        <textarea data-bind="prompt.contexto" oninput="promptOut()" style="min-height:70px"
+          placeholder="O que a IA precisa saber sobre a sua situação? Ex.: compramos 6 mil t/ano; contrato-mãe vence em jun/2027; fornecedor líder pediu reajuste pelo IGP-M.">${esc(p.contexto)}</textarea>
+        <button class="mini-btn" onclick="sugerirContexto()">puxar do dossiê</button>
+      </div>
+
+      <div class="prompt-bloco">
+        <div class="pb-tag">Formato</div>
+        <textarea data-bind="prompt.formato" oninput="promptOut()" style="min-height:60px"
+          placeholder="Como a resposta deve vir? Ex.: tabela com tópico, achado, fonte e data; depois um sumário executivo de até 10 linhas.">${esc(p.formato)}</textarea>
+        <button class="mini-btn" onclick="sugerirFormato()">sugerir</button>
+      </div>
+
+      <div class="prompt-bloco">
+        <div class="pb-tag">Restrições e cuidados <span>· opcional</span></div>
+        <textarea data-bind="prompt.restricoes" oninput="promptOut()" style="min-height:56px"
+          placeholder="Ex.: cite a fonte e a data de cada afirmação; separe fato de estimativa; declare o que não encontrou em vez de preencher lacunas.">${esc(p.restricoes)}</textarea>
+        <button class="mini-btn" onclick="sugerirRestricoes()">sugerir</button>
+      </div>
+
+      <div class="campo"><label>Prompt final — pronto para copiar</label>
+        <div class="prompt-out" id="promptOut"></div></div>
       <div class="btn-row no-print" style="margin-top:14px">
-        <button class="btn ghost" onclick="copiarString()">Copiar string</button>
-        <button class="btn ghost" onclick="abrirBusca()">Testar no buscador ↗</button>
-        <button class="btn ghost" onclick="window.open('https://www.google.com/alerts','_blank')">Abrir Google Alerts ↗</button>
+        <button class="btn gold" onclick="copiarPrompt()">Copiar prompt</button>
+        <span class="small" id="promptMsg"></span>
       </div>
+      <p class="copy-hint">A IA é ponto de partida da pesquisa, não fonte. Todo achado precisa ser verificado na fonte
+      primária e registrado com origem e data na próxima fase.</p>
     </div>
     ${botFase("dossie", "pesquisar")}`;
-  stringOut();
+  promptOut();
 }
-function montarString() {
-  const s = D.strings;
-  const chave = ($("#fase [data-bind='strings.chave']") || {}).value ?? s.chave;
-  const sin = (($("#fase [data-bind='strings.sinonimos']") || {}).value ?? s.sinonimos).split(",").map(t => t.trim()).filter(Boolean);
-  const obr = (($("#fase [data-bind='strings.obrigatorios']") || {}).value ?? s.obrigatorios).split(",").map(t => t.trim()).filter(Boolean);
-  const exc = (($("#fase [data-bind='strings.excluir']") || {}).value ?? s.excluir).split(",").map(t => t.trim()).filter(Boolean);
-  let parts = [];
-  const nucleo = [chave, ...sin].filter(Boolean);
-  if (nucleo.length > 1) parts.push("(" + nucleo.join(" OR ") + ")");
-  else if (nucleo.length === 1) parts.push(nucleo[0]);
-  obr.forEach(t => parts.push("AND " + t));
-  exc.forEach(t => parts.push("-" + t.replace(/^-/, "")));
-  return parts.join(" ");
+
+/* ---------- sugestões automáticas ---------- */
+function sugerirPersona() {
+  const cat = D.dossie.categoria || "a categoria analisada";
+  const t = "Você é um analista sênior de inteligência de mercado em Suprimentos, com experiência no mercado de " + cat +
+    ". Você trabalha com evidência: distingue fato de estimativa, cita fontes e admite quando a informação não está disponível.";
+  D.prompt.persona = t;
+  const el = $("#fase [data-bind='prompt.persona']"); if (el) el.value = t;
+  promptOut();
 }
-function stringOut() {
-  const str = montarString();
-  $("#stringOut").textContent = str || "A string aparece aqui conforme você preenche os campos.";
+function sugerirContexto() {
+  const d = D.dossie;
+  const partes = [];
+  if (d.categoria) partes.push("Categoria analisada: " + d.categoria + ".");
+  if (d.spend) partes.push("Gasto anual aproximado: R$ " + d.spend + ".");
+  if (d.vencimento) partes.push("Contrato principal com vencimento em " + d.vencimento + ".");
+  if (d.objetivo) partes.push("A análise vai sustentar a seguinte decisão: " + d.objetivo);
+  partes.push("O mercado é analisado da perspectiva do comprador — interessa entender poder de barganha, alternativas de fornecimento e drivers de custo.");
+  const t = partes.join(" ");
+  D.prompt.contexto = t;
+  const el = $("#fase [data-bind='prompt.contexto']"); if (el) el.value = t;
+  promptOut();
 }
-function copiarString() {
-  const str = montarString(); if (!str) return;
-  navigator.clipboard && navigator.clipboard.writeText(str);
+function sugerirFormato() {
+  const t = "Responda em duas partes. (1) Uma tabela com as colunas: tópico, achado, número ou dado quando houver, fonte e data da informação. " +
+    "(2) Um sumário executivo de até dez linhas, terminando com três perguntas que eu deveria investigar a seguir. " +
+    "Use português do Brasil e linguagem objetiva, sem adjetivos promocionais.";
+  D.prompt.formato = t;
+  const el = $("#fase [data-bind='prompt.formato']"); if (el) el.value = t;
+  promptOut();
 }
-function abrirBusca() {
-  const str = montarString(); if (!str) return;
-  window.open("https://news.google.com/search?q=" + encodeURIComponent(str) + "&hl=pt-BR", "_blank");
+function sugerirRestricoes() {
+  const t = "Cite a fonte e a data de cada afirmação. Separe claramente fato verificável de estimativa sua. " +
+    "Quando não encontrar informação confiável sobre um tópico, escreva “não encontrado” em vez de preencher a lacuna. " +
+    "Não use material publicitário de fornecedores como fonte principal.";
+  D.prompt.restricoes = t;
+  const el = $("#fase [data-bind='prompt.restricoes']"); if (el) el.value = t;
+  promptOut();
+}
+
+/* ---------- montagem do prompt ---------- */
+function tarefaTexto() {
+  const cat = D.dossie.categoria || "[preencha a categoria no Dossiê]";
+  const ntk = D.kits.filter(k => k.t.trim() && k.rel === "ntk").map(k => k.t.trim());
+  const n2k = D.kits.filter(k => k.t.trim() && k.rel === "n2k").map(k => k.t.trim());
+  if (!ntk.length && !n2k.length) return null;
+  let t = "Pesquise e sintetize inteligência de mercado sobre " + cat + ", respondendo aos tópicos abaixo.\n\n";
+  if (ntk.length) {
+    t += "Prioridade alta (need to know) — responda a todos, com dados e fontes:\n";
+    ntk.forEach((k, i) => { t += (i + 1) + ". " + k + "\n"; });
+  }
+  if (n2k.length) {
+    t += (ntk.length ? "\n" : "") + "Prioridade secundária (nice to know) — responda se houver informação confiável:\n";
+    n2k.forEach((k, i) => { t += (i + 1) + ". " + k + "\n"; });
+  }
+  return t.trim();
+}
+function montarPrompt() {
+  const p = D.prompt;
+  const val = n => { const el = $("#fase [data-bind='prompt." + n + "']"); return (el ? el.value : p[n]) || ""; };
+  const tarefa = tarefaTexto();
+  const blocos = [];
+  if (val("persona").trim()) blocos.push("# PERSONA\n" + val("persona").trim());
+  if (tarefa) blocos.push("# TAREFA\n" + tarefa);
+  if (val("contexto").trim()) blocos.push("# CONTEXTO\n" + val("contexto").trim());
+  if (val("formato").trim()) blocos.push("# FORMATO DA RESPOSTA\n" + val("formato").trim());
+  if (val("restricoes").trim()) blocos.push("# RESTRIÇÕES\n" + val("restricoes").trim());
+  return blocos.join("\n\n");
+}
+function promptOut() {
+  const tEl = $("#tarefaAuto");
+  if (tEl) {
+    const t = tarefaTexto();
+    tEl.textContent = t || "Cadastre KITs acima como “need to know” ou “nice to know” — eles viram a tarefa do prompt.";
+    tEl.style.color = t ? "" : "var(--muted)";
+  }
+  const out = $("#promptOut");
+  if (out) {
+    const pr = montarPrompt();
+    out.textContent = pr || "O prompt aparece aqui conforme você preenche os blocos acima.";
+  }
+}
+function copiarPrompt() {
+  const pr = montarPrompt();
+  const msg = $("#promptMsg");
+  if (!pr) { if (msg) msg.textContent = "preencha ao menos um bloco"; return; }
+  if (navigator.clipboard) navigator.clipboard.writeText(pr);
+  if (msg) msg.textContent = "prompt copiado ✓";
 }
 
 /* =====================================================================
