@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do Líder Cuidador ao Líder Construtor — Painel Executivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#13333F; --deep:#0E262F; --bronze:#AE8A5B; --bronze-lt:#D8C29B;
+  --cream:#F6F2EA; --paper:#FDFBF7; --ink:#242424; --gray:#4E4B44; --hair:#E4DDD0;
+  --serif:'Lora',Georgia,serif; --sans:'Poppins','Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+body{font-family:var(--serif);color:var(--ink);background:var(--paper);line-height:1.7;font-size:18px}
+.wrap{max-width:1020px;margin:0 auto;padding:0 22px}
+.eyebrow{font-family:var(--sans);font-size:.78rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--bronze)}
+h1,h2,h3{font-family:var(--sans);color:var(--navy);line-height:1.25}
+button{font:inherit;background:none;border:none;cursor:pointer}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+
+/* ---------- TOPO ---------- */
+header{background:linear-gradient(160deg,var(--deep),var(--navy));color:#fff;padding:44px 0 30px}
+header .eyebrow{color:var(--bronze-lt)}
+header h1{color:#fff;font-size:clamp(1.7rem,4.6vw,2.7rem);font-weight:700;margin:.45rem 0 1rem;max-width:16ch}
+.anchor-quote{border-left:3px solid var(--bronze);padding:.35rem 0 .35rem 1.1rem;max-width:46ch}
+.anchor-quote p{font-style:italic;font-size:1.12rem;color:#EDE7DA}
+.anchor-quote span{font-family:var(--sans);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze-lt);display:block;margin-top:.5rem}
+
+/* ---------- ABAS ---------- */
+.tabs{position:sticky;top:0;z-index:60;background:var(--deep);border-bottom:2px solid var(--bronze)}
+.tabs .wrap{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab-btn{font-family:var(--sans);font-size:.92rem;font-weight:500;color:#C7D8DD;padding:15px 18px;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab-btn:hover{color:#fff}
+.tab-btn[aria-selected="true"]{color:#fff;font-weight:600;border-bottom-color:var(--bronze);background:rgba(174,138,91,.12)}
+.panel{display:none;animation:fade .25s ease}
+.panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+main{padding:40px 0 70px}
+
+/* ---------- COMPONENTES ---------- */
+.sec-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--bronze);padding-bottom:10px;margin:34px 0 22px}
+.sec-head:first-child{margin-top:0}
+.sec-head h2{font-size:clamp(1.3rem,3vw,1.65rem);font-weight:700}
+.sec-head .tag{font-family:var(--sans);font-size:.8rem;color:var(--gray);margin-left:auto;white-space:nowrap}
+.lead{max-width:66ch;margin-bottom:1.3rem;font-size:1.05rem}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:1.5rem 0 .5rem}
+.stats div{background:var(--cream);border:1px solid #C4B394;border-left:4px solid var(--bronze);padding:1rem 1.15rem;border-radius:0 10px 10px 0}
+.stats b{font-family:var(--sans);font-size:1.7rem;color:var(--navy);display:block;font-weight:700;line-height:1.1}
+.stats span{font-family:var(--sans);font-size:.82rem;color:var(--gray)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:1.3rem}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.list-o{list-style:none}
+.list-o li{display:flex;gap:12px;padding:.62rem 0;border-bottom:1px solid var(--hair);font-size:1rem}
+.badge{font-family:var(--sans);font-weight:600;font-size:.78rem;background:var(--navy);color:#fff;border-radius:6px;padding:.24rem .55rem;height:fit-content;flex-shrink:0;margin-top:.2rem}
+.badge.c{background:var(--bronze)}
+h3.sub{font-size:1.05rem;font-weight:600;margin-bottom:.6rem}
+
+/* travessia */
+.rail-zone{background:var(--deep);border-radius:14px;padding:28px 26px 30px;margin:2rem 0 .5rem}
+.rail-zone h3{color:#fff;font-size:1.15rem;margin-bottom:.15rem}
+.rail-zone p.hint{font-family:var(--sans);font-size:.85rem;color:#9FB6BE;margin-bottom:1rem}
+.rail{position:relative;display:flex;overflow-x:auto;padding:22px 2px 8px;-webkit-overflow-scrolling:touch}
+.rail::before{content:"";position:absolute;left:0;right:0;top:40px;height:2px;background:linear-gradient(90deg,var(--bronze),rgba(174,138,91,.25))}
+.node{flex:0 0 auto;width:120px;text-align:center;background:none;border:none;cursor:pointer;padding:0 4px}
+.node i{display:block;width:16px;height:16px;border-radius:50%;background:#28505E;border:2px solid var(--bronze);margin:8px auto 12px;position:relative;z-index:1;transition:transform .15s}
+.node.act i{background:var(--bronze);width:22px;height:22px;margin-top:5px}
+.node:hover i,.node:focus-visible i{transform:scale(1.3)}
+.node b{font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.06em;color:var(--bronze-lt);display:block;text-transform:uppercase}
+.node span{font-family:var(--sans);font-size:.76rem;color:#C9D8DD;display:block;line-height:1.35;margin-top:2px}
+.legend{display:flex;gap:20px;margin-top:12px;font-family:var(--sans);font-size:.78rem;color:#9FB6BE}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:6px}
+.legend .t{background:#28505E;border:2px solid var(--bronze)}
+.legend .a{background:var(--bronze)}
+
+/* blocos */
+.day-mark{display:flex;align-items:center;gap:16px;margin:0 0 22px}
+.day-mark b{font-family:var(--sans);font-size:2.7rem;color:var(--bronze);font-weight:700;line-height:1}
+.day-mark strong{font-family:var(--sans);color:var(--navy);font-size:1.15rem;display:block}
+.day-mark span{font-family:var(--sans);font-size:.85rem;color:var(--gray)}
+.bloco{border:1px solid var(--hair);border-radius:12px;margin-bottom:20px;overflow:hidden;background:#fff;scroll-margin-top:80px}
+.bloco-h{display:flex;align-items:center;gap:14px;padding:15px 20px;background:var(--cream);border-bottom:1px solid #C4B394}
+.bloco-h .n{font-family:var(--sans);font-weight:700;font-size:1.25rem;color:var(--bronze);flex-shrink:0}
+.bloco-h h3{font-size:1.08rem;font-weight:600}
+.bloco-h time{font-family:var(--sans);font-size:.8rem;color:var(--gray);margin-left:auto;white-space:nowrap}
+.bloco-body{padding:18px 20px 8px}
+.bloco-body>p{font-size:1rem;max-width:70ch;margin-bottom:1rem}
+details{border-top:1px solid var(--hair)}
+summary{cursor:pointer;font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--navy);padding:14px 20px;list-style:none;display:flex;align-items:center;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-weight:600;color:var(--bronze);width:15px}
+details[open] summary::before{content:"–"}
+.det-body{padding:2px 20px 18px;font-size:1rem}
+.det-body p{margin-bottom:.75rem;max-width:70ch}
+.det-body ul,.det-body ol{margin:.2rem 0 .9rem 1.2rem}
+.det-body li{margin-bottom:.5rem}
+.det-body strong{color:var(--navy)}
+.quote-mini{background:var(--cream);border:1px solid #C4B394;border-left:3px solid var(--bronze);padding:.8rem 1.05rem;font-style:italic;margin:.7rem 0 1rem;border-radius:0 8px 8px 0;max-width:62ch;font-size:1rem}
+.mini-h{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze);margin:1rem 0 .4rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin:.4rem 0 1rem}
+.tbl th{font-family:var(--sans);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:var(--navy);color:#fff;text-align:left;padding:.55rem .7rem}
+.tbl td{padding:.5rem .7rem;border-bottom:1px solid var(--hair);vertical-align:top}
+.tbl tr:nth-child(even) td{background:var(--cream)}
+
+details.atv{background:var(--navy)}
+details.atv summary{color:#fff}
+details.atv summary::before{color:var(--bronze-lt)}
+.pill{font-family:var(--sans);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;background:var(--bronze);color:#fff;border-radius:20px;padding:.22rem .65rem}
+details.atv summary .tm{margin-left:auto;font-size:.75rem;color:var(--bronze-lt);font-weight:500}
+details.atv .det-body{color:#E8E3D9}
+details.atv .det-body strong{color:var(--bronze-lt)}
+details.atv .fase{font-family:var(--sans);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze-lt);margin:.8rem 0 .35rem}
+details.atv ol li{font-size:.95rem}
+.result{background:rgba(174,138,91,.16);border:1px solid rgba(216,194,155,.4);border-radius:8px;padding:.7rem 1rem;font-size:.93rem;margin:.5rem 0 .9rem}
+.result b{font-family:var(--sans);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze-lt);display:block;margin-bottom:.2rem}
+
+.trilha{width:100%;border-collapse:collapse;font-size:.95rem;margin:.6rem 0 1.1rem}
+.trilha th{font-family:var(--sans);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;background:var(--navy);color:#fff;text-align:left;padding:.65rem .85rem}
+.trilha td{padding:.6rem .85rem;border-bottom:1px solid var(--hair)}
+.trilha tr:nth-child(even) td{background:var(--cream)}
+.trilha td:nth-child(2),.trilha td:nth-child(3){font-family:var(--sans);font-size:.85rem;white-space:nowrap}
+.lib{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:1.2rem}
+.lib>div{border:1px solid var(--hair);border-radius:12px;padding:1.1rem 1.2rem;background:#fff}
+.lib h3{font-size:.95rem;margin-bottom:.55rem}
+.lib ul{list-style:none}
+.lib li{font-size:.95rem;padding:.35rem 0;border-bottom:1px dashed var(--hair)}
+.lib li:last-child{border-bottom:none}
+.lib li b{color:var(--navy)}
+
+.apply{border:2px solid var(--bronze);border-radius:12px;margin:6px 20px 20px;background:#fff;overflow:hidden}
+.apply h4{font-family:var(--sans);font-size:.82rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--bronze);padding:.6rem 1.1rem}
+.apply ul{list-style:none;padding:.9rem 1.2rem .8rem}
+.apply li{padding:.4rem 0 .4rem 1.5rem;position:relative;font-size:1rem}
+.apply li::before{content:"\2192";position:absolute;left:0;color:var(--bronze);font-family:var(--sans);font-weight:700}
+footer{background:var(--deep);color:#B7C7CD;padding:32px 0 38px;font-family:var(--sans);font-size:.88rem}
+footer .fq{font-family:var(--serif);font-style:italic;font-size:1.08rem;color:#EDE7DA;max-width:52ch;margin-bottom:1rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">Programa de desenvolvimento de liderança · Painel executivo</span>
+    <h1>Do Líder Cuidador ao Líder Construtor</h1>
+    <p style="font-family:var(--sans);font-size:.95rem;color:var(--bronze-lt);margin:-.4rem 0 1.2rem"><strong>Prof. Dr. Thiago Lima</strong></p>
+    <div class="anchor-quote">
+      <p>“Se sua área só funciona com você, você não construiu uma área. Construiu uma extensão de você.”</p>
+      <span>Frase-âncora do programa</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Seções do painel">
+  <div class="wrap">
+    <button class="tab-btn" role="tab" aria-selected="true" data-tab="panorama">Panorama</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="dia1">Dia 1 · Despertar</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="dia2">Dia 2 · Construir</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="evid">Evidências &amp; Biblioteca</button>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+<!-- ================= PANORAMA ================= -->
+<div class="panel on" id="panel-panorama" role="tabpanel">
+  <div class="sec-head"><h2>Panorama</h2><span class="tag">o programa em uma tela</span></div>
+  <p class="lead">O diagnóstico da consultoria identificou um grupo de líderes com <strong>grande força no cuidado de pessoas</strong> — e uma oportunidade clara: converter parte dessa energia em <strong>construção de sistemas</strong>. O programa não pede que ninguém cuide menos; ensina a cuidar de forma escalável — por meio de processos, delegação e estrutura.</p>
+  <div class="stats">
+    <div><b>9h</b><span>dois encontros — 15 e 22/07</span></div>
+    <div><b>9 + 9</b><span>blocos e atividades intercalados</span></div>
+    <div><b>1</b><span>processo documentado e testado, por líder</span></div>
+    <div><b>30 dias</b><span>follow-up com compromisso datado</span></div>
+  </div>
+
+  <div class="rail-zone">
+    <h3>A travessia: ver → construir → transferir</h3>
+    <p class="hint">Teoria e prática se intercalam. Toque num ponto para abrir o bloco.</p>
+    <div class="rail">
+      <button class="node" data-go="dia1" data-id="b1"><i></i><b>Bloco 1</b><span>O dia que você não estava lá</span></button>
+      <button class="node act" data-go="dia1" data-id="b1"><i></i><b>Atv 1</b><span>Férias de 30 dias</span></button>
+      <button class="node" data-go="dia1" data-id="b2"><i></i><b>Bloco 2</b><span>Kahneman: dois sistemas</span></button>
+      <button class="node act" data-go="dia1" data-id="b2"><i></i><b>Atv 2</b><span>Raio-X da semana</span></button>
+      <button class="node" data-go="dia1" data-id="b3"><i></i><b>Bloco 3</b><span>Senge · macaco · Cynefin</span></button>
+      <button class="node" data-go="dia1" data-id="b4"><i></i><b>Bloco 4</b><span>Mentalidade de dono</span></button>
+      <button class="node act" data-go="dia1" data-id="b4"><i></i><b>Atv 3</b><span>Diagnóstico de dono</span></button>
+      <button class="node" data-go="dia1" data-id="b5"><i></i><b>Bloco 5</b><span>Processos como legado</span></button>
+      <button class="node act" data-go="dia1" data-id="b5"><i></i><b>Atv 4</b><span>Escolha do processo</span></button>
+      <button class="node act" data-go="dia1" data-id="b5"><i></i><b>Atv 5</b><span>Observação de campo</span></button>
+      <button class="node" data-go="dia2" data-id="b7"><i></i><b>Bloco 7</b><span>Padrão é liberdade</span></button>
+      <button class="node act" data-go="dia2" data-id="b7"><i></i><b>Atv 6</b><span>Oficina: 1 página</span></button>
+      <button class="node act" data-go="dia2" data-id="b7"><i></i><b>Atv 7</b><span>Teste cruzado</span></button>
+      <button class="node" data-go="dia2" data-id="b8"><i></i><b>Bloco 8</b><span>Marquet · Blanchard</span></button>
+      <button class="node act" data-go="dia2" data-id="b8"><i></i><b>Atv 8</b><span>Plano de delegação</span></button>
+      <button class="node" data-go="dia2" data-id="b9"><i></i><b>Bloco 9</b><span>Falácia · pré-mortem</span></button>
+      <button class="node act" data-go="dia2" data-id="b9"><i></i><b>Atv 9</b><span>Compromisso público</span></button>
+    </div>
+    <div class="legend"><span><i class="t"></i>teoria</span><span><i class="a"></i>atividade</span></div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h3 class="sub">Os cinco objetivos</h3>
+      <ul class="list-o">
+        <li><span class="badge">O1</span>Diferenciar cuidado vs. construção de sistemas</li>
+        <li><span class="badge">O2</span>Transformar quem resolve problemas em quem elimina a causa dos problemas</li>
+        <li><span class="badge">O3</span>Diferenciar atuação reativa (resolver) vs. estrutural (prevenir)</li>
+        <li><span class="badge">O4</span>Entender o impacto da dependência organizacional</li>
+        <li><span class="badge">O5</span>Desenvolver a visão de processos como legado do líder</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sub">As seis competências</h3>
+      <ul class="list-o">
+        <li><span class="badge c">C1</span>Autoconsciência gerencial — flagrar o piloto automático</li>
+        <li><span class="badge c">C2</span>Diagnóstico sistêmico — ver estruturas, não só eventos</li>
+        <li><span class="badge c">C3</span>Causa raiz e pensamento científico</li>
+        <li><span class="badge c">C4</span>Estruturação de processos — tácito vira padrão</li>
+        <li><span class="badge c">C5</span>Delegação desenvolvedora</li>
+        <li><span class="badge c">C6</span>Autogestão do compromisso</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DIA 1 ================= -->
+<div class="panel" id="panel-dia1" role="tabpanel">
+  <div class="day-mark"><b>D1</b><div><strong>Despertar o Construtor</strong><span>15/07 · o dia de ver: consciência e diagnóstico</span></div></div>
+
+  <article class="bloco" id="b1">
+    <div class="bloco-h"><span class="n">1</span><h3>O dia que você não estava lá</h3></div>
+    <div class="bloco-body"><p>Abertura vivencial, sem teoria: o incômodo fundador nasce dos dados do próprio grupo — e a releitura do facilitador o transforma na tese do programa: a lista do que quebraria na sua ausência não mede importância; mede dependência.</p></div>
+    <details class="atv">
+      <summary><span class="pill">Atividade 1</span> O dia que você não estava lá</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> se você tirasse 30 dias de férias, sem celular, o que quebraria? A lista é o inventário da sua dependência.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Individual: liste 3 itens concretos que quebrariam.</li><li>Dupla: compartilhem e escolham 1 de cada para a plenária.</li><li>Plenária: colheita no flipchart — e a releitura do facilitador.</li></ol>
+        <div class="result"><b>O resultado</b>Sua lista de pontos de dependência — cada item é algo que você não construiu: segurou.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Repita o teste dos 30 dias a cada trimestre — a lista do que quebraria é o seu mapa de prioridades de construção.</li><li>Quando se sentir indispensável, troque a pergunta: “isso prova o meu valor — ou prova que ainda não construí estrutura?”</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b2">
+    <div class="bloco-h"><span class="n">2</span><h3>Cuidador vs. Construtor — Kahneman</h3></div>
+    <div class="bloco-body"><p>Por que resolver é tão gostoso: três recompensas chegam juntas — sensação de utilidade, gratidão da pessoa, fila que anda. Construir não gera aplauso no dia em que acontece: o benefício é o problema que <em>não</em> ocorre — e o cérebro é péssimo em comemorar o que não aconteceu.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 1, Cap. 1</summary>
+      <div class="det-body">
+        <p class="mini-h">Dois sistemas na mesma cabeça</p>
+        <table class="tbl"><thead><tr><th>Sistema 1 — resolve</th><th>Sistema 2 — constrói</th></tr></thead><tbody>
+          <tr><td>Rápido, automático, sem esforço; reconhece o padrão (“já vi isso”)</td><td>Lento, deliberado, caro em energia; analisa a causa e desenha o mecanismo</td></tr>
+          <tr><td>Recompensa imediata e visível</td><td>Benefício invisível: o problema que NÃO acontece</td></tr>
+          <tr><td>Sempre ligado — responde primeiro</td><td>Preguiçoso: só entra quando convocado</td></tr>
+        </tbody></table>
+        <p class="mini-h">Os dois vieses que sabotam o líder</p>
+        <ul>
+          <li><strong>Viés de ação:</strong> fazer parece sempre melhor que analisar. O goleiro que pula no pênalti é perdoado (“pelo menos tentou”); o que fica parado — estatisticamente mais eficaz — é massacrado. Na empresa: quem apaga incêndio <em>parece</em> produtivo; quem desenha o processo parece parado.</li>
+          <li><strong>WYSIATI</strong> (“o que você vê é tudo o que há”): decidimos só com o visível. O erro de hoje está na sua frente; as quatro recorrências dos últimos meses, não — então corrigimos o sintoma e a causa agenda a próxima ocorrência.</li>
+        </ul>
+        <div class="quote-mini">O caso Mariana: todo dia 30, três horas corrigindo pessoalmente as planilhas das filiais. Em um ano, 36 horas — que uma reunião de 90 minutos de padronização teria eliminado no segundo mês. O Sistema 1 dela resolve com competência; o Sistema 2 nunca foi convocado.</div>
+        <p class="mini-h">O par acadêmico</p>
+        <ul>
+          <li><strong>Argyris (Harvard):</strong> resolver é aprendizado de <em>circuito simples</em> (corrigir dentro das regras); construir exige <em>circuito duplo</em> (questionar as regras que produzem o erro). E quanto mais bem-sucedido o profissional, mais ele resiste a examinar o próprio modo de operar.</li>
+          <li><strong>Adam Grant (Wharton):</strong> doadores ocupam o topo E a base dos rankings de desempenho. A diferença não é quanto doam — é o desenho da doação: os que afundam ajudam sem estrutura; os que chegam ao topo doam de forma escalável. Ninguém aqui precisa doar menos; precisa doar melhor.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 2</span> Raio-X da minha semana</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> quanto da sua última semana foi resolver (R) e quanto foi prevenir (E)? O número é sua linha de base.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Acompanhe a demonstração das duas velocidades.</li><li>Liste as 10 atividades da semana e classifique R ou E.</li><li>Calcule o % reativo e compare no trio.</li></ol>
+        <div class="result"><b>O resultado</b>Seu percentual reativo — a métrica que o follow-up de 30 dias vai reencontrar.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Antes de responder no automático, uma pausa de 5 segundos: “estou resolvendo — ou só reagindo?”</li><li>Bloqueie na agenda um horário semanal de Sistema 2: construir não acontece nas sobras do dia.</li><li>Lembre do goleiro: às vezes a jogada certa é parar e analisar — mesmo que pareça que você “não está fazendo nada”.</li><li>Se o mesmo problema apareceu 3 vezes, ele tem uma causa que você ainda não viu (WYSIATI).</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b3">
+    <div class="bloco-h"><span class="n">3</span><h3>O custo da dependência — Senge, o macaco e o Cynefin</h3></div>
+    <div class="bloco-body"><p>Os problemas persistentes raramente vêm de pessoas incompetentes — vêm de <strong>estruturas</strong>. O bloco entrega o diagrama que explica o líder cuidador, a metáfora que vira linguagem da turma e o mapa para diagnosticar problemas. Fecha com o mini-caso <strong>demonstrado pelo facilitador</strong>: o método em ação.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 1, Caps. 2 e 3</summary>
+      <div class="det-body">
+        <p class="mini-h">O loop da transferência de responsabilidade (Senge)</p>
+        <p>Três elementos: o <strong>sintoma</strong> aparece → a <strong>solução sintomática</strong> (líder resolve — rápida, eficaz) alivia → e o <strong>efeito colateral</strong> atrofia a capacidade que a <strong>solução fundamental</strong> (time desenvolvido + processo) construiria. O time desaprende a decidir; o líder, vendo o time menos capaz, resolve ainda mais. O loop se fecha: <em>quanto mais o líder cuida resolvendo, mais indispensável ele se torna — e mais frágil o sistema fica</em>.</p>
+        <p class="mini-h">Os quatro custos da dependência</p>
+        <ul>
+          <li><strong>Gargalo:</strong> tudo passa pelo líder; a área anda na velocidade da agenda dele.</li>
+          <li><strong>Fragilidade:</strong> férias, doença ou saída param a operação — o conhecimento mora numa cabeça só.</li>
+          <li><strong>Time infantilizado:</strong> gente competente que não decide porque nunca precisou — a “falta de proatividade” que a própria estrutura produziu.</li>
+          <li><strong>Teto de carreira:</strong> “não pode ser promovido: ninguém segura a área sem ele”. A dedicação que aprisiona.</li>
+        </ul>
+        <div class="quote-mini">“Quando alguém entra na sua sala com um problema e sai sem ele, o macaco pulou para as suas costas.” — Oncken &amp; Wass, o artigo mais reimpresso da história da HBR. A regra: o macaco sai da conversa nas costas de quem entrou — com próximo passo e data de retorno. Pergunta-atalho da turma: <em>de quem é o macaco?</em></div>
+        <p><strong>Ibarra (INSEAD) — a armadilha da competência:</strong> ficamos presos ao que fazemos bem. A habilidade que construiu sua carreira (resolver com excelência) é exatamente a que bloqueia o próximo nível — e a armadilha se fecha com sensação de sucesso, porque resolver continua gerando aplauso diário.</p>
+        <p class="mini-h">Cynefin (Snowden, HBR 2007) — nem todo problema é igual</p>
+        <table class="tbl"><thead><tr><th>Domínio</th><th>Como agir</th><th>Exemplo</th></tr></thead><tbody>
+          <tr><td><strong>Óbvio</strong></td><td>Sentir → categorizar → responder: aplique a prática</td><td>Reembolso de viagem; reset de senha</td></tr>
+          <tr><td><strong>Complicado</strong></td><td>Sentir → <em>analisar</em> → responder: investigue antes</td><td>Queda recorrente de qualidade; margem caindo</td></tr>
+          <tr><td><strong>Complexo</strong></td><td>Sondar → sentir → responder: experimente e observe</td><td>Engajamento em queda; resistência à mudança</td></tr>
+          <tr><td><strong>Caótico</strong></td><td>Agir → sentir → responder: estabilize primeiro</td><td>Sistema fora do ar na Black Friday</td></tr>
+          <tr><td><strong>Desordem</strong></td><td>O mais perigoso: é dele que agimos por hábito</td><td>“Não sei em que território estou”</td></tr>
+        </tbody></table>
+        <p><strong>Os dois erros favoritos do cuidador:</strong> tratar tudo como Óbvio (“eu sei resolver” — mas a recorrência prova que existe causa não analisada) e tratar o Complexo como Complicado (buscar “A causa” de problemas humanos, quando eles pedem experimento: mudar uma coisa, observar duas semanas, ajustar).</p>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Antes de aceitar um problema, pergunte: “de quem é o macaco?” — e devolva-o com próximo passo e data de retorno.</li><li>Diante de qualquer problema, classifique o território (Cynefin) antes de escolher a resposta.</li><li>Cada vez que você resolver pelo time, pergunte-se o que o time deixou de aprender — é o loop girando.</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b4">
+    <div class="bloco-h"><span class="n">4</span><h3>Mentalidade de dono — 5 Porquês e o experimento</h3></div>
+    <div class="bloco-body"><p>“Se essa área fosse SUA empresa — seu dinheiro, seu nome na porta — o que você faria diferente segunda-feira?” A régua do dono: o mesmo problema resolvido duas vezes é a denúncia de que falta um sistema. Duas ferramentas de exploração, que podem ser combinadas no mesmo problema.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 1, Cap. 4</summary>
+      <div class="det-body">
+        <p class="mini-h">Ferramenta 1 · Os 5 Porquês (Toyota)</p>
+        <p>Pergunte “por quê?” sucessivamente até a resposta deixar de ser um nome e virar uma <strong>ausência de estrutura</strong>. Exemplo completo:</p>
+        <ol>
+          <li>Relatório saiu errado. Por quê? → planilha-fonte desatualizada.</li>
+          <li>Por quê? → a filial não enviou os dados a tempo.</li>
+          <li>Por quê? → a filial não sabe a data-limite.</li>
+          <li>Por quê? → a data nunca foi formalizada — “combinado de boca”.</li>
+          <li>Por quê? → <strong>não existe processo de fechamento com prazos e responsáveis</strong> ← causa raiz, estrutural.</li>
+        </ol>
+        <p><strong>Regras de ouro:</strong> pare quando a resposta virar nome de pessoa (pergunte “por que o sistema permitiu?”); pare quando sair da sua governabilidade. Boa causa raiz começa com “não existe…” ou “não está definido…”.</p>
+        <p class="mini-h">Ferramenta 2 · O experimento (Toyota Kata)</p>
+        <p>Quatro perguntas: <strong>condição-alvo</strong> (o que quero que passe a acontecer, observável) → <strong>condição atual</strong> (fatos, não opiniões) → <strong>hipótese</strong> (“se eu mudar X, espero observar Y”) → <strong>verificação</strong> (o que medir, em 1–3 semanas). Errar a hipótese não é fracasso — é dado; desenha-se o próximo experimento.</p>
+        <div class="quote-mini">Exemplo: “meu time só traz problemas quando viram crise” (Complexo). Hipótese: se eu abrir a reunião semanal perguntando pelo quase-problema da semana, sem censura, em 3 semanas os riscos chegarão antes. Verificação: contar riscos trazidos espontaneamente por semana.</div>
+        <p><strong>Uso combinado:</strong> a classificação Cynefin indica a ferramenta de <em>partida</em> (Complicado → 5 Porquês; Complexo → experimento), mas as duas exploram o mesmo problema por ângulos diferentes — no Complexo, os 5 Porquês sozinhos enganam: use-os como exploração, não como veredicto, e complete com o experimento.</p>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 3</span> Diagnóstico de dono</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> aplicar o método ao SEU problema recorrente — logo depois de vê-lo demonstrado pelo facilitador no mini-caso.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Acompanhe a demonstração (nada a registrar).</li><li>Escolha um problema resolvido 3+ vezes — o que dói, não o confortável.</li><li>Classifique no Cynefin e explore com 5 Porquês e/ou experimento.</li><li>Dupla: o colega desafia a classificação e o último “porquê”.</li></ol>
+        <div class="result"><b>O resultado</b>A causa estrutural do seu problema — a matéria-prima de todo o Dia 2. Ninguém troca de problema depois.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Nunca aceite um nome de pessoa como causa raiz — pergunte “por que o sistema permitiu?”.</li><li>Segunda ocorrência do mesmo problema = alarme de sistema, não azar.</li><li>Trate sua próxima solução como hipótese: defina ANTES o que vai observar para saber se funcionou.</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b5">
+    <div class="bloco-h"><span class="n">5</span><h3>Processos como legado — Lean e Deming</h3></div>
+    <div class="bloco-body"><p>O teste do legado: se você fosse promovido amanhã, o que fica? Reunião não fica; favor não fica; incêndio apagado volta. Ficam duas coisas — processo documentado e pessoa desenvolvida — e são exatamente as duas entregas do Dia 2.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 1, Cap. 5</summary>
+      <div class="det-body">
+        <p class="mini-h">Valor e desperdício (Lean)</p>
+        <p>De tudo que a sua área faz, pelo que o cliente pagaria? O resto é desperdício — e três desperdícios clássicos são fabricados pela ausência de padrão:</p>
+        <ul>
+          <li><strong>Retrabalho:</strong> corrigir a mesma planilha todo mês (as 36 h/ano de Mariana).</li>
+          <li><strong>Espera:</strong> o pedido parado aguardando “um minutinho” do líder — desperdício acumulando em silêncio.</li>
+          <li><strong>Informação perdida:</strong> perguntar de novo o que já foi respondido; procurar o arquivo que ninguém acha.</li>
+        </ul>
+        <div class="quote-mini">“Sem padrão, você não melhora — você só recomeça.” SDCA antes de PDCA (Deming): a melhoria empurra a pedra rampa acima; o padrão é o calço que impede de rolar de volta. Burocracia é o papel que NÃO elimina desperdício; padrão é o papel que elimina.</div>
+        <p class="mini-h">Anatomia do processo de 1 página</p>
+        <p><strong>Objetivo</strong> (para que existe) · <strong>gatilho</strong> (o que dispara) · <strong>passo a passo</strong> (verbo + quem faz + com quê) · <strong>critério de qualidade</strong> (como sei que ficou bem-feito) · <strong>exceções</strong> (o que fazer fora do padrão) · <strong>dono</strong> (quem responde — e não pode ser o líder). Se não cabe em uma página, ainda não está claro o suficiente.</p>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 4</span> Escolha do processo-legado</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> escolher com critérios o processo do Dia 2 — e recortá-lo para caber em 1 página.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Liste 2–3 candidatos ligados à causa raiz da Atividade 3.</li><li>Aplique os 3 critérios: frequente? depende de você? o desperdício dói?</li><li>Defina o recorte e esboce os 3 primeiros passos <strong>do próprio processo</strong> (verbo + quem faz — não ações de implantação).</li><li>Plenária relâmpago: cada um anuncia seu processo escolhido.</li></ol>
+        <div class="result"><b>O resultado</b>O processo definido, recortado do gatilho X à entrega Y.</div>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 5</span> Observação de campo</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> uma semana observando o processo acontecer DE VERDADE — o real, não o imaginado.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Observe ao menos uma ocorrência (ou reconstitua a última em detalhe).</li><li>Anote: quem faz o quê · onde trava · o que só você sabe fazer.</li><li>Traga o Caderno preenchido no dia 22/07.</li></ol>
+        <div class="result"><b>O resultado</b>O insumo da oficina — a diferença entre o processo imaginado e o real é onde mora a dependência.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Some as horas de retrabalho e espera do último mês — esse número é o argumento do seu processo de 1 página.</li><li>Antes de melhorar qualquer coisa, estabilize: padrão primeiro (SDCA), melhoria depois (PDCA).</li><li>Se não cabe em 1 página, recorte o processo — não engorde o documento.</li></ul></div>
+  </article>
+</div>
+
+<!-- ================= DIA 2 ================= -->
+<div class="panel" id="panel-dia2" role="tabpanel">
+  <div class="day-mark"><b>D2</b><div><strong>Construir na Prática</strong><span>22/07 · hoje ninguém sai com intenção — sai com documento</span></div></div>
+
+  <article class="bloco" id="b7">
+    <div class="bloco-h"><span class="n">6·7</span><h3>Reabertura + Oficina de documentação</h3></div>
+    <div class="bloco-body"><p>O coração do programa. O template de 1 página é o <em>standard work</em> da Toyota aplicado à sua área — e as três regras da oficina não são obstáculos: são o próprio treino.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 2, Cap. 1</summary>
+      <div class="det-body">
+        <p class="mini-h">Standard work — três palavras que carregam tudo</p>
+        <ul>
+          <li><strong>Atualmente:</strong> o padrão não é lápide, é fotografia — existe para ser melhorado, mas só se melhora o que está estabilizado (o SDCA do Dia 1).</li>
+          <li><strong>Conhecida:</strong> captura o conhecimento que mora em cabeças e o torna patrimônio — a diferença entre “o Roberto sabe” e “a área sabe”.</li>
+          <li><strong>Com quem executa:</strong> padrão imposto de cima vira papel morto. Por isso o campo “dono do processo” não pode ter o nome do líder.</li>
+        </ul>
+        <p class="mini-h">As três regras da oficina</p>
+        <ol>
+          <li><strong>Máximo uma página</strong> — se não cabe, o recorte está errado ou o texto carrega gordura.</li>
+          <li><strong>Legível no primeiro dia de trabalho</strong> — proibidos “como de costume”, “conforme combinado”.</li>
+          <li><strong>Proibido o passo “falar comigo”</strong> — redesenhe até seu nome sumir do fluxo; ele só pode morar nas exceções, com critério claro.</li>
+        </ol>
+        <p><strong>A maldição do conhecimento:</strong> quem sabe fazer perde a capacidade de perceber o que o iniciante precisaria ouvir — o especialista escreve “conferir o pedido” sem ver as oito decisões escondidas na frase. Por isso o autor é a pior pessoa para revisar o próprio documento, e o teste cruzado existe: o colega é o seu Sistema 2 externo.</p>
+        <div class="quote-mini">O caso da reclamação grave: a primeira versão dizia “avaliar a gravidade e acionar quem for necessário”. Após o teste cruzado, ganhou régua objetiva (3 critérios), lista de quem acionar por nível e prazo máximo. Dois meses depois, uma reclamação grave foi resolvida em 40 minutos — num dia de férias da gerente. Isso é o padrão trabalhando: a área respondeu, não a pessoa.</div>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 6</span> Oficina de documentação</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> transformar o seu processo num documento de 1 página que qualquer pessoa consiga executar.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Template do Anexo A + anotações de campo; escrita individual com apoio do facilitador.</li><li>Travou? Conte o passo em voz alta — e escreva o que falou.</li><li>Genérico demais? “Conferir o pedido”: conferir O QUÊ, ONDE, contra o quê?</li></ol>
+        <div class="result"><b>O resultado</b>O entregável central: 1 processo documentado em 1 página, com dono que não é você.</div>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 7</span> Teste cruzado</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> um colega de OUTRA área lê seu documento como se fosse executá-lo no primeiro dia — e marca onde travaria.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Troca de documentos entre áreas diferentes.</li><li>Roteiro do revisor: onde eu travaria? que passo pressupõe algo não escrito? onde ainda depende do autor?</li><li>Revisão imediata com os apontamentos.</li></ol>
+        <div class="result"><b>O resultado</b>Processo testado — cada apontamento é uma dependência invisível desarmada antes de custar caro.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Aplique o teste do primeiro dia: alguém novo executaria só com o que está escrito?</li><li>Seu nome só pode morar nas exceções — com critério claro de quando acionar.</li><li>Nunca revise sozinho o próprio processo: peça a alguém de fora para marcar onde travaria.</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b8">
+    <div class="bloco-h"><span class="n">8</span><h3>Framework de delegação — Marquet e Blanchard</h3></div>
+    <div class="bloco-body"><p>Em 1999, o capitão David Marquet assumiu o pior submarino da marinha americana — e deu uma ordem tecnicamente impossível, que o oficial executou “porque o senhor mandou”. A virada que implantou tem nome: liderança por intenção. Em dois anos, o USS Santa Fe virou o melhor avaliado da frota — e a maior fábrica de futuros comandantes.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 2, Cap. 2</summary>
+      <div class="det-body">
+        <p class="mini-h">A escada da autonomia (Marquet)</p>
+        <table class="tbl"><thead><tr><th>Degrau</th><th>O que a pessoa diz</th><th>Quem pensa</th></tr></thead><tbody>
+          <tr><td>1</td><td>“O que eu faço?”</td><td>Só o líder</td></tr>
+          <tr><td>2</td><td>“Acho que temos um problema.”</td><td>O líder, provocado</td></tr>
+          <tr><td>3</td><td>“Vejo estas opções — qual prefere?”</td><td>Os dois</td></tr>
+          <tr><td><strong>4</strong></td><td><strong>“Eu pretendo fazer X, porque Y.”</strong></td><td>A pessoa; o líder valida</td></tr>
+          <tr><td>5</td><td>“Fiz X. Resultado: Y.”</td><td>A pessoa; o líder é informado</td></tr>
+        </tbody></table>
+        <p>Suba cada pessoa <strong>um degrau por vez</strong>, com a técnica de devolver a pergunta: “o que você faria?”. As duas condições da autonomia: <strong>competência técnica</strong> (o processo documentado de manhã!) e <strong>clareza de propósito</strong> (o critério de qualidade do documento).</p>
+        <p class="mini-h">Blanchard e as duas falhas clássicas</p>
+        <ul>
+          <li>Autonomia se calibra por <strong>TAREFA</strong>, não por pessoa — seu melhor analista pode estar no degrau 5 em análise e no 1 em negociação.</li>
+          <li><strong>Abandono travestido de confiança:</strong> “confio em você” dito a quem ainda não formou a competência — a pessoa falha, o líder retoma tudo.</li>
+          <li><strong>Microgestão travestida de cuidado:</strong> supervisão cerrada sobre quem já domina — lida como desconfiança, gera desengajamento.</li>
+        </ul>
+        <div class="quote-mini">Manzoni &amp; Barsoux (INSEAD), a síndrome do preparado-para-falhar: o chefe percebe desempenho abaixo do esperado e aumenta o controle; o subordinado lê como desconfiança e desempenha pior; o chefe se sente confirmado e aperta mais. Em meses, ele fabricou — com as melhores intenções — o desempenho fraco que usa como prova de que “não dá para delegar”.</div>
+        <p class="mini-h">O framework dos 5 passos</p>
+        <p><strong>1. Selecionar</strong> (recorrente + documentado + risco controlado) · <strong>2. Escolher</strong> (quem tem ou desenvolve a competência, por tarefa) · <strong>3. Transferir</strong> (eu faço/você observa → juntos → você faz/eu observo → você reporta) · <strong>4. Combinar</strong> (qualidade, prazos e checagens definidos ANTES) · <strong>5. Sustentar</strong> (erro dentro do combinado é custo de desenvolvimento — retomar no primeiro erro reativa o loop de Senge, agora com a falsa prova de que delegar não funciona).</p>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 8</span> Escada da Intenção e Plano de Delegação</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> sentir a escada da autonomia na pele — e converter a sensação, em seguida, num plano de delegação datado.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Rodada de contraste em dupla: o mesmo pedido no degrau 1 e no degrau 4 — em qual seu cérebro trabalhou menos?</li><li>Plano de Delegação (Anexo B): quem, degrau atual, 4 etapas com datas, critérios, o que fazer com o tempo liberado — e a frase que quero ouvir em 60 dias.</li><li>Trio: teste de realismo — essa pessoa, nesse prazo, é real?</li></ol>
+        <div class="result"><b>O resultado</b>Plano datado: o documento eliminou a dependência do conhecimento; o plano elimina a da execução.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Quando alguém perguntar “o que eu faço?”, devolva: “o que você faria?” — um degrau por vez.</li><li>Combine critérios de qualidade ANTES de delegar; nunca cobre de surpresa depois.</li><li>Calibre a autonomia por tarefa, não por pessoa.</li><li>Erro dentro do combinado é custo de desenvolvimento — retomar no primeiro erro reativa a dependência.</li></ul></div>
+  </article>
+
+  <article class="bloco" id="b9">
+    <div class="bloco-h"><span class="n">9</span><h3>Pré-mortem, plano de 30 dias e compromisso</h3></div>
+    <div class="bloco-body"><p>O fechamento que protege todo o resto: contra a falácia do planejamento, o pré-mortem; contra a imunidade à mudança, o risco interno; contra o abismo entre saber e fazer, o compromisso público com data.</p></div>
+    <details>
+      <summary>Teoria em profundidade — Apostila 2, Cap. 3</summary>
+      <div class="det-body">
+        <p class="mini-h">A falácia do planejamento (Kahneman &amp; Tversky)</p>
+        <p>Planejamos o melhor caso — mesmo sabendo que os casos anteriores idênticos estouraram. Na delegação, a falácia tem frase de estimação: <em>“é mais rápido eu mesmo fazer”</em>. Verdadeira hoje; matematicamente falsa em qualquer horizonte acima de um mês: <strong>40 min/semana × 50 semanas = 30+ horas/ano</strong>, contra 3 horas de transferência, uma única vez.</p>
+        <p class="mini-h">O pré-mortem (Gary Klein)</p>
+        <p>Em vez de “o que pode dar errado?” (que o otimismo responde com generalidades), mude o tempo verbal: <em>“estamos 30 dias no futuro e o plano fracassou — escreva a história do fracasso”</em>. Os fracassos previsíveis já têm endereço: “retomei ‘só desta vez’ e nunca devolvi” · “a pessoa errou, fiquei com medo do cliente, voltei a fazer eu mesmo” · “o documento ficou na gaveta” · “meu gestor cobrou urgências e o plano virou ‘para depois’”. Para cada risco, uma <strong>contramedida-mecanismo</strong> — não promessa (“vou me policiar”), mecanismo (“se eu retomar, marco no mesmo dia a data de devolução”).</p>
+        <p><strong>Kegan &amp; Lahey (Harvard) — imunidade à mudança:</strong> sob cada compromisso declarado costuma existir um compromisso oculto concorrente — “se o time funcionar sem mim, deixo de ser indispensável, e ser indispensável é minha segurança”. Enquanto não nomeado, ele vence qualquer plano disfarçado de bons motivos. Por isso ao menos 1 risco do pré-mortem deve ser <strong>interno</strong>.</p>
+        <p><strong>O compromisso público:</strong> declarado a pares, com nome e data, ativa o motor de consistência mais confiável da psicologia social (Pfeffer &amp; Sutton: é assim que saber vira fazer). “Vou tentar delegar mais” evapora; “vou delegar o fechamento para a Paula até 15/08” obriga.</p>
+      </div>
+    </details>
+    <details class="atv">
+      <summary><span class="pill">Atividade 9</span> Pré-mortem + compromisso público</summary>
+      <div class="det-body">
+        <p><strong>A atividade:</strong> escrever a história do fracasso antes que ele aconteça — e declarar o compromisso em pé, diante do grupo.</p>
+        <p class="fase">A dinâmica</p>
+        <ol><li>Pré-mortem: 2 riscos (mínimo 1 interno) + contramedidas-mecanismo.</li><li>Plano de 30 dias: validar → transferir → primeira execução sem você.</li><li>Declaração individual, em pé: processo · para quem · até quando · próximo processo.</li></ol>
+        <div class="result"><b>O resultado</b>Compromisso datado e blindado — com o follow-up de 30 dias já marcado.</div>
+      </div>
+    </details>
+    <div class="apply"><h4>Como esse conhecimento pode me ajudar</h4><ul><li>Escreva hoje a frase que vai te sabotar (“é mais rápido eu mesmo fazer”) — reconhecê-la chegando é metade da defesa.</li><li>Contramedida é mecanismo, não promessa: “se eu retomar, marco no mesmo dia a data de devolução”.</li><li>Compromisso sem data evapora; com nome, data e plateia, obriga.</li></ul></div>
+  </article>
+</div>
+
+<!-- ================= EVIDÊNCIAS & BIBLIOTECA ================= -->
+<div class="panel" id="panel-evid" role="tabpanel">
+  <div class="sec-head"><h2>Trilha de evidências</h2><span class="tag">o que o programa prova, atividade a atividade</span></div>
+  <table class="trilha">
+    <thead><tr><th>Evidência produzida</th><th>Atividade</th><th>Objetivo</th></tr></thead>
+    <tbody>
+      <tr><td>Inventário da minha dependência</td><td>1</td><td>O4</td></tr>
+      <tr><td>Linha de base: % reativo da semana</td><td>2</td><td>O1 · O3</td></tr>
+      <tr><td>1 problema analisado até a causa estrutural</td><td>3</td><td>O2 · O3</td></tr>
+      <tr><td>1 processo escolhido com critérios e observado em campo</td><td>4 e 5</td><td>O5 · O4</td></tr>
+      <tr><td>1 processo documentado em 1 página e testado por colega</td><td>6 e 7</td><td>O5 · O2</td></tr>
+      <tr><td>1 plano de delegação datado</td><td>8</td><td>O2 · O4</td></tr>
+      <tr><td>1 compromisso público blindado por pré-mortem</td><td>9</td><td>consolidação</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.95rem;color:var(--gray);max-width:68ch">No follow-up de 30 dias, o Caderno preenchido responde com evidências: o processo foi validado com o time? A transferência aconteceu nas datas? Houve a primeira execução sem o líder? O % reativo começou a cair?</p>
+
+  <div class="sec-head"><h2>Biblioteca do programa</h2><span class="tag">a fundamentação, por escola</span></div>
+  <div class="lib">
+    <div><h3>Harvard</h3><ul>
+      <li><b>Oncken &amp; Wass</b> — Who's Got the Monkey? (HBR)</li>
+      <li><b>Argyris</b> — Teaching Smart People How to Learn</li>
+      <li><b>Kegan &amp; Lahey</b> — Immunity to Change</li>
+      <li><b>Edmondson</b> — segurança psicológica</li>
+      <li><b>Linda Hill</b> — Being the Boss</li>
+      <li><b>Heifetz &amp; Linsky</b> — técnico vs. adaptativo</li>
+    </ul></div>
+    <div><h3>INSEAD</h3><ul>
+      <li><b>Manzoni &amp; Barsoux</b> — Set-Up-to-Fail Syndrome</li>
+      <li><b>Herminia Ibarra</b> — Act Like a Leader</li>
+      <li><b>Kets de Vries</b> — a síndrome do salvador</li>
+    </ul></div>
+    <div><h3>MIT · Wharton · Stanford</h3><ul>
+      <li><b>Senge (MIT)</b> — A Quinta Disciplina</li>
+      <li><b>Schein (MIT)</b> — Humble Inquiry</li>
+      <li><b>Adam Grant (Wharton)</b> — Give and Take</li>
+      <li><b>Pfeffer &amp; Sutton (Stanford)</b> — Knowing-Doing Gap</li>
+    </ul></div>
+    <div><h3>Pensamento e método</h3><ul>
+      <li><b>Kahneman</b> — Rápido e Devagar</li>
+      <li><b>Snowden</b> — Cynefin (HBR 2007)</li>
+      <li><b>Ohno / Rother</b> — 5 Porquês · Toyota Kata</li>
+      <li><b>Womack &amp; Jones</b> — Lean Thinking</li>
+      <li><b>Marquet</b> — Turn the Ship Around!</li>
+      <li><b>Blanchard</b> — Liderança Situacional</li>
+    </ul></div>
+  </div>
+</div>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fq">“Cuidar de pessoas, no nível mais alto, é dar a elas estrutura para vencerem sem você por perto.”</p>
+    <p>Do Líder Cuidador ao Líder Construtor · 9 horas · 15 e 22/07/2026 · Conduzido por <strong style="color:#E8E3D9">Prof. Dr. Thiago Lima</strong> · Painel executivo — apostilas 1 e 2 + Caderno de Atividades</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var btns = document.querySelectorAll('.tab-btn');
+  var panels = { panorama:'panel-panorama', dia1:'panel-dia1', dia2:'panel-dia2', evid:'panel-evid' };
+  function show(tab){
+    btns.forEach(function(b){ b.setAttribute('aria-selected', b.dataset.tab===tab ? 'true':'false'); });
+    Object.keys(panels).forEach(function(k){
+      document.getElementById(panels[k]).classList.toggle('on', k===tab);
+    });
+    window.scrollTo({top:0});
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.tab); }); });
+  // nós da travessia: trocam de aba e rolam até o bloco
+  document.querySelectorAll('.node').forEach(function(n){
+    n.addEventListener('click', function(){
+      show(n.dataset.go);
+      var el = document.getElementById(n.dataset.id);
+      if(el){ setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
