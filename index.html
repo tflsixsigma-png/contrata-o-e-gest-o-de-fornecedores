@@ -55,6 +55,8 @@
         .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;transition:all .2s;}
         .btn-p{background:var(--blue);color:white;}.btn-p:hover{background:#2563eb;}
         .btn-g{background:var(--green);color:white;}.btn-g:hover{background:#059669;}
+        .btn-icon{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;padding:.25rem .5rem;font-size:.8rem;}
+        .btn-icon:hover{color:#60a5fa;border-color:#60a5fa;}
         .btn-danger{background:var(--red);color:white;font-size:.68rem;padding:.25rem .6rem;border-radius:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;}
 
         .sup-pill{display:flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);margin-bottom:.4rem;cursor:pointer;transition:border-color .2s;}
@@ -160,15 +162,19 @@
     </div>
     <div class="grid2" style="align-items:start;">
         <div class="card">
-            <div class="card-title">Cadastrar Categoria</div>
+            <div class="card-title" id="catFormTitle">Cadastrar Categoria</div>
             <div style="display:flex;flex-direction:column;gap:.7rem;">
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Embalagens Flexíveis, Frete Rodoviário, TI"></div>
-                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Fornecedores associados (separe por vírgula)</label><input id="sForn" class="ifield" placeholder="Ex: FlexPack, Polifilm, Embalatec"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Fornecedores associados (separe por vírgula)</label><input id="sForn" class="ifield" placeholder="Ex: FlexPack, Polifilm, Embalatec">
+                <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Podem ser acrescentados depois pelo botão ✎ na ficha da categoria.</div></div>
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Spend anual (R$) — opcional</label><input id="sSpend" class="ifield" placeholder="Ex: 48.000.000"></div>
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Valor/Impacto para o negócio (Y) 0–100</label><input id="sY" type="number" class="ifield" min="0" max="100" value="50">
                 <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Materialidade do spend, criticidade para a operação e impacto no produto final.</div></div>
                 <div style="padding:.5rem .7rem;border-radius:8px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);font-size:.64rem;color:#fbbf24;">O eixo <b>Risco/Complexidade (X)</b> não é digitado: ele migra automaticamente da <b>Avaliação de Riscos</b> desta categoria.</div>
-                <button class="btn btn-p" onclick="addSup()">+ Cadastrar Categoria</button>
+                <div style="display:flex;gap:.5rem;">
+                    <button class="btn btn-p" id="catFormBtn" style="flex:1" onclick="addSup()">+ Cadastrar Categoria</button>
+                    <button class="btn" id="catCancelBtn" style="display:none;background:var(--surface2);color:var(--muted);border:1px solid var(--border);" onclick="cancelEditSup()">Cancelar</button>
+                </div>
             </div>
         </div>
         <div class="card">
@@ -192,10 +198,9 @@
         <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
             <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#60a5fa;display:block;margin-bottom:.3rem;">Avaliando os riscos de</label>
                 <select id="rkCtxCat" class="ifield" onchange="riskCtxChange()"></select></div>
-            <div style="flex:1;min-width:220px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Fornecedor específico (opcional)</label>
-                <select id="rkCtxForn" class="ifield"><option value="">— a categoria como um todo —</option></select></div>
-            <div style="min-width:200px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Exibir no registro e na matriz</label>
-                <select id="rkView" class="ifield" onchange="renderRisks()"><option value="cat">Só a categoria selecionada</option><option value="all">Todos os riscos</option></select></div>
+            <div style="flex:1;min-width:250px;"><label style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem;">Visão do registro e do mapa</label>
+                <select id="rkView" class="ifield" onchange="renderRisks()"></select></div>
+            <div style="min-width:230px;font-size:.62rem;color:var(--muted);line-height:1.5;">A visão <b style="color:#94a3b8;">consolidada</b> soma todos os riscos da categoria — inclusive os atribuídos a fornecedores. As visões por <b style="color:#94a3b8;">fornecedor</b> isolam a exposição de cada um.</div>
         </div>
     </div>
     <div class="grid2" style="align-items:start;">
@@ -216,6 +221,7 @@
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Probabilidade (1–5)</label><select id="rkProb" class="ifield"><option value="1">1 · Rara</option><option value="2">2 · Improvável</option><option value="3" selected>3 · Possível</option><option value="4">4 · Provável</option><option value="5">5 · Quase certa</option></select></div>
                         <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Impacto (1–5)</label><select id="rkImp" class="ifield"><option value="1">1 · Insignificante</option><option value="2">2 · Menor</option><option value="3" selected>3 · Moderado</option><option value="4">4 · Maior</option><option value="5">5 · Severo</option></select></div>
                     </div>
+                    <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Atribuir este risco a</label><select id="rkAtrib" class="ifield"></select></div>
                     <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Resposta / mitigação planejada</label><input id="rkResp" class="ifield" placeholder="Ex: homologar segunda fonte e criar estoque de segurança de 30 dias"></div>
                     <button class="btn btn-p" onclick="addRisk()">+ Adicionar ao Registro</button>
                 </div>
@@ -235,6 +241,11 @@
                     <span><i class="rk-dot" style="background:#fb923c"></i> 10–15 Alto</span>
                     <span><i class="rk-dot" style="background:#f87171"></i> 16–25 Crítico</span>
                 </div>
+            </div>
+            <div class="card" style="margin-bottom:1rem;">
+                <div class="card-title">Exposição da categoria <span id="rkExpCat" class="mono" style="font-size:.62rem;color:var(--muted);font-weight:400;"></span></div>
+                <div id="riskExposure"></div>
+                <div style="margin-top:.6rem;font-size:.6rem;color:var(--muted);line-height:1.5;">Score consolidado = 0,5 × maior + 0,5 × média dos riscos do escopo. O da <b>categoria</b> alimenta o eixo X da Matriz Kraljic.</div>
             </div>
             <div class="card">
                 <div class="card-title">Referência — Tipos e Fontes de Risco</div>
@@ -571,7 +582,7 @@ function showTab(name,el){
     panel.style.display='block';panel.classList.add('active');
     if(el) el.classList.add('active');
     if(name==='categorias'){renderSupList();}
-    if(name==='riscos'){renderRisks();riskCtxSyncFromGlobal();renderRisks();}
+    if(name==='riscos'){refreshRiskCatList();riskCtxSyncFromGlobal();renderRisks();}
     if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
     if(name==='pcb'){setTimeout(()=>{try{initPCBChart();}catch(e){}pcbCtxRefresh();updatePCBForSup();},80);}
     if(name==='checklist'){renderChecklist();}
@@ -605,6 +616,51 @@ function addSup(){
     toast('Categoria cadastrada! Agora avalie os riscos dela.');refreshRiskCatList();syncKraljicX();
 }
 
+let editId=null;
+function editSup(id){
+    const s=getSup(id); if(!s)return;
+    editId=id;
+    document.getElementById('sName').value=s.name;
+    document.getElementById('sForn').value=s.forn||'';
+    document.getElementById('sSpend').value=s.spend||'';
+    document.getElementById('sY').value=s.ky;
+    document.getElementById('catFormTitle').innerText='Editar Categoria';
+    document.getElementById('catFormBtn').innerText='💾 Salvar Alterações';
+    document.getElementById('catFormBtn').setAttribute('onclick','saveSup()');
+    document.getElementById('catCancelBtn').style.display='block';
+    document.getElementById('sName').focus();
+    document.getElementById('sName').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelEditSup(){
+    editId=null;
+    ['sName','sForn','sSpend'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('sY').value=50;
+    document.getElementById('catFormTitle').innerText='Cadastrar Categoria';
+    document.getElementById('catFormBtn').innerText='+ Cadastrar Categoria';
+    document.getElementById('catFormBtn').setAttribute('onclick','addSup()');
+    document.getElementById('catCancelBtn').style.display='none';
+}
+function saveSup(){
+    const s=getSup(editId); if(!s){cancelEditSup();return;}
+    const novoNome=document.getElementById('sName').value.trim();
+    if(!novoNome){alert('Informe o nome da categoria.');return;}
+    const antigos=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
+    const novos=document.getElementById('sForn').value.split(',').map(f=>f.trim()).filter(Boolean);
+    // fornecedores removidos que ainda têm riscos registrados
+    const orfaos=antigos.filter(f=>!novos.includes(f)&&risks.some(r=>r.cat===s.name&&r.forn===f));
+    if(orfaos.length&&!confirm('Estes fornecedores saíram da lista mas têm riscos registrados:\n\n'+orfaos.join(', ')+
+        '\n\nOs riscos serão mantidos e aparecerão como “fora da lista atual”. Continuar?')) return;
+    // renomear categoria propaga para os riscos
+    if(novoNome!==s.name) risks.forEach(r=>{if(r.cat===s.name)r.cat=novoNome;});
+    s.name=novoNome;
+    s.forn=novos.join(', ');
+    s.spend=document.getElementById('sSpend').value.trim();
+    s.ky=Math.min(100,Math.max(0,+document.getElementById('sY').value));
+    syncKraljicX();
+    cancelEditSup();
+    renderSupList();updateGlobalSel();updateKChart();refreshRiskCatList();
+    toast('Categoria atualizada!');
+}
 function removeSup(id){
     suppliers=suppliers.filter(s=>s.id!==id);
     if(curId===id){curId=null;updateSupBar();}
@@ -666,6 +722,7 @@ function renderSupList(){
                 <span class="pi${clDone?' done':''}" title="Checklist">✅</span>
                 <span class="pi${gDone?' done':''}" title="Relacionamento">🤝</span>
             </div>
+            <button class="btn-icon" title="Editar categoria" onclick="event.stopPropagation();editSup('${s.id}')">✎</button>
             <button class="btn-danger" onclick="event.stopPropagation();removeSup('${s.id}')">✕</button>
         </div>`;
     }).join('');
@@ -1024,6 +1081,20 @@ function generatePDF(){
             } else {h+=`<h2>🎯 Diagnóstico PCB</h2><p style="font-size:.76rem;color:#94a3b8;font-style:italic;">Diagnóstico não realizado para esta categoria.</p>`;}
         }
 
+        const rsCat=risks.filter(r=>r.cat===s.name);
+        if(incR&&rsCat.length){
+            const cons=scoreConsolidado(rsCat);
+            h+=`<h2>⚠️ Exposição a Riscos — ${s.name}</h2>
+            <table><thead><tr><th>Escopo</th><th>Riscos</th><th>Maior score</th><th>Consolidado</th><th>Eixo X</th></tr></thead><tbody>`;
+            const todosF=[...new Set([...fornsDaCategoria(s.name),...rsCat.map(r=>r.forn).filter(Boolean)])];
+            todosF.forEach(f=>{
+                const c=scoreConsolidado(rsCat.filter(r=>r.forn===f));
+                if(c) h+=`<tr><td>${f}</td><td>${c.n}</td><td>${c.max}</td><td>${c.score.toFixed(1)}</td><td>${c.x}</td></tr>`;
+            });
+            const sf=scoreConsolidado(rsCat.filter(r=>!r.forn));
+            if(sf) h+=`<tr><td>Riscos da categoria (sem fornecedor)</td><td>${sf.n}</td><td>${sf.max}</td><td>${sf.score.toFixed(1)}</td><td>${sf.x}</td></tr>`;
+            h+=`<tr><td><b>Consolidado da categoria</b></td><td><b>${cons.n}</b></td><td><b>${cons.max}</b></td><td><b>${cons.score.toFixed(1)}</b></td><td><b>${cons.x}</b></td></tr></tbody></table>`;
+        }
         if(incT&&s.tax&&s.tax.length){
             h+=`<h2>🗂 Estratégias e Alavancas Selecionadas (Purchasing Chessboard)</h2>`;
             TAX_ESTRAT.forEach(est=>{
@@ -1131,13 +1202,8 @@ function renderTaxonomia(){
 // ================================================================
 function syncKraljicX(){
     suppliers.forEach(s=>{
-        const rs=risks.filter(r=>r.cat===s.name);
-        if(rs.length){
-            const scores=rs.map(r=>r.p*r.i);
-            const mx=Math.max(...scores);
-            const med=scores.reduce((a,b)=>a+b,0)/scores.length;
-            s.kx=Math.round(((0.5*mx+0.5*med)/25)*100);
-        }
+        const c=scoreConsolidado(risks.filter(r=>r.cat===s.name));
+        if(c) s.kx=c.x;
         s.kquad=kQuad(s.kx,s.ky).n;
     });
 }
@@ -1196,27 +1262,49 @@ function refreshRiskCatList(){
  if([...sel.options].some(o=>o.value===v)) sel.value=v;
  refreshRiskFornList();
 }
+function fornsDaCategoria(nome){
+ const s=suppliers.find(o=>o.name===nome);
+ return s&&s.forn?s.forn.split(',').map(f=>f.trim()).filter(Boolean):[];
+}
 function refreshRiskFornList(){
- const cat=document.getElementById('rkCtxCat'), sel=document.getElementById('rkCtxForn');
- if(!cat||!sel)return;
- const v=sel.value;
- const s=suppliers.find(o=>o.name===cat.value);
- const forns=s&&s.forn?s.forn.split(',').map(f=>f.trim()).filter(Boolean):[];
- sel.innerHTML='<option value="">— a categoria como um todo —</option>'+forns.map(f=>`<option value="${f}">${f}</option>`).join('');
- if([...sel.options].some(o=>o.value===v)) sel.value=v;
+ const cat=document.getElementById('rkCtxCat');
+ const view=document.getElementById('rkView'), atrib=document.getElementById('rkAtrib');
+ if(!cat)return;
+ const forns=fornsDaCategoria(cat.value);
+ if(view){
+  const v=view.value;
+  const extrasV=[...new Set(risks.filter(r=>r.cat===cat.value&&r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
+  view.innerHTML='<option value="__all">Consolidado da categoria (todos os riscos)</option>'
+   +forns.map(f=>`<option value="f:${f}">Somente ${f}</option>`).join('')
+   +extrasV.map(f=>`<option value="f:${f}">Somente ${f} (fora da lista)</option>`).join('')
+   +'<option value="__cat">Somente riscos da categoria (sem fornecedor)</option>';
+  view.value=[...view.options].some(o=>o.value===v)?v:'__all';
+ }
+ if(atrib){
+  const a=atrib.value;
+  const extras=[...new Set(risks.filter(r=>r.cat===cat.value&&r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
+  atrib.innerHTML='<option value="">A categoria como um todo</option>'
+   +forns.map(f=>`<option value="${f}">${f}</option>`).join('')
+   +extras.map(f=>`<option value="${f}">${f} (fora da lista)</option>`).join('');
+  // se a visão está em um fornecedor, o formulário acompanha
+  const vv=view?view.value:'__all';
+  if(vv.indexOf('f:')===0) atrib.value=vv.slice(2);
+  else if([...atrib.options].some(o=>o.value===a)) atrib.value=a;
+ }
 }
 function riskCtxChange(){
- refreshRiskFornList();
  const cat=document.getElementById('rkCtxCat').value;
  const s=suppliers.find(o=>o.name===cat);
  if(s&&curId!==s.id){curId=s.id;document.getElementById('globalSel').value=s.id;updateSupBar();}
+ const view=document.getElementById('rkView'); if(view) view.value='__all';
+ refreshRiskFornList();
  renderRisks();
 }
 function riskCtxSyncFromGlobal(){
  const sel=document.getElementById('rkCtxCat');
  if(!sel)return;
  const s=cur();
- sel.value=s?s.name:'';
+ if(s&&[...sel.options].some(o=>o.value===s.name)) sel.value=s.name;
  refreshRiskFornList();
 }
 function addRisk(){
@@ -1227,7 +1315,7 @@ function addRisk(){
   tipo:document.getElementById('rkTipo').value,
   persp:document.getElementById('rkPersp').value,
   cat:document.getElementById('rkCtxCat').value,
-  forn:document.getElementById('rkCtxForn').value,
+  forn:document.getElementById('rkAtrib')?document.getElementById('rkAtrib').value:'',
   p:+document.getElementById('rkProb').value,
   i:+document.getElementById('rkImp').value,
   resp:document.getElementById('rkResp').value.trim()
@@ -1237,18 +1325,66 @@ function addRisk(){
 }
 function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKraljicX();}
 function riskFiltered(){
- const view=document.getElementById('rkView');
+ const view=document.getElementById('rkView'), cat=document.getElementById('rkCtxCat');
+ if(!view||!cat) return risks;
+ const daCat=risks.filter(r=>r.cat===cat.value);
+ const v=view.value;
+ if(v==='__cat') return daCat.filter(r=>!r.forn);
+ if(v.indexOf('f:')===0) return daCat.filter(r=>r.forn===v.slice(2));
+ return daCat;
+}
+function scoreConsolidado(lista){
+ if(!lista.length)return null;
+ const sc=lista.map(r=>r.p*r.i);
+ const mx=Math.max(...sc), med=sc.reduce((a,b)=>a+b,0)/sc.length;
+ return {score:0.5*mx+0.5*med, x:Math.round(((0.5*mx+0.5*med)/25)*100), max:mx, n:lista.length};
+}
+function renderExposure(){
+ const el=document.getElementById('riskExposure'); if(!el)return;
  const cat=document.getElementById('rkCtxCat');
- if(view&&cat&&view.value==='cat') return risks.filter(r=>r.cat===cat.value);
- return risks;
+ const nome=cat?cat.value:'';
+ const lbl=document.getElementById('rkExpCat');
+ if(lbl) lbl.innerText=nome?'· '+nome:'';
+ if(!nome){el.innerHTML='<div class="empty"><div class="empty-icon">📦</div><p>Selecione uma categoria.</p></div>';return;}
+ const daCat=risks.filter(r=>r.cat===nome);
+ const linhas=[];
+ fornsDaCategoria(nome).forEach(f=>{
+  const c=scoreConsolidado(daCat.filter(r=>r.forn===f));
+  linhas.push({n:f,tipo:'forn',c});
+ });
+ const listados=fornsDaCategoria(nome);
+ const foraDaLista=[...new Set(daCat.map(r=>r.forn).filter(f=>f&&!listados.includes(f)))];
+ foraDaLista.forEach(f=>{
+  linhas.push({n:f+' (fora da lista atual)',tipo:'forn',c:scoreConsolidado(daCat.filter(r=>r.forn===f))});
+ });
+ const semForn=daCat.filter(r=>!r.forn);
+ if(semForn.length) linhas.push({n:'Riscos da categoria (sem fornecedor)',tipo:'cat',c:scoreConsolidado(semForn)});
+ const cons=scoreConsolidado(daCat);
+ let h='<table class="data" style="font-size:.7rem;margin-top:0"><thead><tr><th>Escopo</th><th class="num">Riscos</th><th class="num">Maior</th><th class="num">Consolidado</th><th class="num">→ X</th></tr></thead><tbody>';
+ linhas.forEach(l=>{
+  const sv=l.c?sevInfo(l.c.max):null;
+  h+=`<tr><td>${l.tipo==='forn'?'🏭 ':'📦 '}${l.n}</td>
+   <td class="num">${l.c?l.c.n:'—'}</td>
+   <td class="num">${l.c?`<span style="color:${sv.c}">${l.c.max}</span>`:'—'}</td>
+   <td class="num">${l.c?l.c.score.toFixed(1).replace('.',','):'—'}</td>
+   <td class="num">${l.c?l.c.x:'—'}</td></tr>`;
+ });
+ h+=`<tr class="total"><td>Consolidado da categoria</td><td class="num">${cons?cons.n:0}</td>
+  <td class="num">${cons?cons.max:'—'}</td><td class="num">${cons?cons.score.toFixed(1).replace('.',','):'—'}</td>
+  <td class="num"><b style="color:#60a5fa">${cons?cons.x:50}</b></td></tr></tbody></table>`;
+ if(!daCat.length) h='<div class="empty" style="padding:1rem"><div class="empty-icon">⚠️</div><p>Nenhum risco registrado nesta categoria.</p></div>';
+ el.innerHTML=h;
 }
 function renderRisks(){
  initRiskUI();
  const el=document.getElementById('riskList'); if(!el)return;
  const lista=riskFiltered();
- const filtrado=lista.length!==risks.length;
- document.getElementById('rkCount').innerText=risks.length?`· ${lista.length}${filtrado?' de '+risks.length:''} exibido(s)`:'';
- if(!lista.length){el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>'+(risks.length?'Nenhum risco neste filtro — troque para “Todos os riscos”.':'Nenhum risco registrado ainda.')+'</p></div>';}
+ const cat=document.getElementById('rkCtxCat'), view=document.getElementById('rkView');
+ const nomeCat=cat?cat.value:'';
+ const daCat=risks.filter(r=>r.cat===nomeCat).length;
+ const escopo=view?(view.value==='__all'?'consolidado':view.value==='__cat'?'sem fornecedor':view.value.slice(2)):'';
+ document.getElementById('rkCount').innerText=nomeCat?`· ${lista.length} no escopo “${escopo}” · ${daCat} na categoria · ${risks.length} no total`:`· ${risks.length} no total`;
+ if(!lista.length){el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>'+(daCat?'Nenhum risco neste escopo — a categoria tem '+daCat+' risco(s) em outros escopos.':'Nenhum risco registrado nesta categoria ainda.')+'</p></div>';}
  else{
   const ord=[...lista].sort((a,b)=>(b.p*b.i)-(a.p*a.i));
   el.innerHTML=ord.map(r=>{
@@ -1264,6 +1400,7 @@ function renderRisks(){
   }).join('');
  }
  renderRiskMatrix();
+ renderExposure();
 }
 function renderRiskMatrix(){
  const el=document.getElementById('riskMatrix'); if(!el)return;
