@@ -164,7 +164,8 @@
         <div class="card">
             <div class="card-title" id="catFormTitle">Cadastrar Categoria</div>
             <div style="display:flex;flex-direction:column;gap:.7rem;">
-                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Embalagens Flexíveis, Frete Rodoviário, TI"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Nome *</label><input id="sName" class="ifield" placeholder="Ex: Embalagens Flexíveis, Frete Rodoviário, TI" oninput="checkDupName()">
+                <div id="dupHint" style="display:none;font-size:.63rem;margin-top:.3rem;padding:.4rem .6rem;border-radius:6px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);color:#60a5fa;"></div></div>
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Fornecedores associados (separe por vírgula)</label><input id="sForn" class="ifield" placeholder="Ex: FlexPack, Polifilm, Embalatec">
                 <div style="font-size:.61rem;color:var(--muted);margin-top:.2rem;">Podem ser acrescentados depois pelo botão ✎ na ficha da categoria.</div></div>
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Spend anual (R$) — opcional</label><input id="sSpend" class="ifield" placeholder="Ex: 48.000.000"></div>
@@ -178,9 +179,18 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-title">Categorias Cadastradas</div>
+            <div class="card-title">Categorias Cadastradas <span class="mono" style="font-size:.6rem;color:var(--muted);font-weight:400;">· clique para selecionar</span></div>
             <div id="supList"><div class="empty"><div class="empty-icon">📋</div><p>Nenhuma categoria ainda.</p></div></div>
         </div>
+    </div>
+    <div class="card" id="fornPanel" style="display:none;margin-top:1rem;">
+        <div class="card-title">Fornecedores da categoria <span id="fornCatName" style="color:#60a5fa;"></span></div>
+        <p style="font-size:.68rem;color:var(--muted);margin-bottom:.7rem;">Acrescente quantos fornecedores a categoria tiver. Cada um pode receber riscos e um diagnóstico de poder próprios.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem;">
+            <input id="fornNovo" class="ifield" style="flex:1;min-width:240px;" placeholder="Nome do fornecedor — ou vários separados por vírgula" onkeydown="if(event.key==='Enter')addForn()">
+            <button class="btn btn-p" onclick="addForn()" style="white-space:nowrap;">+ Adicionar fornecedor</button>
+        </div>
+        <div id="fornList"></div>
     </div>
 </div>
 
@@ -581,7 +591,7 @@ function showTab(name,el){
     const panel=document.getElementById('tab-'+name);
     panel.style.display='block';panel.classList.add('active');
     if(el) el.classList.add('active');
-    if(name==='categorias'){renderSupList();}
+    if(name==='categorias'){renderSupList();renderFornPanel();}
     if(name==='riscos'){refreshRiskCatList();riskCtxSyncFromGlobal();renderRisks();}
     if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
     if(name==='pcb'){setTimeout(()=>{try{initPCBChart();}catch(e){}pcbCtxRefresh();updatePCBForSup();},80);}
@@ -597,6 +607,25 @@ function showTab(name,el){
 function addSup(){
     const name=document.getElementById('sName').value.trim();
     if(!name){alert('Informe o nome da categoria.');return;}
+    const dup=suppliers.find(o=>o.name.trim().toLowerCase()===name.toLowerCase());
+    if(dup){
+        const novosF=document.getElementById('sForn').value.split(',').map(f=>f.trim()).filter(Boolean);
+        const atuaisF=(dup.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
+        const acrescentar=novosF.filter(f=>!atuaisF.some(a=>a.toLowerCase()===f.toLowerCase()));
+        if(acrescentar.length){
+            dup.forn=atuaisF.concat(acrescentar).join(', ');
+            const sp=document.getElementById('sSpend').value.trim(); if(sp) dup.spend=sp;
+            ['sName','sForn','sSpend'].forEach(i=>document.getElementById(i).value='');
+            document.getElementById('sY').value=50;
+            curId=dup.id;
+            checkDupName();
+            renderSupList();renderFornPanel();updateGlobalSel();updateKChart();refreshRiskCatList();
+            toast(acrescentar.length>1?acrescentar.length+' fornecedores acrescentados a '+dup.name+'!':'“'+acrescentar[0]+'” acrescentado a '+dup.name+'!');
+        } else {
+            alert('Estes fornecedores já estão na categoria “'+dup.name+'”: '+novosF.join(', '));
+        }
+        return;
+    }
     const kx=50;
     const ky=Math.min(100,Math.max(0,+document.getElementById('sY').value));
     const q=kQuad(kx,ky);
@@ -613,9 +642,83 @@ function addSup(){
     ['sName','sForn','sSpend'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('sY').value=50;
     renderSupList(); updateGlobalSel(); updateKChart(); selectSup(s.id);
-    toast('Categoria cadastrada! Agora avalie os riscos dela.');refreshRiskCatList();syncKraljicX();
+    renderFornPanel();toast('Categoria cadastrada! Agora acrescente os fornecedores dela abaixo.');refreshRiskCatList();syncKraljicX();
 }
 
+function addForn(){
+    const s=cur();
+    if(!s){alert('Selecione uma categoria na lista ao lado.');return;}
+    const inp=document.getElementById('fornNovo');
+    const novos=inp.value.split(',').map(f=>f.trim()).filter(Boolean);
+    if(!novos.length){alert('Informe o nome do fornecedor.');return;}
+    const atuais=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
+    const add=[],dup=[];
+    novos.forEach(f=>{
+        if(atuais.some(a=>a.toLowerCase()===f.toLowerCase())||add.some(a=>a.toLowerCase()===f.toLowerCase())) dup.push(f);
+        else add.push(f);
+    });
+    if(!add.length){alert('Já cadastrado(s) nesta categoria: '+dup.join(', '));return;}
+    s.forn=atuais.concat(add).join(', ');
+    inp.value='';
+    renderSupList();renderFornPanel();updateGlobalSel();refreshRiskCatList();
+    toast(add.length>1?add.length+' fornecedores adicionados!':'Fornecedor “'+add[0]+'” adicionado!');
+}
+function removeForn(nome){
+    const s=cur(); if(!s)return;
+    const comRisco=riscosDaCategoria(s).filter(r=>r.forn===nome).length;
+    const temPCB=s.pcbForn&&s.pcbForn[nome];
+    let aviso='Remover “'+nome+'” da categoria '+s.name+'?';
+    if(comRisco||temPCB){
+        aviso+='\n\nAtenção: ';
+        if(comRisco) aviso+='ele tem '+comRisco+' risco(s) registrado(s), que serão mantidos e aparecerão como “fora da lista atual”. ';
+        if(temPCB) aviso+='O diagnóstico de poder dele também será mantido.';
+    }
+    if(!confirm(aviso))return;
+    s.forn=(s.forn||'').split(',').map(f=>f.trim()).filter(f=>f&&f!==nome).join(', ');
+    renderSupList();renderFornPanel();updateGlobalSel();refreshRiskCatList();
+    toast('Fornecedor removido da lista.');
+}
+function renderFornPanel(){
+    const painel=document.getElementById('fornPanel'); if(!painel)return;
+    const s=cur();
+    if(!s){painel.style.display='none';return;}
+    painel.style.display='block';
+    document.getElementById('fornCatName').innerText=s.name;
+    const forns=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
+    const el=document.getElementById('fornList');
+    if(!forns.length){
+        el.innerHTML='<div class="empty" style="padding:1.2rem"><div class="empty-icon">👥</div><p>Nenhum fornecedor nesta categoria ainda.</p></div>';
+        return;
+    }
+    el.innerHTML='<table class="data" style="font-size:.72rem;margin-top:0"><thead><tr><th style="width:40%">Fornecedor</th><th class="num" style="width:12%">Riscos</th><th class="num" style="width:14%">Maior score</th><th style="width:26%">Diagnóstico PCB</th><th class="num" style="width:8%"></th></tr></thead><tbody>'
+    +forns.map(f=>{
+        const rs=riscosDaCategoria(s).filter(r=>r.forn===f);
+        const c=scoreConsolidado(rs);
+        const sv=c?sevInfo(c.max):null;
+        const pcb=s.pcbForn&&s.pcbForn[f]?s.pcbForn[f].quad:'—';
+        return `<tr><td><b>🏭 ${f}</b></td>
+            <td class="num">${rs.length||'—'}</td>
+            <td class="num">${c?`<span style="color:${sv.c}">${c.max}</span>`:'—'}</td>
+            <td style="font-size:.68rem;color:var(--muted)">${pcb}</td>
+            <td class="num"><button class="btn-danger" onclick="removeForn('${f.replace(/'/g,"\\'")}')">✕</button></td></tr>`;
+    }).join('')+'</tbody></table>';
+}
+function checkDupName(){
+    if(editId)return;
+    const nome=document.getElementById('sName').value.trim();
+    const hint=document.getElementById('dupHint'), btn=document.getElementById('catFormBtn');
+    const dup=nome?suppliers.find(o=>o.name.trim().toLowerCase()===nome.toLowerCase()):null;
+    if(dup){
+        const n=(dup.forn||'').split(',').map(f=>f.trim()).filter(Boolean).length;
+        hint.style.display='block';
+        hint.innerHTML='A categoria <b>'+dup.name+'</b> já existe'+(n?' com '+n+' fornecedor(es)':'')+
+            '. Os fornecedores que você digitar abaixo serão <b>acrescentados a ela</b>.';
+        btn.innerText='+ Acrescentar a '+dup.name;
+    }else{
+        hint.style.display='none';
+        btn.innerText='+ Cadastrar Categoria';
+    }
+}
 let editId=null;
 function editSup(id){
     const s=getSup(id); if(!s)return;
@@ -639,11 +742,15 @@ function cancelEditSup(){
     document.getElementById('catFormBtn').innerText='+ Cadastrar Categoria';
     document.getElementById('catFormBtn').setAttribute('onclick','addSup()');
     document.getElementById('catCancelBtn').style.display='none';
+    document.getElementById('dupHint').style.display='none';
 }
 function saveSup(){
     const s=getSup(editId); if(!s){cancelEditSup();return;}
     const novoNome=document.getElementById('sName').value.trim();
     if(!novoNome){alert('Informe o nome da categoria.');return;}
+    if(suppliers.some(o=>o.id!==editId&&o.name.trim().toLowerCase()===novoNome.toLowerCase())){
+        alert('Já existe outra categoria chamada “'+novoNome+'”. Escolha um nome diferente.');return;
+    }
     const antigos=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
     const novos=document.getElementById('sForn').value.split(',').map(f=>f.trim()).filter(Boolean);
     // fornecedores removidos que ainda têm riscos registrados
@@ -651,7 +758,7 @@ function saveSup(){
     if(orfaos.length&&!confirm('Estes fornecedores saíram da lista mas têm riscos registrados:\n\n'+orfaos.join(', ')+
         '\n\nOs riscos serão mantidos e aparecerão como “fora da lista atual”. Continuar?')) return;
     // renomear categoria propaga para os riscos
-    if(novoNome!==s.name) risks.forEach(r=>{if(r.cat===s.name)r.cat=novoNome;});
+    if(novoNome!==s.name) risks.forEach(r=>{if((r.catId&&r.catId===s.id)||r.cat===s.name)r.cat=novoNome;});
     s.name=novoNome;
     s.forn=novos.join(', ');
     s.spend=document.getElementById('sSpend').value.trim();
@@ -671,6 +778,7 @@ function selectSup(id){
     curId=id||null;
     document.getElementById('globalSel').value=id||'';
     updateSupBar(); updatePCBForSup(); renderChecklist(); renderGestao();
+    renderSupList(); renderFornPanel();
 }
 
 function updateSupBar(){
@@ -697,7 +805,8 @@ function updateGlobalSel(){
     sel.innerHTML='<option value="">— Cadastre na aba Categorias —</option>';
     suppliers.forEach(s=>{
         const o=document.createElement('option');
-        o.value=s.id;o.textContent=s.name+' ('+kQuad(s.kx,s.ky).n+')';
+        const nF=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean).length;
+        o.value=s.id;o.textContent=s.name+(nF?' · '+nF+' forn.':'')+' ('+kQuad(s.kx,s.ky).n+')';
         sel.appendChild(o);
     });
     if(cur_val) sel.value=cur_val;
@@ -1031,7 +1140,7 @@ function generatePDF(){
         <table><thead><tr><th>Ameaça</th><th>Tipo</th><th>Perspectiva</th><th>Categoria</th><th>Fornecedor</th><th>P</th><th>I</th><th>Score</th><th>Mitigação</th></tr></thead><tbody>`;
         [...risks].sort((a,b)=>(b.p*b.i)-(a.p*a.i)).forEach(r=>{
             const sc=r.p*r.i,sv=sevInfo(sc);
-            h+=`<tr><td>${r.desc}</td><td>${r.tipo}</td><td>${r.persp}</td><td>${r.cat||'—'}</td><td>${r.forn||'—'}</td><td>${r.p}</td><td>${r.i}</td><td><b style="color:${sv.c}">${sc} · ${sv.l}</b></td><td>${r.resp||'—'}</td></tr>`;
+            h+=`<tr><td>${r.desc}</td><td>${r.tipo}</td><td>${r.persp}</td><td>${(r.catId&&getSup(r.catId)?getSup(r.catId).name:r.cat)||'—'}</td><td>${r.forn||'—'}</td><td>${r.p}</td><td>${r.i}</td><td><b style="color:${sv.c}">${sc} · ${sv.l}</b></td><td>${r.resp||'—'}</td></tr>`;
         });
         h+=`</tbody></table>`;
     }
@@ -1081,7 +1190,7 @@ function generatePDF(){
             } else {h+=`<h2>🎯 Diagnóstico PCB</h2><p style="font-size:.76rem;color:#94a3b8;font-style:italic;">Diagnóstico não realizado para esta categoria.</p>`;}
         }
 
-        const rsCat=risks.filter(r=>r.cat===s.name);
+        const rsCat=riscosDaCategoria(s);
         if(incR&&rsCat.length){
             const cons=scoreConsolidado(rsCat);
             h+=`<h2>⚠️ Exposição a Riscos — ${s.name}</h2>
@@ -1202,7 +1311,7 @@ function renderTaxonomia(){
 // ================================================================
 function syncKraljicX(){
     suppliers.forEach(s=>{
-        const c=scoreConsolidado(risks.filter(r=>r.cat===s.name));
+        const c=scoreConsolidado(riscosDaCategoria(s));
         if(c) s.kx=c.x;
         s.kquad=kQuad(s.kx,s.ky).n;
     });
@@ -1262,6 +1371,14 @@ function refreshRiskCatList(){
  if([...sel.options].some(o=>o.value===v)) sel.value=v;
  refreshRiskFornList();
 }
+function riscosDaCategoria(s){
+ if(!s)return [];
+ return risks.filter(r=>r.catId?r.catId===s.id:r.cat===s.name);
+}
+function catAtualRisco(){
+ const sel=document.getElementById('rkCtxCat');
+ return sel?suppliers.find(o=>o.name===sel.value):null;
+}
 function fornsDaCategoria(nome){
  const s=suppliers.find(o=>o.name===nome);
  return s&&s.forn?s.forn.split(',').map(f=>f.trim()).filter(Boolean):[];
@@ -1273,7 +1390,7 @@ function refreshRiskFornList(){
  const forns=fornsDaCategoria(cat.value);
  if(view){
   const v=view.value;
-  const extrasV=[...new Set(risks.filter(r=>r.cat===cat.value&&r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
+  const extrasV=[...new Set(riscosDaCategoria(catAtualRisco()).filter(r=>r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
   view.innerHTML='<option value="__all">Consolidado da categoria (todos os riscos)</option>'
    +forns.map(f=>`<option value="f:${f}">Somente ${f}</option>`).join('')
    +extrasV.map(f=>`<option value="f:${f}">Somente ${f} (fora da lista)</option>`).join('')
@@ -1282,7 +1399,7 @@ function refreshRiskFornList(){
  }
  if(atrib){
   const a=atrib.value;
-  const extras=[...new Set(risks.filter(r=>r.cat===cat.value&&r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
+  const extras=[...new Set(riscosDaCategoria(catAtualRisco()).filter(r=>r.forn&&!forns.includes(r.forn)).map(r=>r.forn))];
   atrib.innerHTML='<option value="">A categoria como um todo</option>'
    +forns.map(f=>`<option value="${f}">${f}</option>`).join('')
    +extras.map(f=>`<option value="${f}">${f} (fora da lista)</option>`).join('');
@@ -1314,6 +1431,7 @@ function addRisk(){
   id:Date.now()+'',desc:d,
   tipo:document.getElementById('rkTipo').value,
   persp:document.getElementById('rkPersp').value,
+  catId:(suppliers.find(o=>o.name===document.getElementById('rkCtxCat').value)||{}).id||'',
   cat:document.getElementById('rkCtxCat').value,
   forn:document.getElementById('rkAtrib')?document.getElementById('rkAtrib').value:'',
   p:+document.getElementById('rkProb').value,
@@ -1327,7 +1445,7 @@ function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKralj
 function riskFiltered(){
  const view=document.getElementById('rkView'), cat=document.getElementById('rkCtxCat');
  if(!view||!cat) return risks;
- const daCat=risks.filter(r=>r.cat===cat.value);
+ const daCat=riscosDaCategoria(catAtualRisco());
  const v=view.value;
  if(v==='__cat') return daCat.filter(r=>!r.forn);
  if(v.indexOf('f:')===0) return daCat.filter(r=>r.forn===v.slice(2));
@@ -1346,7 +1464,7 @@ function renderExposure(){
  const lbl=document.getElementById('rkExpCat');
  if(lbl) lbl.innerText=nome?'· '+nome:'';
  if(!nome){el.innerHTML='<div class="empty"><div class="empty-icon">📦</div><p>Selecione uma categoria.</p></div>';return;}
- const daCat=risks.filter(r=>r.cat===nome);
+ const daCat=riscosDaCategoria(catAtualRisco());
  const linhas=[];
  fornsDaCategoria(nome).forEach(f=>{
   const c=scoreConsolidado(daCat.filter(r=>r.forn===f));
@@ -1381,7 +1499,7 @@ function renderRisks(){
  const lista=riskFiltered();
  const cat=document.getElementById('rkCtxCat'), view=document.getElementById('rkView');
  const nomeCat=cat?cat.value:'';
- const daCat=risks.filter(r=>r.cat===nomeCat).length;
+ const daCat=riscosDaCategoria(catAtualRisco()).length;
  const escopo=view?(view.value==='__all'?'consolidado':view.value==='__cat'?'sem fornecedor':view.value.slice(2)):'';
  document.getElementById('rkCount').innerText=nomeCat?`· ${lista.length} no escopo “${escopo}” · ${daCat} na categoria · ${risks.length} no total`:`· ${risks.length} no total`;
  if(!lista.length){el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>'+(daCat?'Nenhum risco neste escopo — a categoria tem '+daCat+' risco(s) em outros escopos.':'Nenhum risco registrado nesta categoria ainda.')+'</p></div>';}
@@ -1393,7 +1511,7 @@ function renderRisks(){
     <span class="badge" style="background:${sv.c}22;color:${sv.c};border:1px solid ${sv.c}55;white-space:nowrap;">${sc} · ${sv.l}</span>
     <div style="flex:1;min-width:0;">
      <div style="font-size:.76rem;font-weight:700;">${r.desc}</div>
-     <div style="font-size:.62rem;color:var(--muted);margin-top:.15rem;">${r.tipo} · ${r.persp}${r.cat?' · 📦 '+r.cat:''}${r.forn?' · 🏭 '+r.forn:''} · P${r.p} × I${r.i}</div>
+     <div style="font-size:.62rem;color:var(--muted);margin-top:.15rem;">${r.tipo} · ${r.persp}${r.catId&&getSup(r.catId)?' · 📦 '+getSup(r.catId).name:(r.cat?' · 📦 '+r.cat:'')}${r.forn?' · 🏭 '+r.forn:''} · P${r.p} × I${r.i}</div>
      ${r.resp?`<div style="font-size:.64rem;color:#94a3b8;margin-top:.2rem;">🛡 ${r.resp}</div>`:''}
     </div>
     <button class="btn-danger" onclick="removeRisk('${r.id}')">✕</button></div>`;
