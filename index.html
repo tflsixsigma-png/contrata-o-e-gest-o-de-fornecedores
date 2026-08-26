@@ -55,6 +55,8 @@
         .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;transition:all .2s;}
         .btn-p{background:var(--blue);color:white;}.btn-p:hover{background:#2563eb;}
         .btn-g{background:var(--green);color:white;}.btn-g:hover{background:#059669;}
+        .btn-file{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;padding:.3rem .7rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;}
+        .btn-file:hover{color:#60a5fa;border-color:#60a5fa;}
         .btn-icon{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;padding:.25rem .5rem;font-size:.8rem;}
         .btn-icon:hover{color:#60a5fa;border-color:#60a5fa;}
         .btn-danger{background:var(--red);color:white;font-size:.68rem;padding:.25rem .6rem;border-radius:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;}
@@ -113,7 +115,13 @@
         <div class="nav-title">⬡ Purchasing Chessboard Dashboard</div>
         <div class="nav-sub">Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</div>
     </div>
-    <div class="mono" style="font-size:.62rem;color:var(--muted);">Kraljic · Kearney · 64 Métodos</div>
+    <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn-file" onclick="exportarDados()" title="Baixar um arquivo com toda a análise">&#8681; Salvar arquivo</button>
+        <label class="btn-file" style="cursor:pointer;" title="Abrir uma análise salva">&#8679; Abrir arquivo
+            <input type="file" accept=".json,application/json" style="display:none" onchange="importarDados(this)"></label>
+        <span id="saveState" class="mono" style="font-size:.58rem;color:var(--muted);"></span>
+        <div class="mono" style="font-size:.62rem;color:var(--muted);">Kraljic · Kearney · v2.4</div>
+      </div>
 </nav>
 
 <!-- SUPPLIER SELECTOR BAR -->
@@ -642,7 +650,7 @@ function addSup(){
     ['sName','sForn','sSpend'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('sY').value=50;
     renderSupList(); updateGlobalSel(); updateKChart(); selectSup(s.id);
-    renderFornPanel();toast('Categoria cadastrada! Agora acrescente os fornecedores dela abaixo.');refreshRiskCatList();syncKraljicX();
+    renderFornPanel();toast('Categoria cadastrada! Agora acrescente os fornecedores dela abaixo.');agendarSalvamento();refreshRiskCatList();syncKraljicX();
 }
 
 function addForn(){
@@ -661,7 +669,7 @@ function addForn(){
     s.forn=atuais.concat(add).join(', ');
     inp.value='';
     renderSupList();renderFornPanel();updateGlobalSel();refreshRiskCatList();
-    toast(add.length>1?add.length+' fornecedores adicionados!':'Fornecedor “'+add[0]+'” adicionado!');
+    toast(add.length>1?add.length+' fornecedores adicionados!':'Fornecedor “'+add[0]+'” adicionado!');agendarSalvamento();
 }
 function removeForn(nome){
     const s=cur(); if(!s)return;
@@ -676,12 +684,19 @@ function removeForn(nome){
     if(!confirm(aviso))return;
     s.forn=(s.forn||'').split(',').map(f=>f.trim()).filter(f=>f&&f!==nome).join(', ');
     renderSupList();renderFornPanel();updateGlobalSel();refreshRiskCatList();
-    toast('Fornecedor removido da lista.');
+    toast('Fornecedor removido da lista.');agendarSalvamento();
 }
 function renderFornPanel(){
     const painel=document.getElementById('fornPanel'); if(!painel)return;
     const s=cur();
-    if(!s){painel.style.display='none';return;}
+    if(!s){
+        painel.style.display=suppliers.length?'block':'none';
+        if(suppliers.length){
+            document.getElementById('fornCatName').innerText='—';
+            document.getElementById('fornList').innerHTML='<div class="empty" style="padding:1.2rem"><div class="empty-icon">👆</div><p>Selecione uma categoria na lista acima para gerenciar os fornecedores dela.</p></div>';
+        }
+        return;
+    }
     painel.style.display='block';
     document.getElementById('fornCatName').innerText=s.name;
     const forns=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
@@ -718,6 +733,76 @@ function checkDupName(){
         hint.style.display='none';
         btn.innerText='+ Cadastrar Categoria';
     }
+}
+/* ---------- persistência ---------- */
+const STORE_KEY='pcb_dashboard_v1';
+let saveTimer=null;
+function estadoAtual(){
+    return {v:1, salvoEm:new Date().toISOString(), suppliers:suppliers, risks:risks, curId:curId};
+}
+function salvarLocal(){
+    try{
+        localStorage.setItem(STORE_KEY, JSON.stringify(estadoAtual()));
+        marcarSalvo('salvo automaticamente');
+    }catch(e){
+        marcarSalvo('use “Salvar arquivo”');
+    }
+}
+function agendarSalvamento(){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(salvarLocal, 600);
+}
+function marcarSalvo(txt){
+    const el=document.getElementById('saveState');
+    if(el){
+        const n=suppliers.length, r=risks.length;
+        el.innerText=(n||r)?`${n} categoria(s) · ${r} risco(s) · ${txt}`:'';
+    }
+}
+function carregarLocal(){
+    try{
+        const raw=localStorage.getItem(STORE_KEY);
+        if(!raw)return false;
+        const d=JSON.parse(raw);
+        if(!d||!Array.isArray(d.suppliers))return false;
+        aplicarEstado(d);
+        return true;
+    }catch(e){return false;}
+}
+function aplicarEstado(d){
+    suppliers=(d.suppliers||[]).map(s=>Object.assign({
+        checklist:{}, scores:[5,5,5,5,5,5], kx:50, ky:50, pcbX:50, pcbY:50, tax:[]
+    }, s));
+    risks=d.risks||[];
+    curId=d.curId&&suppliers.some(s=>s.id===d.curId)?d.curId:(suppliers[0]?suppliers[0].id:null);
+    syncKraljicX();
+    updateGlobalSel();
+    if(curId) document.getElementById('globalSel').value=curId;
+    updateSupBar(); renderSupList(); renderFornPanel(); renderRisks();
+    try{updateKChart();}catch(e){}
+}
+function exportarDados(){
+    const blob=new Blob([JSON.stringify(estadoAtual(),null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='analise-categorias-'+new Date().toISOString().slice(0,10)+'.json';
+    a.click(); URL.revokeObjectURL(a.href);
+    toast('Arquivo salvo! Guarde-o para retomar depois.');
+}
+function importarDados(input){
+    const f=input.files&&input.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+        try{
+            const d=JSON.parse(r.result);
+            if(!d||!Array.isArray(d.suppliers))throw new Error('formato');
+            if(suppliers.length&&!confirm('Isso vai substituir a análise atual ('+suppliers.length+' categoria(s)). Continuar?'))return;
+            aplicarEstado(d); salvarLocal();
+            toast('Análise carregada: '+suppliers.length+' categoria(s), '+risks.length+' risco(s).');
+        }catch(e){alert('Arquivo inválido. Selecione um .json salvo pela própria plataforma.');}
+        input.value='';
+    };
+    r.readAsText(f);
 }
 let editId=null;
 function editSup(id){
@@ -766,7 +851,7 @@ function saveSup(){
     syncKraljicX();
     cancelEditSup();
     renderSupList();updateGlobalSel();updateKChart();refreshRiskCatList();
-    toast('Categoria atualizada!');
+    toast('Categoria atualizada!');agendarSalvamento();
 }
 function removeSup(id){
     suppliers=suppliers.filter(s=>s.id!==id);
@@ -958,7 +1043,7 @@ function updatePCB(){
     }
 }
 
-function savePCB(){
+function savePCB(){agendarSalvamento();
     const s=cur();if(!s)return;
     const forn=document.getElementById('pcbCtxForn').value;
     const px=+document.getElementById('pcbX').value,py=+document.getElementById('pcbY').value;
@@ -968,9 +1053,9 @@ function savePCB(){
         toast('Diagnóstico de '+forn+' salvo!');
     }else{
         s.pcbX=px;s.pcbY=py;s.pcbQuad=pcbQuad(px,py).n;
-        toast('Diagnóstico da categoria salvo!');
+        toast('Diagnóstico da categoria salvo!');agendarSalvamento();
     }
-    updateSupBar();renderSupList();updatePCB();
+    updateSupBar();renderSupList();updatePCB();agendarSalvamento();
 }
 
 // ================================================================
@@ -1075,7 +1160,7 @@ function calcGestao(){
     else{radarChart=new Chart(radarEl.getContext('2d'),{type:'radar',data:rd,options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:10,ticks:{color:'#64748b',stepSize:2,backdropColor:'transparent'},grid:{color:'#1e2d45'},pointLabels:{color:'#94a3b8',font:{size:9}}}},plugins:{legend:{labels:{color:'#94a3b8'}}}}});}
 }
 
-function saveGestao(){const s=cur();if(!s)return;toast('Avaliação salva!');updateSupBar();renderSupList();}
+function saveGestao(){agendarSalvamento();const s=cur();if(!s)return;toast('Avaliação salva!');agendarSalvamento();updateSupBar();renderSupList();}
 
 // ================================================================
 // REPORT
@@ -1260,7 +1345,7 @@ const TAX_ESTRAT=[
  {t:'III. Mudar Natureza',cor:'#f87171',estilo:'background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);',tag:'Fornecedor forte — o valor vem de quebrar a dependência por inovação e re-especificação.'},
  {t:'IV. Vantagem Conjunta',cor:'#c084fc',estilo:'background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);',tag:'Alto poder mútuo — o valor vem da colaboração estruturada de longo prazo.'}
 ];
-function toggleTax(code){
+function toggleTax(code){agendarSalvamento();
     const s=cur(); if(!s)return;
     if(!s.tax)s.tax=[];
     const i=s.tax.indexOf(code);
@@ -1439,9 +1524,9 @@ function addRisk(){
   resp:document.getElementById('rkResp').value.trim()
  });
  document.getElementById('rkDesc').value='';document.getElementById('rkResp').value='';
- renderRisks(); syncKraljicX(); toast(document.getElementById('rkCtxCat').value?'Risco registrado — eixo X da categoria atualizado.':'Risco geral registrado!');
+ renderRisks(); syncKraljicX(); agendarSalvamento(); toast(document.getElementById('rkCtxCat').value?'Risco registrado — eixo X da categoria atualizado.':'Risco geral registrado!');
 }
-function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKraljicX();}
+function removeRisk(id){risks=risks.filter(r=>r.id!==id);renderRisks();syncKraljicX();agendarSalvamento();}
 function riskFiltered(){
  const view=document.getElementById('rkView'), cat=document.getElementById('rkCtxCat');
  if(!view||!cat) return risks;
@@ -1540,8 +1625,12 @@ function renderRiskMatrix(){
 // INIT
 // ================================================================
 window.addEventListener('load',()=>{
+    const restaurado=carregarLocal();
     renderSupList();
+    renderFornPanel();
     renderRisks();
+    marcarSalvo(restaurado?'sessão restaurada':'');
+    if(restaurado) setTimeout(()=>toast('Análise anterior restaurada — '+suppliers.length+' categoria(s).'),400);
 });
 </script>
 </body>
