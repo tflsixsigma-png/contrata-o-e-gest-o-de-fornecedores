@@ -153,6 +153,7 @@
     <div class="tab-div"></div>
     <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
     <div class="tab-div"></div>
+    <a class="tab tab-link" id="tabCanvas" href="canvas-strategic-sourcing.html" title="Canvas Strategic Sourcing"><span class="tl-dot"></span>Canvas</a>
     <a class="tab tab-link" href="central-inteligencia.html" title="Ferramenta: análise de mercado da sua categoria com Market Intelligence Report"><span class="tl-dot"></span>Inteligência de Mercado</a>
     <a class="tab tab-link" href="laboratorio-encontro2.html" title="Atividade em grupo — caso Aurora Alimentos"><span class="tl-dot"></span>Laboratório</a>
 </div>
@@ -687,6 +688,7 @@ function removeForn(nome){
     toast('Fornecedor removido da lista.');agendarSalvamento();
 }
 function renderFornPanel(){
+    atualizarLinkCanvas();
     const painel=document.getElementById('fornPanel'); if(!painel)return;
     const s=cur();
     if(!s){
@@ -866,7 +868,21 @@ function selectSup(id){
     renderSupList(); renderFornPanel();
 }
 
+function atualizarLinkCanvas(){
+    const a=document.getElementById('tabCanvas'); if(!a)return;
+    const s=cur();
+    if(!s){a.href='canvas-strategic-sourcing.html';a.title='Canvas Strategic Sourcing';return;}
+    const forns=(s.forn||'').split(',').map(f=>f.trim()).filter(Boolean);
+    const q=new URLSearchParams();
+    q.set('cat',s.name);
+    if(s.spend) q.set('spend',s.spend);
+    if(forns.length){q.set('nforn',forns.length);q.set('forn',forns.join(', '));}
+    q.set('quad',kQuad(s.kx,s.ky).n);
+    a.href='canvas-strategic-sourcing.html?'+q.toString();
+    a.title='Canvas de '+s.name+' \u2014 campos iniciais j\u00e1 preenchidos';
+}
 function updateSupBar(){
+    atualizarLinkCanvas();
     const s=cur();
     document.getElementById('gBadgeK').innerHTML='';
     document.getElementById('gBadgePCB').innerHTML='';
@@ -1629,6 +1645,7 @@ window.addEventListener('load',()=>{
     renderSupList();
     renderFornPanel();
     renderRisks();
+    atualizarLinkCanvas();
     marcarSalvo(restaurado?'sessão restaurada':'');
     if(restaurado) setTimeout(()=>toast('Análise anterior restaurada — '+suppliers.length+' categoria(s).'),400);
 });
