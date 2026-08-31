@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANVAS Strategic Sourcing | Prof. Dr. Thiago Lima</title>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F5EF; --paper:#FFFFFF; --ink:#1C1F26; --mut:#5F5C55; --soft:#8B877D;
+  --line:#D9D4C6; --gold:#9A7A2F; --goldbg:#EFEBE0; --dark:#14171D;
+  --c1:#FFFFFF; --c2:#FBF3DF; --c3:#E6EEF7; --c4:#F7E5DA; --c5:#EDEBE6;
+  --c6:#ECECEC; --c7:#E7EFE1; --c8:#FBF5B7; --c9:#EDEBE6; --c10:#DCF2F3;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.55;}
+
+/* ---------- topo ---------- */
+.top{background:var(--dark);color:#fff;padding:.85rem 1.6rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+.top .brand{font-family:Marcellus,serif;font-size:1.02rem;letter-spacing:.01em;}
+.top .sub{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#9AA0AB;margin-top:.1rem;}
+.top .sp{flex:1;}
+.tbtn{background:transparent;border:1px solid #3A414D;color:#D8D4CA;border-radius:7px;padding:.36rem .8rem;cursor:pointer;
+      font-family:'IBM Plex Mono',monospace;font-size:.61rem;letter-spacing:.09em;text-transform:uppercase;transition:.18s;}
+.tbtn:hover{border-color:#C9A961;color:#E9D6A4;}
+.tbtn.pri{background:#C9A961;border-color:#C9A961;color:#14171D;font-weight:600;}
+.tbtn.pri:hover{background:#E9D6A4;}
+a.tbtn{text-decoration:none;display:inline-block;}
+.st{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:#8B919C;letter-spacing:.06em;}
+
+/* ---------- cabeçalho do canvas ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:1.3rem 1.6rem 3rem;}
+h1{font-family:Marcellus,serif;font-size:1.62rem;letter-spacing:.005em;margin-bottom:.15rem;}
+.lead{font-size:.86rem;color:var(--mut);max-width:900px;margin-bottom:1.1rem;}
+.hdr{display:flex;gap:.9rem;flex-wrap:wrap;border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:.7rem .9rem;margin-bottom:.9rem;}
+.hdr>div{flex:1;min-width:190px;}
+
+/* ---------- grade ---------- */
+.canvas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;align-items:start;}
+.col{display:flex;flex-direction:column;gap:.75rem;}
+.blk{border:1px solid var(--line);border-radius:9px;padding:.75rem .85rem;background:var(--paper);}
+.blk h2{font-family:Marcellus,serif;font-size:.95rem;font-weight:400;letter-spacing:.005em;display:flex;align-items:baseline;gap:.45rem;margin-bottom:.15rem;}
+.blk .hint{font-size:.68rem;color:var(--soft);margin-bottom:.5rem;font-style:italic;}
+.sec{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin:.6rem 0 .28rem;}
+.sec:first-of-type{margin-top:.25rem;}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:.57rem;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);margin-bottom:.15rem;display:block;}
+
+/* ---------- campos ---------- */
+.f{border:1px solid var(--line);background:#FCFBF7;border-radius:6px;padding:.34rem .5rem;font-family:Georgia,serif;font-size:.79rem;
+   color:var(--ink);min-height:1.75rem;outline:none;line-height:1.5;margin-bottom:.4rem;white-space:pre-wrap;word-break:break-word;}
+.f:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 2px rgba(154,122,47,.1);}
+.f.big{min-height:3.4rem;}
+.f:empty:before{content:attr(data-ph);color:#A9A599;font-style:italic;}
+.row{display:flex;gap:.4rem;}
+.row>div{flex:1;}
+.opt{display:flex;align-items:flex-start;gap:.42rem;font-size:.79rem;margin-bottom:.24rem;cursor:pointer;}
+.opt input{margin-top:.28rem;accent-color:var(--gold);flex-shrink:0;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 .7rem;}
+.crit{display:flex;align-items:center;gap:.4rem;margin-bottom:.22rem;}
+.crit .opt{flex:1;margin:0;}
+.pw{width:54px;flex-shrink:0;border:1px solid var(--line);background:#FCFBF7;border-radius:6px;padding:.16rem .25rem;
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;text-align:center;outline:none;color:var(--ink);}
+.pw:focus{border-color:var(--gold);background:#fff;}
+.cf{flex:1;border:1px solid var(--line);background:#FCFBF7;border-radius:6px;padding:.16rem .4rem;
+    font-family:Georgia,serif;font-size:.76rem;outline:none;color:var(--ink);min-width:0;}
+.cf:focus{border-color:var(--gold);background:#fff;}
+.soma{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.06em;color:var(--mut);text-align:right;margin:.15rem 0 .1rem;}
+
+/* ---------- termo de especificação ---------- */
+.spec{border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin-bottom:.15rem;}
+.spec .sh{background:#E4E1D8;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+          text-transform:uppercase;padding:.3rem;border-bottom:1px solid var(--ink);}
+.spec .sr{display:grid;grid-template-columns:96px 1fr;border-bottom:1px solid var(--line);}
+.spec .sr:last-child{border-bottom:none;}
+.spec .sk{background:#F1EEE6;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;
+          padding:.4rem .45rem;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;color:var(--ink);}
+.spec .sk small{font-family:Georgia,serif;font-size:.58rem;font-style:italic;color:var(--soft);text-transform:none;letter-spacing:0;line-height:1.3;}
+.spec .sv{padding:.34rem .5rem;font-size:.79rem;outline:none;min-height:1.9rem;line-height:1.45;white-space:pre-wrap;word-break:break-word;}
+.spec .sv:focus{background:#FFFDF6;box-shadow:inset 0 0 0 2px rgba(154,122,47,.12);}
+.spec .sv:empty:before{content:attr(data-ph);color:#A9A599;font-style:italic;}
+
+/* ---------- barra de progresso ---------- */
+.prog{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;}
+.pbar{flex:1;height:5px;background:var(--goldbg);border-radius:99px;overflow:hidden;}
+.pfill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+.ptxt{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.08em;color:var(--mut);white-space:nowrap;}
+
+/* ---------- tons por bloco ---------- */
+#b1{background:var(--c1);} #b2{background:var(--c2);} #b3{background:var(--c3);} #b4{background:var(--c4);}
+#b5{background:var(--c5);} #b6{background:var(--c6);} #b7{background:var(--c7);} #b8{background:var(--c8);}
+#b9{background:var(--c9);} #b10{background:var(--c10);}
+
+.foot{margin-top:1.4rem;font-size:.72rem;color:var(--soft);border-top:1px solid var(--line);padding-top:.7rem;}
+
+@media (max-width:1080px){ .canvas{grid-template-columns:1fr;} }
+
+/* ---------- impressão ---------- */
+@media print{
+  @page{size:A3 landscape;margin:7mm;}
+  .top,.prog,.lead,.foot,.noprint{display:none!important;}
+  body{background:#fff;line-height:1.32;}
+  .wrap{max-width:none;padding:0;}
+  h1{font-size:13.5pt;margin-bottom:.25rem;}
+  .canvas{gap:4px;}
+  .col{gap:4px;}
+  .blk{padding:4px 6px;border-color:#999;page-break-inside:avoid;break-inside:avoid;}
+  .blk h2{font-size:9pt;margin-bottom:3px;} .blk .hint{display:none;}
+  .f,.spec .sv{font-size:7.6pt;min-height:17px;background:#fff;border-color:#BBB;margin-bottom:2px;padding:1px 4px;}
+  .f.big{min-height:30px;}
+  .f:empty:before,.spec .sv:empty:before{content:'';}
+  .sec{font-size:6.2pt;margin:5px 0 1px;} .lbl{font-size:6pt;margin:3px 0 1px;}
+  .opt{font-size:7.6pt;margin-bottom:0;gap:.3rem;} .opt input{margin-top:.18rem;}
+  .spec .sh{font-size:6.2pt;padding:2px;}
+  .spec .sk{font-size:6.2pt;padding:1px 4px;} .spec .sk small{display:none;}
+  .spec .sr{grid-template-columns:74px 1fr;}
+  .hdr{padding:3px 6px;margin-bottom:4px;gap:.5rem;}
+  .row{gap:.3rem;}
+  .crit{margin-bottom:0;gap:.25rem;}
+  .pw{width:34px;font-size:6.8pt;padding:0 2px;}
+  .cf{font-size:7.4pt;padding:0 3px;}
+  .soma{font-size:6pt;margin:1px 0;}
+}
+</style>
+</head>
+<body>
+
+<div class="top noprint">
+  <div>
+    <div class="brand">CANVAS Strategic Sourcing</div>
+    <div class="sub">Compras estratégicas · Prof. Dr. Thiago Lima</div>
+  </div>
+  <div class="sp"></div>
+  <span class="st" id="saveState"></span>
+  <button class="tbtn" onclick="salvarArquivo()">↓ Salvar arquivo</button>
+  <label class="tbtn" style="margin:0;">↑ Abrir arquivo<input type="file" accept=".json" onchange="abrirArquivo(this)" style="display:none;"></label>
+  <button class="tbtn" onclick="limpar()">Limpar</button>
+  <button class="tbtn pri" onclick="window.print()">🖨 Imprimir A3</button>
+  <a class="tbtn" href="index.html">⬡ Dashboard</a>
+  <a class="tbtn" href="central-inteligencia.html">Inteligência de Mercado</a>
+  <a class="tbtn" href="laboratorio-encontro2.html">Laboratório</a>
+</div>
+
+<div class="wrap">
+  <h1>CANVAS Strategic Sourcing — Compras Estratégicas</h1>
+  <div id="fromDash" style="display:none;margin-bottom:.9rem;padding:.6rem .9rem;border-radius:8px;background:var(--goldbg);border:1px solid var(--line);border-left:3px solid var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.06em;color:var(--gold);">Campos iniciais preenchidos com a categoria vinda do Dashboard — confira e complete.</div>
+  <p class="lead">Preencha os dez blocos com o que você sabe sobre a categoria. Não é preciso trazer planilha nem dado exato: onde faltar número, escreva a sua melhor estimativa e marque como estimativa. O canvas é salvo automaticamente neste navegador.</p>
+
+  <div class="prog noprint">
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+    <span class="ptxt" id="ptxt">0% preenchido</span>
+  </div>
+
+  <div class="hdr">
+    <div><span class="lbl">Nome do projeto</span><div class="f" contenteditable data-k="projeto" data-ph="Ex.: Renegociação de filme flexível 2026"></div></div>
+    <div><span class="lbl">Categoria</span><div class="f" contenteditable data-k="categoria" data-ph="Ex.: Filme BOPP"></div></div>
+    <div><span class="lbl">Grupo / responsáveis</span><div class="f" contenteditable data-k="grupo" data-ph="Nomes"></div></div>
+    <div style="max-width:130px;"><span class="lbl">Data</span><div class="f" contenteditable data-k="data" data-ph="__/__/____"></div></div>
+  </div>
+
+  <div class="canvas">
+
+    <!-- ================= COLUNA 1 ================= -->
+    <div class="col">
+
+      <div class="blk" id="b2">
+        <h2>Dados gerais — spend analysis</h2>
+        <div class="hint">O retrato do que a empresa compra e de quem compra.</div>
+
+        <div class="sec">Categoria</div>
+        <span class="lbl">Volume de compras nos últimos 12 meses</span>
+        <div class="f" contenteditable data-k="b2_vol" data-ph="R$ ou unidades"></div>
+        <div class="row">
+          <div><span class="lbl">Vigência do contrato atual</span><div class="f" contenteditable data-k="b2_vig" data-ph="De __ a __"></div></div>
+          <div><span class="lbl">Frequência de compras</span><div class="f" contenteditable data-k="b2_freq" data-ph="Mensal, spot…"></div></div>
+        </div>
+        <span class="lbl">Previsão de compras nos próximos 12 meses</span>
+        <div class="f" contenteditable data-k="b2_prev" data-ph="Volume e valor esperados"></div>
+        <span class="lbl">Processo de contratação usado hoje</span>
+        <div class="f" contenteditable data-k="b2_proc" data-ph="Ex.: cotação por e-mail, RFQ formal, contrato guarda-chuva"></div>
+
+        <div class="sec">Fornecedores atuais ou passados</div>
+        <span class="lbl">Quantos foram contratados nos últimos 12 meses</span>
+        <div class="f" contenteditable data-k="b2_qtd" data-ph="Número"></div>
+        <span class="lbl">Três principais (classificação ABC)</span>
+        <div class="f big" contenteditable data-k="b2_abc" data-ph="A: … / B: … / C: …"></div>
+
+        <div class="sec">Visão do mercado</div>
+        <span class="lbl">Quanto representamos no faturamento do fornecedor</span>
+        <div class="f" contenteditable data-k="b2_rep" data-ph="% estimado — e como você chegou nele"></div>
+        <span class="lbl">O quão estratégica nossa empresa é para ele</span>
+        <div class="f" contenteditable data-k="b2_estrat" data-ph="Somos vitrine, volume, aprendizado, ou apenas mais um cliente?"></div>
+        <span class="lbl">Quem tem maior poder de barganha</span>
+        <div class="f" contenteditable data-k="b2_barg" data-ph="Nós, ele, ou equilíbrio — e por quê"></div>
+        <span class="lbl">Existem produtos substitutos</span>
+        <div class="f" contenteditable data-k="b2_subs" data-ph="Quais, e o que impede a troca hoje"></div>
+      </div>
+
+      <div class="blk" id="b3">
+        <h2>Contrato atual</h2>
+        <div class="hint">O que já está assinado — e como vem se comportando.</div>
+        <span class="lbl">Qual a vigência</span>
+        <div class="f" contenteditable data-k="b3_vig" data-ph="Início, término e renovação automática?"></div>
+        <span class="lbl">Vem sofrendo reajustes</span>
+        <div class="f big" contenteditable data-k="b3_reaj" data-ph="Quantos, de quanto, com qual indexador ou justificativa"></div>
+        <span class="lbl">Os clientes internos estão satisfeitos</span>
+        <div class="f big" contenteditable data-k="b3_sat" data-ph="O que eles reclamam — e o que elogiam"></div>
+      </div>
+
+      <div class="blk" id="b4">
+        <h2>Indicadores e qualidade</h2>
+        <div class="hint">Como o desempenho é medido hoje.</div>
+        <span class="lbl">Principais SLA acordados</span>
+        <div class="f big" contenteditable data-k="b4_sla" data-ph="Ex.: OTIF 95%, prazo de resposta 24h"></div>
+        <span class="lbl">Performance atual do fornecedor</span>
+        <div class="f big" contenteditable data-k="b4_perf" data-ph="O que ele entrega de fato contra o acordado"></div>
+        <span class="lbl">% de defeitos e atrasos</span>
+        <div class="f" contenteditable data-k="b4_def" data-ph="Número ou estimativa"></div>
+      </div>
+
+      <div class="blk" id="b5">
+        <h2>Posição no portfólio</h2>
+        <div class="hint">Onde a categoria está na Matriz Kraljic.</div>
+        <label class="opt"><input type="radio" name="pos" data-k="b5_pos" value="Alavancável (A)"><span><b>Alavancável (A)</b> — alto impacto, baixo risco</span></label>
+        <label class="opt"><input type="radio" name="pos" data-k="b5_pos" value="Não crítico (NC)"><span><b>Não crítico (NC)</b> — baixo impacto, baixo risco</span></label>
+        <label class="opt"><input type="radio" name="pos" data-k="b5_pos" value="Crítico / Estratégico (E)"><span><b>Crítico / Estratégico (E)</b> — alto impacto, alto risco</span></label>
+        <label class="opt"><input type="radio" name="pos" data-k="b5_pos" value="Gargalo (G)"><span><b>Gargalo (G)</b> — baixo impacto, alto risco</span></label>
+        <span class="lbl" style="margin-top:.45rem;">Por quê — em uma frase defensável</span>
+        <div class="f big" contenteditable data-k="b5_just" data-ph="O que sustenta esse posicionamento"></div>
+      </div>
+
+    </div>
+
+    <!-- ================= COLUNA 2 ================= -->
+    <div class="col">
+
+      <div class="blk" id="b1">
+        <h2>Dados de especificação</h2>
+        <div class="hint">O termo de especificação responde o que se compra, antes de discutir de quem.</div>
+        <div class="row" style="margin-bottom:.4rem;">
+          <div><span class="lbl">Data</span><div class="f" contenteditable data-k="b1_data" data-ph="__/__/____"></div></div>
+          <div style="flex:2;"><span class="lbl">Item a ser adquirido</span><div class="f" contenteditable data-k="b1_item" data-ph="Descrição curta do item ou serviço"></div></div>
+        </div>
+        <div class="spec">
+          <div class="sh">Termo de especificação</div>
+          <div class="sr"><div class="sk">What<small>o que estamos comprando?</small></div><div class="sv" contenteditable data-k="b1_what" data-ph="Especificação técnica, norma, grau"></div></div>
+          <div class="sr"><div class="sk">Why<small>por que estamos adquirindo?</small></div><div class="sv" contenteditable data-k="b1_why" data-ph="Necessidade que origina a compra"></div></div>
+          <div class="sr"><div class="sk">Where<small>onde deve ser entregue?</small></div><div class="sv" contenteditable data-k="b1_where" data-ph="Plantas, CDs, incoterm"></div></div>
+          <div class="sr"><div class="sk">When<small>quando deve ser entregue?</small></div><div class="sv" contenteditable data-k="b1_when" data-ph="Prazo, janela, lead time aceitável"></div></div>
+          <div class="sr"><div class="sk">Who<small>quem precisa do produto?</small></div><div class="sv" contenteditable data-k="b1_who" data-ph="Área e usuário final"></div></div>
+          <div class="sr"><div class="sk">How much<small>quantos são necessários?</small></div><div class="sv" contenteditable data-k="b1_howmuch" data-ph="Quantidade e periodicidade"></div></div>
+          <div class="sr"><div class="sk">Budget<small>recursos disponíveis</small></div><div class="sv" contenteditable data-k="b1_budget" data-ph="Verba aprovada e centro de custo"></div></div>
+          <div class="sr"><div class="sk">Stakeholder<small>interessados na compra</small></div><div class="sv" contenteditable data-k="b1_stake" data-ph="Quem especifica, quem usa, quem aprova"></div></div>
+        </div>
+      </div>
+
+      <div class="blk" id="b10">
+        <h2>Estratégia de contratação</h2>
+        <div class="hint">A decisão que fecha o canvas — marque as alavancas e defina o desenho do acordo.</div>
+        <div class="sec">Alavancas</div>
+        <div class="two">
+          <label class="opt"><input type="checkbox" data-k="b10_competicao"><span>Promover competição</span></label>
+          <label class="opt"><input type="checkbox" data-k="b10_parcerias"><span>Fomentar parcerias</span></label>
+          <label class="opt"><input type="checkbox" data-k="b10_automatizar"><span>Automatizar</span></label>
+          <label class="opt"><input type="checkbox" data-k="b10_escala"><span>Explorar escala</span></label>
+          <label class="opt"><input type="checkbox" data-k="b10_unico"><span>Fornecedor único</span></label>
+          <label class="opt"><input type="checkbox" data-k="b10_multiplo"><span>Fornecedor múltiplo</span></label>
+        </div>
+        <div class="sec">Desenho do acordo</div>
+        <div class="row">
+          <div><span class="lbl">Prazo do novo acordo</span><div class="f" contenteditable data-k="b10_prazo" data-ph="Ex.: 24 meses"></div></div>
+          <div><span class="lbl">Spot ou longo prazo</span><div class="f" contenteditable data-k="b10_spot" data-ph="E por quê"></div></div>
+        </div>
+        <span class="lbl">Transacional ou por performance</span>
+        <div class="f" contenteditable data-k="b10_perf" data-ph="Como o fornecedor será remunerado"></div>
+        <span class="lbl">SLA a serem incluídos</span>
+        <div class="f big" contenteditable data-k="b10_sla" data-ph="Métrica, meta, frequência de medição e consequência"></div>
+        <span class="lbl">Racional da estratégia</span>
+        <div class="f big" contenteditable data-k="b10_racional" data-ph="Por que esta é a estratégia certa para a posição escolhida no bloco 5"></div>
+      </div>
+
+    </div>
+
+    <!-- ================= COLUNA 3 ================= -->
+    <div class="col">
+
+      <div class="blk" id="b6">
+        <h2>Riscos, compliance e sustentabilidade</h2>
+        <div class="hint">O que pode dar errado e o que a empresa é obrigada a garantir.</div>
+        <div class="sec">Riscos</div>
+        <span class="lbl">Principais riscos operacionais e naturais identificados</span>
+        <div class="f big" contenteditable data-k="b6_riscos" data-ph="Ruptura, qualidade, preço, geopolítico, climático…"></div>
+        <span class="lbl">Estratégia de mitigação</span>
+        <div class="f big" contenteditable data-k="b6_mit" data-ph="O que reduz probabilidade e o que reduz impacto"></div>
+        <div class="sec">Compliance e transparência</div>
+        <span class="lbl">Compliance do fornecedor e dos fornecedores dele</span>
+        <div class="f" contenteditable data-k="b6_comp" data-ph="Certificações, auditorias, tier 2 conhecido?"></div>
+        <span class="lbl">Grau de transparência</span>
+        <div class="f" contenteditable data-k="b6_transp" data-ph="Abre custo? Compartilha capacidade e roadmap?"></div>
+        <div class="sec">Práticas sustentáveis</div>
+        <span class="lbl">O fornecedor pratica e divulga ações sustentáveis</span>
+        <div class="f" contenteditable data-k="b6_sust" data-ph="Quais, e são auditáveis?"></div>
+      </div>
+
+      <div class="blk" id="b7">
+        <h2>Inovações e tendências</h2>
+        <div class="hint">O que muda esta categoria nos próximos anos.</div>
+        <span class="lbl">Ciclo de vida do produto</span>
+        <div class="f" contenteditable data-k="b7_ciclo" data-ph="Nascente, maduro ou em declínio?"></div>
+        <span class="lbl">Inovações tecnológicas</span>
+        <div class="f big" contenteditable data-k="b7_inov" data-ph="O que pode tornar a especificação atual obsoleta"></div>
+        <span class="lbl">Potenciais entrantes</span>
+        <div class="f" contenteditable data-k="b7_entr" data-ph="Quem poderia entrar neste mercado e ampliar sua oferta"></div>
+      </div>
+
+      <div class="blk" id="b8">
+        <h2>Feedback da última negociação</h2>
+        <div class="hint">O que já foi tentado — e o que aprendemos.</div>
+        <span class="lbl">Quantidade de fornecedores participantes</span>
+        <div class="f" contenteditable data-k="b8_qtd" data-ph="Quantos foram convidados e quantos responderam"></div>
+        <span class="lbl">Duração do processo</span>
+        <div class="f" contenteditable data-k="b8_dur" data-ph="Do início ao contrato assinado"></div>
+        <span class="lbl">Abordagem de seleção adotada</span>
+        <div class="f big" contenteditable data-k="b8_abord" data-ph="Como se decidiu — e o que você faria diferente"></div>
+      </div>
+
+      <div class="blk" id="b9">
+        <h2>Critério de seleção a adotar</h2>
+        <div class="hint">Marque os critérios e defina os pesos antes de abrir qualquer proposta.</div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_preco"><span>Preço</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_preco" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_custo"><span>Custo total (TCO)</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_custo" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_tec"><span>Capacidade técnica</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_tec" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_qual"><span>Histórico de qualidade</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_qual" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_fin"><span>Saúde financeira</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_fin" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_entr"><span>Entrega e confiabilidade</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_entr" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_esg"><span>Compliance e ESG</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_esg" placeholder="%"></div>
+        <div class="crit"><label class="opt"><input type="checkbox" data-k="b9_c_inov"><span>Inovação e P&amp;D</span></label><input class="pw" type="number" min="0" max="100" data-k="b9_p_inov" placeholder="%"></div>
+        <div class="crit"><label class="opt" style="flex:0 0 auto;"><input type="checkbox" data-k="b9_c_outro"></label><input class="cf" type="text" data-k="b9_n_outro" placeholder="Outro critério — descreva"><input class="pw" type="number" min="0" max="100" data-k="b9_p_outro" placeholder="%"></div>
+        <div class="soma" id="somaPesos">soma dos pesos: —</div>
+        <span class="lbl">Modalidade de julgamento</span>
+        <div class="f" contenteditable data-k="b9_modal" data-ph="Ex.: menor preço, técnica e preço, maior desconto sobre tabela"></div>
+        <span class="lbl">BATNA e ZOPA</span>
+        <div class="f big" contenteditable data-k="b9_batna" data-ph="Nossa melhor alternativa se não houver acordo, e a faixa em que o acordo é possível"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="foot noprint">
+    Ferramenta didática do curso Gestão Estratégica de Compras e Suprimentos · Prof. Dr. Thiago Fernandes Lima ·
+    Os dados ficam apenas neste navegador. Use “Salvar arquivo” para guardar ou entregar o canvas.
+  </div>
+</div>
+
+<script>
+const KEY='canvas_ss_v1';
+let timer=null;
+
+function campos(){return document.querySelectorAll('[data-k]');}
+
+function estado(){
+  const d={};
+  campos().forEach(el=>{
+    const k=el.dataset.k;
+    if(el.type==='checkbox'){d[k]=el.checked;}
+    else if(el.type==='radio'){if(el.checked)d[k]=el.value;}
+    else if(el.tagName==='INPUT'){d[k]=el.value.trim();}
+    else{d[k]=el.innerText.trim();}
+  });
+  return {v:1, salvoEm:new Date().toISOString(), dados:d};
+}
+
+function aplicar(d){
+  campos().forEach(el=>{
+    const k=el.dataset.k;
+    if(el.type==='checkbox'){el.checked=!!d[k];}
+    else if(el.type==='radio'){el.checked=(d[k]===el.value);}
+    else if(el.tagName==='INPUT'){el.value=d[k]||'';}
+    else{el.innerText=d[k]||'';}
+  });
+  progresso();
+}
+
+function salvar(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(estado()));
+    marcar('salvo automaticamente');
+  }catch(e){marcar('use “Salvar arquivo”');}
+}
+function agendar(){clearTimeout(timer);timer=setTimeout(salvar,500);progresso();somaPesos();}
+
+function somaPesos(){
+  const el=document.getElementById('somaPesos'); if(!el)return;
+  let t=0,n=0;
+  document.querySelectorAll('.pw').forEach(i=>{const v=parseFloat(i.value); if(!isNaN(v)){t+=v;n++;}});
+  if(!n){el.innerText='soma dos pesos: —';el.style.color='var(--mut)';return;}
+  el.innerText='soma dos pesos: '+Math.round(t)+'%';
+  el.style.color=Math.abs(t-100)>0.5?'#B4432E':'var(--gold)';
+}
+function marcar(t){const el=document.getElementById('saveState');if(el)el.innerText=t;}
+
+function carregar(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(!raw)return false;
+    const d=JSON.parse(raw);
+    if(!d||!d.dados)return false;
+    aplicar(d.dados);
+    marcar('recuperado deste navegador');
+    return true;
+  }catch(e){return false;}
+}
+
+function progresso(){
+  const els=[...campos()];
+  const radios=els.filter(e=>e.type==='radio');
+  const outros=els.filter(e=>e.type!=='radio');
+  const total=outros.length+(radios.length?1:0);
+  let ok=outros.filter(e=>e.type==='checkbox'?e.checked:(e.tagName==='INPUT'?e.value.trim().length>0:e.innerText.trim().length>0)).length;
+  if(radios.length&&radios.some(r=>r.checked))ok++;
+  const pct=Math.round(ok/total*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ptxt').innerText=pct+'% preenchido · '+ok+' de '+total+' campos';
+}
+
+function salvarArquivo(){
+  const st=estado();
+  const nome=(st.dados.projeto||st.dados.categoria||'canvas').replace(/[^\wÀ-ú\- ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
+  const blob=new Blob([JSON.stringify(st,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='canvas-sourcing-'+(nome||'sem-nome')+'.json';
+  a.click();URL.revokeObjectURL(a.href);
+  marcar('arquivo gerado');
+}
+
+function abrirArquivo(input){
+  const f=input.files&&input.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!d||!d.dados)throw new Error('formato');
+      aplicar(d.dados); salvar();
+      marcar('arquivo carregado');
+    }catch(e){alert('Arquivo inválido. Selecione um .json salvo por esta própria ferramenta.');}
+    input.value='';
+  };
+  r.readAsText(f);
+}
+
+function limpar(){
+  if(!confirm('Isso apaga tudo o que foi preenchido neste canvas. Continuar?'))return;
+  campos().forEach(el=>{
+    if(el.type==='checkbox'||el.type==='radio')el.checked=false;
+    else if(el.tagName==='INPUT')el.value='';
+    else el.innerText='';
+  });
+  salvar(); progresso();
+  marcar('canvas limpo');
+}
+
+/* colar sempre como texto simples, para não trazer formatação do Word */
+document.addEventListener('paste',e=>{
+  const el=e.target;
+  if(el&&el.isContentEditable){
+    e.preventDefault();
+    const t=(e.clipboardData||window.clipboardData).getData('text/plain');
+    document.execCommand('insertText',false,t);
+  }
+});
+
+campos().forEach(el=>{
+  if(el.type==='checkbox'||el.type==='radio')el.addEventListener('change',agendar);
+  else el.addEventListener('input',agendar);
+});
+
+
+/* ---------- pre-preenchimento vindo do Dashboard ---------- */
+function prefillDaURL(){
+  const q=new URLSearchParams(location.search);
+  if(![...q.keys()].length) return false;
+  const set=(k,v)=>{
+    if(!v) return;
+    const el=document.querySelector('[data-k="'+k+'"]');
+    if(!el) return;
+    const vazio = el.tagName==='INPUT' ? !el.value.trim() : !el.innerText.trim();
+    if(!vazio) return;
+    if(el.tagName==='INPUT') el.value=v; else el.innerText=v;
+  };
+  set('categoria', q.get('cat'));
+  set('b1_item', q.get('cat'));
+  if(q.get('spend')) set('b2_vol', 'R$ '+q.get('spend')+' / ano');
+  set('b2_qtd', q.get('nforn'));
+  set('b2_rep', q.get('forn'));
+  const quad=q.get('quad');
+  if(quad){
+    const mapa={'Alavancagem':'Alavanc','N\u00e3o-cr\u00edtico':'N\u00e3o cr\u00edtico','Estrat\u00e9gico':'Cr\u00edtico','Gargalo':'Gargalo'};
+    const alvo=mapa[quad];
+    if(alvo) document.querySelectorAll('[data-k="b5_pos"]').forEach(r=>{
+      if(r.value.indexOf(alvo)===0) r.checked=true;
+    });
+    set('b5_just','Posi\u00e7\u00e3o migrada do Dashboard \u2014 eixo de risco calculado a partir da avalia\u00e7\u00e3o de riscos da categoria.');
+  }
+  const hoje=new Date().toLocaleDateString('pt-BR');
+  set('data', hoje); set('b1_data', hoje);
+  return true;
+}
+carregar();
+if(prefillDaURL()){
+  progresso(); agendar();
+  const av=document.getElementById('fromDash'); if(av) av.style.display='block';
+}
+progresso();
+somaPesos();
+</script>
+</body>
+</html>
