@@ -92,6 +92,11 @@ p{color:var(--soft);font-size:.92rem;margin-bottom:.7rem;}
 .kpi.hl{border-color:rgba(201,169,97,.5);background:rgba(201,169,97,.06);}
 .pos{color:var(--green)!important;}.neg{color:var(--red)!important;}
 .memo{margin-top:.9rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;}
+.one{font-size:.92rem!important;color:var(--text)!important;}
+.steps{padding-left:1.2rem;margin:.4rem 0 .8rem;}
+.steps li{font-size:.86rem;color:var(--soft);margin-bottom:.45rem;line-height:1.55;}
+.gl td:first-child{white-space:nowrap;width:30%;}
+@media(max-width:600px){.gl td:first-child{white-space:normal;}}
 .memo .t{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:.4rem;}
 .memo .ln{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--soft);line-height:1.75;}
 .memo .ln b{color:var(--text);}
@@ -161,34 +166,42 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   </div>
 
   <!-- ================= CONCEITOS ================= -->
-  <h2><span class="n">00</span>Antes de começar: cinco ideias que você vai usar</h2>
+  <h2><span class="n">00</span>Antes de começar: o mínimo de finanças que você precisa</h2>
+  <div class="card">
+    <div class="sub-t" style="margin-top:0;">Seis palavras que aparecem no exercício</div>
+    <table class="data-t gl"><tbody>
+      <tr><td><b>Lucro operacional (EBIT)</b></td><td>O que sobra das vendas depois de pagar os custos da operação, antes de juros e impostos.</td></tr>
+      <tr><td><b>Lucro após imposto (NOPAT)</b></td><td>O lucro operacional depois do imposto de renda. Aqui, 66% do EBIT (o imposto é 34%).</td></tr>
+      <tr><td><b>Capital investido</b></td><td>O dinheiro que fica parado para a operação funcionar: estoque, valores a receber de clientes e fábricas, menos o que a empresa ainda deve a fornecedores.</td></tr>
+      <tr><td><b>WACC</b></td><td>Quanto custa, por ano, cada real desse dinheiro parado. É a média entre os juros dos bancos e o retorno que os acionistas exigem. Na Whirlpool, 14% ao ano.</td></tr>
+      <tr><td><b>ROIC</b></td><td>Quanto a operação rende sobre o dinheiro parado nela: lucro após imposto ÷ capital investido.</td></tr>
+      <tr><td><b>EVA (valor criado)</b></td><td>O lucro que sobra depois de pagar o custo de todo o dinheiro parado. Se uma decisão aumenta o EVA, ela criou valor.</td></tr>
+    </tbody></table>
+  </div>
   <div class="concepts">
     <div class="concept">
-      <h3>1. Compras mexe nos dois lados do ROIC</h3>
-      <span class="eq">ROIC = NOPAT ÷ Capital Investido</span>
-      <p><b>Numerador:</b> o preço pago. Cada real de saving vira lucro operacional (EBIT) e, depois do imposto, NOPAT.</p>
-      <p><b>Denominador:</b> prazo de pagamento e estoque. Eles não mudam o lucro; mudam quanto capital a empresa precisa ter parado na operação.</p>
+      <h3>1. Compras ganha dinheiro de dois jeitos</h3>
+      <p><b>Pagando menos:</b> o desconto vira lucro a mais, todo ano.</p>
+      <p><b>Deixando menos dinheiro parado:</b> pagar o fornecedor mais tarde ou ter menos estoque libera caixa. O lucro não muda, mas a empresa precisa de menos dinheiro para funcionar.</p>
     </div>
     <div class="concept">
-      <h3>2. Recorrente × uma vez só</h3>
-      <p>O saving de preço se repete <b>todo ano</b> enquanto o contrato durar. Prazo e estoque liberam (ou prendem) caixa <b>uma única vez</b>.</p>
-      <p>Por isso não se soma "R$ 75 mi de saving" com "R$ 82 mi de caixa liberado": são grandezas diferentes. Para comparar, é preciso uma régua comum: o EVA.</p>
+      <h3>2. Todo ano × uma vez só</h3>
+      <p>Um desconto de R$ 75 mi aparece <b>todo ano</b>. Um prazo maior libera, digamos, R$ 82 mi <b>uma única vez</b>.</p>
+      <p>Por isso os dois números não podem ser somados: seria como somar um aumento de salário com um bônus único.</p>
     </div>
     <div class="concept">
-      <h3>3. EVA: a régua que põe tudo na mesma unidade</h3>
-      <span class="eq">EVA = NOPAT − WACC × Capital Investido</span>
-      <p>O EVA cobra da operação o custo de todo o capital que ela usa. Caixa liberado vale, por ano, <b>WACC × caixa</b>: com WACC de 14%, liberar R$ 100 mi vale R$ 14 mi por ano.</p>
-      <p>Uma decisão cria valor quando o Δ EVA é positivo.</p>
+      <h3>3. Dinheiro parado custa</h3>
+      <p>Cada real parado em estoque ou em contas a receber custa 14% ao ano à Whirlpool. Então liberar R$ 100 mi de caixa vale <b>R$ 14 mi por ano</b>.</p>
+      <p>É assim que o exercício compara desconto e prazo na mesma régua: tudo vira "valor criado por ano".</p>
     </div>
     <div class="concept">
       <h3>4. O prazo tem preço</h3>
-      <span class="eq">taxa anual ≈ custo do prazo % × 365 ÷ dias</span>
-      <p>Se o fornecedor cobra 1% a mais para dar 30 dias, você está tomando dinheiro emprestado dele a cerca de 12% ao ano. Vale a pena se essa taxa for <b>menor que o WACC</b>.</p>
-      <p>No Supply Chain Finance, um banco paga o fornecedor antes, a uma taxa baseada no risco do comprador, e o comprador paga no prazo longo.</p>
+      <p>Se o fornecedor cobra 1% a mais para você pagar 30 dias depois, ele está te emprestando dinheiro. Um ano tem cerca de 12 períodos de 30 dias, então esse empréstimo custa cerca de <b>12% ao ano</b>.</p>
+      <p>Vale a pena se for mais barato que os 14% que o dinheiro da empresa já custa.</p>
     </div>
     <div class="concept" style="grid-column:1/-1;">
-      <h3>5. TCO: o preço não é o custo</h3>
-      <p>Um desconto que exige comprar lotes maiores, importar com lead time longo ou manter estoque de segurança traz <b>capital parado</b> junto. O custo total de propriedade (TCO) soma preço, estoque, frete, qualidade e risco. Na simulação, esses efeitos aparecem nas alavancas de estoque e de proteção do fornecimento.</p>
+      <h3>5. O preço não é o custo</h3>
+      <p>Um desconto que obriga a comprar lotes maiores ou a manter estoque extra traz dinheiro parado junto. O custo total de ter o material (TCO) soma preço, estoque, frete, qualidade e risco. Um bom comprador olha o custo total, não só o preço da nota.</p>
     </div>
   </div>
 
@@ -210,8 +223,8 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   <div class="card">
     <div class="sub-t" style="margin-top:0;">Perguntas finais para o grupo</div>
     <ol style="padding-left:1.2rem;">
-      <li style="font-size:.88rem;color:var(--soft);margin-bottom:.4rem;">Ordene as cinco negociações pelo Δ EVA. A ordem bate com a ordem pelo saving anunciado em cada uma? O que explica as diferenças?</li>
-      <li style="font-size:.88rem;color:var(--soft);margin-bottom:.4rem;">Duas negociações têm Δ EVA negativo. Em qual delas o grupo manteria a decisão mesmo assim, e com que argumento?</li>
+      <li style="font-size:.88rem;color:var(--soft);margin-bottom:.4rem;">Ordene as cinco negociações pelo valor criado (EVA). A ordem bate com a ordem pelo saving anunciado em cada uma? O que explica as diferenças?</li>
+      <li style="font-size:.88rem;color:var(--soft);margin-bottom:.4rem;">Duas negociações têm valor criado negativo. Em qual delas o grupo manteria a decisão mesmo assim, e com que argumento?</li>
       <li style="font-size:.88rem;color:var(--soft);margin-bottom:.4rem;">Se o diretor de Suprimentos fosse avaliado só por saving de preço, que decisões ele tomaria diferente? Que indicador o grupo proporia no lugar?</li>
     </ol>
     <div class="cta">
@@ -251,10 +264,16 @@ const MISSOES = [
     dados: [['Spend anual', 'R$ 1.500 mi'], ['Saving de preço', '5%'], ['Prazo de pagamento adicional', '+20 dias'], ['Preço do prazo (desconto perdido)', '0,5%'], ['Dias de estoque', '−5 dias']],
     campos: ['saving', 'dpo', 'precoPrazo', 'estoque'],
     gabarito: { saving: 5, dpo: 20, precoPrazo: 0.5, estoque: -5 },
-    perguntas: ['Qual alavanca responde pela maior parte do Δ EVA? E qual liberou mais caixa?', 'Aceitar o prazo em troca de 0,5% foi um bom negócio? Compare a taxa anual equivalente com o WACC.'],
-    analise: `<p><b>O preço domina o valor.</b> Os 5% de saving rendem R$ 75 mi de EBIT por ano, R$ 49,5 mi de NOPAT, todo ano. O prazo libera mais caixa, R$ 82 mi, mas só uma vez; por ano ele vale 14% × 82 = R$ 11,5 mi. Saving de preço responde por cerca de 84% do Δ EVA.</p>
-      <p><b>O prazo compensou.</b> Perder 0,5% para ganhar 20 dias equivale a ~9,1% ao ano, abaixo do WACC de 14%: financiar-se na usina sai mais barato que o capital da própria empresa. Se a usina cobrasse 1%, a taxa iria a ~18% ao ano e o prazo passaria a destruir valor.</p>
-      <p><b>Para o Conselho:</b> o saving líquido (5% − 0,5%) de R$ 67,5 mi equivale a vender R$ 750 mi a mais por ano com a margem EBIT de 9%.</p>`
+    perguntas: ['Qual parte do acordo criou mais valor: o desconto ou o prazo? E qual liberou mais caixa?', 'Aceitar pagar 20 dias depois, perdendo 0,5% de desconto, foi um bom negócio? Por quê?'],
+    analise: `<p class="one">Em uma frase: <b>o desconto de preço é o que mais gera valor; o prazo ajuda, mas bem menos.</b></p>
+      <ol class="steps">
+        <li><b>O desconto.</b> 5% de R$ 1.500 mi = <b>R$ 75 mi</b> a menos de custo por ano. Depois do imposto de 34%, sobram <b>R$ 49,5 mi</b> de lucro a mais, todo ano.</li>
+        <li><b>O prazo.</b> Pagar 20 dias depois deixa <b>R$ 82 mi</b> a mais no caixa (1.500 ÷ 365 × 20). Mas isso acontece uma vez só.</li>
+        <li><b>Quanto vale esse caixa?</b> A Whirlpool paga, em média, 14% ao ano pelo dinheiro que usa (é o WACC). Ter R$ 82 mi a mais evita esse custo: 14% × 82 = <b>R$ 11,5 mi por ano</b>.</li>
+        <li><b>O prazo teve preço.</b> A usina tirou um desconto de 0,5%. Na prática, a Whirlpool pagou juros à usina: 0,5% por 20 dias. Um ano tem cerca de 18 períodos de 20 dias (365 ÷ 20), então isso dá cerca de <b>9% ao ano</b> (0,5% × 18).</li>
+        <li><b>Valeu a pena?</b> O dinheiro normal da Whirlpool custa 14% ao ano; o "empréstimo" da usina custa 9%. Pegar dinheiro mais barato que o normal é bom negócio. Se a usina cobrasse 1%, os juros iriam a cerca de 18% ao ano: mais caro que o dinheiro normal, e o prazo deixaria de valer a pena.</li>
+      </ol>
+      <p><b>O que levar desta missão.</b> Na Whirlpool, de cada R$ 100 vendidos sobram R$ 9 de lucro operacional. Para lucrar os mesmos R$ 67,5 mi que o desconto líquido trouxe (5% − 0,5%), a empresa teria de vender <b>R$ 750 mi a mais</b> (67,5 ÷ 0,09). Compras gerou esse lucro sem vender uma geladeira a mais.</p>`
   },
   {
     id: 'comp', titulo: 'Compressores: parceria, VMI e Supply Chain Finance', quad: 'Estratégico', qcls: 'be', spend: 900,
@@ -264,10 +283,17 @@ const MISSOES = [
     dados: [['Spend anual', 'R$ 900 mi'], ['Saving de preço', '1,5%'], ['Prazo de pagamento adicional', '+30 dias'], ['Preço do prazo para a Whirlpool', '0%'], ['Dias de estoque', '−20 dias']],
     campos: ['saving', 'dpo', 'precoPrazo', 'estoque'],
     gabarito: { saving: 1.5, dpo: 30, precoPrazo: 0, estoque: -20 },
-    perguntas: ['O saving é menos de um terço do saving do aço. O Δ EVA também é? Por quê?', 'Por que o fornecedor aceitaria esticar o prazo em 30 dias sem cobrar? O que ele ganha com o SCF?'],
-    analise: `<p><b>Aqui o denominador manda.</b> O saving de 1,5% rende só R$ 8,9 mi de NOPAT por ano. Mas prazo e estoque liberam juntos R$ 123 mi de caixa, que valem R$ 17,3 mi por ano em custo de capital evitado. O Δ EVA (~R$ 26 mi) é quase metade do aço, com um saving mais de cinco vezes menor.</p>
-      <p><b>Por que o fornecedor aceita.</b> No SCF ele recebe à vista do banco, pagando um desconto calculado sobre o risco de crédito da Whirlpool, que é menor que o dele. Para o fornecedor, o custo de financiar o próprio capital de giro cai. Para a Whirlpool, o prazo fica gratuito. Em categoria estratégica, essa é a forma de ganhar caixa sem quebrar o caixa do parceiro.</p>
-      <p><b>Repare no ROCE:</b> ele não registra os 30 dias de prazo, porque não subtrai fornecedores do capital. Só o ROIC enxerga.</p>`
+    perguntas: ['O desconto aqui é bem menor que no aço. O valor criado também é? O que compensou?', 'Por que o fornecedor aceitaria receber 30 dias depois sem cobrar nada a mais?'],
+    analise: `<p class="one">Em uma frase: <b>aqui o ganho maior não veio do preço, e sim do dinheiro que deixou de ficar parado.</b></p>
+      <ol class="steps">
+        <li><b>O desconto é pequeno.</b> 1,5% de R$ 900 mi = R$ 13,5 mi por ano; depois do imposto, <b>R$ 8,9 mi</b>.</li>
+        <li><b>O prazo.</b> Pagar 30 dias depois deixa 900 ÷ 365 × 30 = <b>R$ 74 mi</b> a mais no caixa.</li>
+        <li><b>O estoque.</b> Com VMI, o fornecedor guarda as peças dentro da fábrica e só cobra quando a Whirlpool usa. São 20 dias a menos de estoque: 900 ÷ 365 × 20 = <b>R$ 49 mi</b> que deixam de ficar parados em peças.</li>
+        <li><b>Quanto vale esse caixa?</b> Juntos, R$ 123 mi liberados uma vez. A 14% ao ano, valem <b>R$ 17,3 mi por ano</b>, o dobro do desconto.</li>
+        <li><b>Resultado:</b> cerca de R$ 26 mi de valor criado por ano, quase metade do aço, com um desconto mais de cinco vezes menor.</li>
+      </ol>
+      <p><b>Por que o fornecedor aceita esperar 30 dias?</b> Porque ele não espera. No Supply Chain Finance, um banco paga o fornecedor logo, e a Whirlpool paga o banco 30 dias depois. O banco cobra juros do fornecedor, mas calculados sobre o risco da Whirlpool, uma empresa grande e boa pagadora. São juros menores do que o fornecedor conseguiria sozinho. O fornecedor recebe rápido e barato; a Whirlpool ganha prazo sem pagar nada.</p>
+      <p><b>O que levar desta missão.</b> Em fornecedor estratégico, dá para ganhar caixa sem apertar o parceiro.</p>`
   },
   {
     id: 'resina', titulo: 'Resinas plásticas: o desconto por volume', quad: 'Alavancagem', qcls: 'ba', spend: 700,
@@ -277,10 +303,16 @@ const MISSOES = [
     dados: [['Spend anual', 'R$ 700 mi'], ['Saving de preço', '2%'], ['Dias de estoque', '+45 dias']],
     campos: ['saving', 'estoque'],
     gabarito: { saving: 2, estoque: 45 },
-    perguntas: ['O saving foi real? Compare o ganho anual do desconto com o custo anual do estoque extra.', 'Que custos do estoque extra a simulação não captura? Eles pioram ou melhoram a conta?'],
-    analise: `<p><b>O saving destruiu valor.</b> Os 2% rendem R$ 14 mi de EBIT, R$ 9,2 mi de NOPAT por ano. Mas 45 dias a mais de estoque prendem R$ 86 mi de capital, que custam 14% × 86 = R$ 12,1 mi por ano. Δ EVA de cerca de −R$ 2,8 mi por ano.</p>
-      <p><b>E a conta real é pior.</b> A simulação cobra só o custo de capital. Faltam armazenagem, manuseio, seguro, perdas e obsolescência: o custo total de manter estoque costuma ficar bem acima do WACC. É a armadilha clássica do volume discount avaliado só pelo preço unitário.</p>
-      <p><b>O que fazer:</b> negociar o desconto sem o lote (compromisso anual de volume com entregas mensais) ou pedir que o distribuidor mantenha o estoque em consignação.</p>`
+    perguntas: ['O desconto de 2% foi um bom negócio? Compare o que ele economiza com o que o estoque extra custa.', 'Que custos do estoque extra a simulação não mostra?'],
+    analise: `<p class="one">Em uma frase: <b>o desconto parecia bom, mas o estoque extra custou mais do que ele economizou.</b></p>
+      <ol class="steps">
+        <li><b>O desconto.</b> 2% de R$ 700 mi = R$ 14 mi por ano; depois do imposto, <b>R$ 9,2 mi</b>.</li>
+        <li><b>O estoque extra.</b> Comprando de três em três meses, a fábrica fica, em média, com 45 dias a mais de resina parada: 700 ÷ 365 × 45 = <b>R$ 86 mi</b> presos em estoque.</li>
+        <li><b>Quanto custa esse estoque?</b> Dinheiro parado também custa 14% ao ano: 14% × 86 = <b>R$ 12,1 mi por ano</b>.</li>
+        <li><b>A conta final.</b> Ganha R$ 9,2 mi, gasta R$ 12,1 mi: <b>perde cerca de R$ 3 mi por ano</b> (a ferramenta mostra R$ 2,8 mi porque não arredonda).</li>
+      </ol>
+      <p><b>E na vida real é pior:</b> a simulação só cobra o custo do dinheiro. Falta o armazém, o manuseio, o seguro e as perdas.</p>
+      <p><b>O que levar desta missão.</b> Desconto de preço tem de ser comparado com o custo total de ter o material, o chamado TCO. Teria sido melhor negociar o desconto pelo volume do ano, mantendo entregas mensais, ou pedir que o distribuidor deixasse o estoque em consignação.</p>`
   },
   {
     id: 'chips', titulo: 'Placas eletrônicas: o preço de não parar', quad: 'Gargalo', qcls: 'bg', spend: 250,
@@ -290,10 +322,16 @@ const MISSOES = [
     dados: [['Spend anual', 'R$ 250 mi'], ['Dias de estoque', '+15 dias'], ['Custo anual da proteção', 'R$ 5 mi'], ['Prejuízo de uma parada', 'R$ 40 mi']],
     campos: ['estoque', 'custoProt', 'prejParada'],
     gabarito: { estoque: 15, custoProt: 5, prejParada: 40 },
-    perguntas: ['O Δ EVA é negativo. Isso quer dizer que a decisão foi errada?', 'Com que frequência a proteção precisa evitar uma parada para se pagar? Isso é plausível para essa categoria?'],
-    analise: `<p><b>Negativo no papel, defensável na prática.</b> A proteção custa R$ 5 mi por ano e o estoque extra prende R$ 10 mi de capital (R$ 1,4 mi por ano). Δ EVA de cerca de −R$ 4,7 mi por ano. Mas a simulação não sabe se uma parada vai acontecer; é o grupo quem julga.</p>
-      <p><b>O ponto de equilíbrio.</b> Uma parada evitada vale R$ 40 mi de EBIT, R$ 26,4 mi depois do imposto. Contando proteção e estoque, a decisão se paga se evitar uma parada a cada <b>~5,6 anos</b> (26,4 ÷ 4,7). A ferramenta mostra 8 anos porque considera só o custo da proteção, sem o estoque. Depois de 2021–2022, poucos executivos diriam que uma parada a cada 5 ou 6 anos é improvável.</p>
-      <p><b>Lição:</b> no ROCE de superfície, a redundância aparece só como custo. Em item gargalo, ela é um seguro, e seguro se avalia pela perda que evita.</p>`
+    perguntas: ['O valor criado é negativo. Isso quer dizer que a decisão foi errada?', 'De quantos em quantos anos a proteção precisa evitar uma parada para se pagar? Isso parece provável?'],
+    analise: `<p class="one">Em uma frase: <b>a proteção custa dinheiro todo ano e só vale a pena se evitar paradas com frequência suficiente.</b></p>
+      <ol class="steps">
+        <li><b>O segundo fornecedor.</b> Custa R$ 5 mi por ano; depois do imposto, <b>R$ 3,3 mi</b>.</li>
+        <li><b>O estoque de segurança.</b> 15 dias a mais: 250 ÷ 365 × 15 = R$ 10 mi parados. A 14% ao ano, <b>R$ 1,4 mi por ano</b>.</li>
+        <li><b>Custo total da proteção:</b> cerca de <b>R$ 4,7 mi por ano</b>. Por isso o valor criado dá negativo.</li>
+        <li><b>O que ela evita.</b> Uma parada custa R$ 40 mi; depois do imposto, <b>R$ 26,4 mi</b>.</li>
+        <li><b>A conta de equilíbrio.</b> 26,4 ÷ 4,7 ≈ 5,6. A proteção se paga se evitar <b>uma parada a cada 5 ou 6 anos</b>. (A ferramenta mostra 8 anos porque conta só o segundo fornecedor, 40 ÷ 5, sem o estoque.)</li>
+      </ol>
+      <p><b>O que levar desta missão.</b> Valor negativo não quer dizer decisão errada. A proteção funciona como um seguro: você paga todo ano e torce para não usar. A pergunta é se uma parada a cada 5 ou 6 anos é provável. Depois da falta de semicondutores de 2021–2022, muita gente diria que sim.</p>`
   },
   {
     id: 'emb', titulo: 'Embalagens: agregar volume e pagar antes', quad: 'Não-crítico', qcls: 'bn', spend: 300,
@@ -304,10 +342,16 @@ const MISSOES = [
     dados: [['Spend anual', 'R$ 300 mi'], ['Saving por agregação', '4%'], ['Desconto extra por pagar antes', '2%'], ['Prazo de pagamento', '10 dias a menos']],
     campos: ['saving', 'dpo'],
     gabarito: { saving: 6, dpo: -10 },
-    perguntas: ['Pagar antes prende capital. Mesmo assim, aceitar o desconto de 2% criou valor? Calcule a taxa anual equivalente.', 'O que esse caso mostra sobre o outro lado da moeda: o prazo que você estica é o caixa que falta ao fornecedor pequeno?'],
-    analise: `<p><b>Pagar antes foi um ótimo investimento.</b> Separando a antecipação: 2% de R$ 300 mi = R$ 6 mi de EBIT (R$ 4 mi de NOPAT), contra R$ 8,2 mi de capital adicional que custa R$ 1,2 mi por ano. Ganho líquido de ~R$ 2,8 mi por ano.</p>
-      <p><b>A taxa explica.</b> Ganhar 2% por pagar 10 dias antes equivale a ~73% ao ano (2% × 365 ÷ 10). Nenhuma aplicação financeira paga isso. Para o fornecedor pequeno, é o custo de não ter capital de giro.</p>
-      <p><b>O espelho do caso dos compressores.</b> Lá, a Whirlpool esticou o prazo sem sufocar o fornecedor graças ao SCF. Aqui, encurtou o prazo e foi paga por isso. Nos dois casos, o prazo tem preço: a pergunta é sempre quem financia quem, e a que taxa.</p>`
+    perguntas: ['Pagar 10 dias antes deixa menos dinheiro no caixa. Mesmo assim, aceitar o desconto de 2% valeu a pena?', 'O que este caso mostra sobre o caixa de fornecedores pequenos quando o comprador estica o prazo?'],
+    analise: `<p class="one">Em uma frase: <b>pagar antes foi um ótimo negócio, porque o desconto oferecido vale muito mais do que o custo do dinheiro.</b></p>
+      <ol class="steps">
+        <li><b>A agregação.</b> 4% de R$ 300 mi = R$ 12 mi por ano a menos de custo.</li>
+        <li><b>O desconto por pagar antes.</b> Mais 2% de R$ 300 mi = R$ 6 mi por ano; depois do imposto, <b>R$ 4 mi</b>.</li>
+        <li><b>O custo de pagar antes.</b> Pagar 10 dias mais cedo tira 300 ÷ 365 × 10 = R$ 8,2 mi do caixa. A 14% ao ano, isso custa <b>R$ 1,2 mi por ano</b>.</li>
+        <li><b>Saldo da antecipação:</b> 4 − 1,2 = <b>R$ 2,8 mi por ano</b> a favor da Whirlpool.</li>
+        <li><b>Em forma de juros.</b> Ganhar 2% por pagar 10 dias antes: um ano tem cerca de 36 períodos de 10 dias, então isso equivale a cerca de <b>73% ao ano</b> (2% × 36,5). Nenhuma aplicação financeira rende isso.</li>
+      </ol>
+      <p><b>O que levar desta missão.</b> É o espelho da missão 2. Para fornecedor pequeno, prazo custa caro, e quem tem caixa pode ganhar com isso. Em toda negociação de prazo, a pergunta é a mesma: quem está financiando quem, e a que juros?</p>`
   }
 ];
 
@@ -322,8 +366,8 @@ function salvar() { try { localStorage.setItem(STORE, JSON.stringify(resp)); } c
   const items = [
     ['Receita líquida', 'R$ ' + nf(BASE.receita / 1000, 2) + ' bi'], ['CPV', nf(BASE.cpv) + '% da receita'], ['Margem EBIT', nf(BASE.ebit) + '%'],
     ['DIOH · DSO · DPO', BASE.dioh + ' · ' + BASE.dso + ' · ' + BASE.dpo + ' d'], ['Ativo fixo', 'R$ ' + nf(BASE.fixo / 1000, 2) + ' bi'],
-    ['Capital Investido', F.fmtMi(B.ci)], ['NOPAT', F.fmtMi(B.nopat)], ['WACC', nf(BASE.wacc) + '%'],
-    ['ROIC base', F.fmtPct(B.roic)], ['EVA base', F.fmtMi(B.eva)]
+    ['Capital investido', F.fmtMi(B.ci)], ['Lucro após imposto', F.fmtMi(B.nopat)], ['WACC', nf(BASE.wacc) + '%'],
+    ['ROIC hoje', F.fmtPct(B.roic)], ['EVA hoje', F.fmtMi(B.eva)]
   ];
   $('baseGrid').innerHTML = items.map(([l, v], i) => `<div class="bk${i >= 8 ? ' hl' : ''}"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
 })();
@@ -353,10 +397,10 @@ function renderMissoes() {
         <div class="check" id="${m.id}-check"></div>
         <div class="sub-t">Resultado para a Whirlpool</div>
         <div class="kpis">
-          <div class="kpi"><div class="l">Δ EBIT · por ano</div><div class="v" id="${m.id}-ebit">—</div></div>
-          <div class="kpi"><div class="l">Δ Capital · uma vez</div><div class="v" id="${m.id}-ci">—</div></div>
-          <div class="kpi"><div class="l">ROIC</div><div class="v" id="${m.id}-roic">—</div><div class="d" id="${m.id}-droic"></div></div>
-          <div class="kpi hl"><div class="l">Δ EVA · por ano</div><div class="v" id="${m.id}-eva">—</div></div>
+          <div class="kpi"><div class="l">Lucro operacional a mais · por ano</div><div class="v" id="${m.id}-ebit">—</div></div>
+          <div class="kpi"><div class="l">Caixa liberado · uma vez</div><div class="v" id="${m.id}-ci">—</div></div>
+          <div class="kpi"><div class="l">ROIC da empresa</div><div class="v" id="${m.id}-roic">—</div><div class="d" id="${m.id}-droic"></div></div>
+          <div class="kpi hl"><div class="l">Valor criado (EVA) · por ano</div><div class="v" id="${m.id}-eva">—</div></div>
         </div>
         <div class="memo"><div class="t">Memória de cálculo</div><div id="${m.id}-memo"></div></div>
       </div>
@@ -393,18 +437,18 @@ function memoria(m, a, r) {
   const out = [];
   const ln = (s) => out.push(`<div class="ln">${s}</div>`);
   if (m.campos.includes('saving') && a.saving)
-    ln(`Saving: ${nf(S, 0)} × ${nf(a.saving)}% = <b>${nf(L.saving.dEbit)}</b> EBIT → × (1 − ${nf(BASE.ir, 0)}%) = <b>${nf(L.saving.dEbit * (1 - t))}</b> NOPAT/ano`);
+    ln(`Desconto: ${nf(S, 0)} × ${nf(a.saving)}% = <b>${nf(L.saving.dEbit)}</b> de lucro a mais → após imposto (× ${nf(100 - BASE.ir, 0)}%) = <b>${nf(L.saving.dEbit * (1 - t))}</b>/ano`);
   if (m.campos.includes('precoPrazo') && a.precoPrazo)
-    ln(`Preço do prazo: −${nf(S, 0)} × ${nf(a.precoPrazo)}% = <b>${nf(L.precoPrazo.dEbit)}</b> EBIT/ano <span class="c">· taxa ≈ ${nf(a.precoPrazo)}% × 365 ÷ ${a.dpo || '?'} = ${a.dpo > 0 ? nf(a.precoPrazo * 365 / a.dpo) + '% a.a. vs WACC ' + nf(BASE.wacc, 0) + '%' : '—'}</span>`);
+    ln(`Preço do prazo: ${nf(S, 0)} × ${nf(a.precoPrazo)}% = <b>${nf(-L.precoPrazo.dEbit)}</b> de lucro a menos/ano <span class="c">· juros ≈ ${nf(a.precoPrazo)}% × (365 ÷ ${a.dpo || '?'}) = ${a.dpo > 0 ? nf(a.precoPrazo * 365 / a.dpo) + '% ao ano, contra ' + nf(BASE.wacc, 0) + '% do dinheiro da empresa' : '—'}</span>`);
   if (m.campos.includes('dpo') && a.dpo)
-    ln(`Prazo: ${nf(S, 0)} ÷ 365 × ${Math.abs(a.dpo)} d = <b>${nf(Math.abs(L.dpo.dCi))}</b> ${a.dpo > 0 ? 'de caixa liberado' : 'de capital a mais (paga antes)'} → × ${nf(BASE.wacc, 0)}% = <b>${nf(L.dpo.dEva)}</b>/ano`);
+    ln(`Prazo: ${nf(S, 0)} ÷ 365 × ${Math.abs(a.dpo)} d = <b>${nf(Math.abs(L.dpo.dCi))}</b> ${a.dpo > 0 ? 'de caixa liberado' : 'a menos no caixa (paga antes)'} → × ${nf(BASE.wacc, 0)}% = <b>${nf(L.dpo.dEva)}</b>/ano`);
   if (m.campos.includes('estoque') && a.estoque)
-    ln(`Estoque: ${nf(S, 0)} ÷ 365 × ${Math.abs(a.estoque)} d = <b>${nf(Math.abs(L.estoque.dCi))}</b> ${a.estoque > 0 ? 'de capital a mais' : 'de capital liberado'} → × ${nf(BASE.wacc, 0)}% = <b>${nf(L.estoque.dEva)}</b>/ano`);
+    ln(`Estoque: ${nf(S, 0)} ÷ 365 × ${Math.abs(a.estoque)} d = <b>${nf(Math.abs(L.estoque.dCi))}</b> ${a.estoque > 0 ? 'de dinheiro a mais parado em estoque' : 'de caixa liberado'} → × ${nf(BASE.wacc, 0)}% = <b>${nf(L.estoque.dEva)}</b>/ano`);
   if (m.campos.includes('custoProt') && a.custoProt) {
-    ln(`Proteção: −${nf(a.custoProt)} EBIT/ano → <b>${nf(L.protecao.dEva)}</b> NOPAT/ano`);
+    ln(`Proteção: ${nf(a.custoProt)} de custo/ano → após imposto <b>${nf(-L.protecao.dEva)}</b>/ano`);
     if (a.prejParada) ln(`<span class="c">Ponto de equilíbrio da proteção: ${nf(a.prejParada, 0)} ÷ ${nf(a.custoProt)} = uma parada evitada a cada <b style="color:var(--gold)">${nf(a.prejParada / a.custoProt)} anos</b></span>`);
   }
-  ln(`Δ EVA = Δ NOPAT − WACC × Δ Capital = ${nf(r.dNopat)} − ${nf(BASE.wacc, 0)}% × (${nf(r.dCi)}) = <b style="color:var(--gold)">${nf(r.dEva)}</b>/ano`);
+  ln(`Valor criado = lucro após imposto + ${nf(BASE.wacc, 0)}% × caixa liberado = ${nf(r.dNopat)} + ${nf(BASE.wacc, 0)}% × (${nf(-r.dCi)}) = <b style="color:var(--gold)">${nf(r.dEva)}</b>/ano`);
   return out.join('');
 }
 
@@ -421,7 +465,7 @@ function calcular(m) {
     $(`${m.id}-check`).textContent = '';
   } else {
     set('ebit', F.fmtSig(r.dEbit), cls(r.dEbit));
-    set('ci', F.fmtSig(r.dCi), cls(-r.dCi));
+    set('ci', F.fmtSig(-r.dCi), cls(-r.dCi));
     set('roic', F.fmtPct(r.N.roic), cls(r.dRoic));
     $(`${m.id}-droic`).textContent = `base ${F.fmtPct(r.B.roic)} · ${F.fmtPP(r.dRoic, 2)}`;
     set('eva', F.fmtSig(r.dEva), cls(r.dEva));
@@ -439,18 +483,18 @@ function calcular(m) {
 function placar() {
   const B = F.base(BASE);
   let tE = 0, tC = 0, tV = 0, n = 0;
-  let h = '<table class="ptable"><thead><tr><th>Missão</th><th>Kraljic</th><th>Spend</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>';
+  let h = '<table class="ptable"><thead><tr><th>Missão</th><th>Kraljic</th><th>Spend</th><th>Lucro a mais/ano</th><th>Caixa liberado</th><th>Valor criado/ano</th></tr></thead><tbody>';
   MISSOES.forEach((m, i) => {
     const r0 = resp[m.id] || {};
     const ok = m.campos.some(c => isFinite(r0[c]));
     if (!ok) { h += `<tr><td>${i + 1}. ${m.titulo.split(':')[0]}</td><td>${m.quad}</td><td>${F.fmtMi(m.spend)}</td><td colspan="3" style="text-align:center;color:var(--muted)">não simulada</td></tr>`; return; }
     const r = F.impacto(BASE, { spend: m.spend, direto: true }, alavancas(m));
     tE += r.dEbit; tC += r.dCi; tV += r.dEva; n++;
-    h += `<tr><td>${i + 1}. ${m.titulo.split(':')[0]}</td><td>${m.quad}</td><td>${F.fmtMi(m.spend)}</td><td class="${cls(r.dEbit)}">${F.fmtSig(r.dEbit)}</td><td class="${cls(-r.dCi)}">${F.fmtSig(r.dCi)}</td><td class="${cls(r.dEva)}">${F.fmtSig(r.dEva)}</td></tr>`;
+    h += `<tr><td>${i + 1}. ${m.titulo.split(':')[0]}</td><td>${m.quad}</td><td>${F.fmtMi(m.spend)}</td><td class="${cls(r.dEbit)}">${F.fmtSig(r.dEbit)}</td><td class="${cls(-r.dCi)}">${F.fmtSig(-r.dCi)}</td><td class="${cls(r.dEva)}">${F.fmtSig(r.dEva)}</td></tr>`;
   });
   const roicN = ((B.ebit + tE) * (1 - BASE.ir / 100)) / (B.ci + tC) * 100;
-  h += `<tr class="tot"><td>Total da rodada</td><td></td><td>${F.fmtMi(MISSOES.reduce((s, m) => s + m.spend, 0))}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
-  h += n ? `<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">ROIC da Whirlpool com ${n} de 5 missões simuladas: <b style="color:var(--gold)">${F.fmtPct(B.roic)} → ${F.fmtPct(roicN)}</b> (${F.fmtPP(roicN - B.roic, 2)}) · EVA ${F.fmtMi(B.eva)} → ${F.fmtMi(B.eva + tV)} por ano. Em perpetuidade, sem crescimento, ${F.fmtSig(tV / (BASE.wacc / 100))} de valor (indicativo).</p>`
+  h += `<tr class="tot"><td>Total da rodada</td><td></td><td>${F.fmtMi(MISSOES.reduce((s, m) => s + m.spend, 0))}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(-tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
+  h += n ? `<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Com ${n} de 5 missões simuladas: o ROIC da Whirlpool vai de <b style="color:var(--gold)">${F.fmtPct(B.roic)} para ${F.fmtPct(roicN)}</b>, e o valor criado por ano (EVA) de ${F.fmtMi(B.eva)} para ${F.fmtMi(B.eva + tV)}.</p>`
        : '<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Simule as missões para ver o placar.</p>';
   $('placar').innerHTML = h;
 }
