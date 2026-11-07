@@ -68,7 +68,7 @@ main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem;}
 /* LEVERS */
 .lever{padding:.85rem 0;border-top:1px dashed var(--border);}
 .lever:first-of-type{border-top:none;padding-top:0;}
-.lv-head{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;margin-bottom:.35rem;}
+.lv-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-bottom:.35rem;}
 .lv-name{font-size:.8rem;font-weight:700;color:var(--text);}
 .lv-name .tag{font-family:'Space Mono',monospace;font-size:.56rem;padding:.1rem .4rem;border-radius:4px;margin-left:.4rem;vertical-align:2px;}
 .t-num{background:rgba(52,211,153,.12);color:var(--green);}
@@ -80,6 +80,9 @@ input[type=range]{accent-color:var(--blue);cursor:pointer;width:100%;}
 .lv-eff b{color:var(--soft);}
 .lv-sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.5rem;}
 .lever.off{opacity:.4;pointer-events:none;}
+.unit-in{display:inline-flex;align-items:center;gap:.4rem;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);white-space:nowrap;}
+.ifield.num{width:96px;text-align:right;font-weight:700;color:var(--blue-l);font-size:.9rem;padding:.4rem .6rem;}
+.opt-title{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gold);margin:1rem 0 .2rem;padding-top:.8rem;border-top:1px solid var(--border);}
 details.why{margin-top:.35rem;}
 details.why summary{font-size:.64rem;color:var(--gold);cursor:pointer;list-style:none;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
 details.why summary::-webkit-details-marker{display:none;}
@@ -177,7 +180,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 <main>
   <div class="intro">
     <b>A pergunta desta aba:</b> a estratégia escolhida para a categoria cria valor para o acionista — e por qual linha da equação?
-    Compras mexe no numerador (preço, receita habilitada, risco) e no denominador (prazo e estoque) do ROIC. Os efeitos são de natureza diferente:
+    Compras mexe no numerador (preço) e no denominador (prazo e estoque) do ROIC. Os efeitos são de natureza diferente:
     o preço se repete todo ano no resultado; o prazo e o estoque liberam caixa <b>uma vez</b>.
     <span class="eq">ROIC = NOPAT ÷ Capital Investido &nbsp;·&nbsp; EVA = NOPAT − WACC × Capital Investido</span>
   </div>
@@ -235,53 +238,40 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <div class="card-title"><span><span class="step">③</span>Alavancas de Compras</span></div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="lv-val" id="v-saving"></span></div>
-          <input type="range" id="a-saving" min="0" max="20" step="0.5">
+          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="unit-in"><input class="ifield num" id="a-saving" type="number" step="0.5"><span>% do spend</span></span></div>
           <div class="lv-eff" id="e-saving"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Redução do preço pago sobre o spend da categoria. Vai inteira para o EBIT (direto via CPV, indireto via despesas) e se repete todo ano enquanto o contrato durar. Use o saving <b>líquido de TCO</b>: se a troca de fornecedor traz frete, qualidade ou estoque extra, desconte aqui ou nas outras alavancas.</p></details>
+          <details class="why"><summary>De onde vem o número</summary><p>Redução de preço obtida na negociação, sobre o spend da categoria. Vai inteira para o EBIT e se repete todo ano enquanto o contrato durar. Use o saving <b>líquido de TCO</b>: se o fornecedor mais barato traz frete, lead time ou estoque extra, lance esses efeitos nas outras alavancas.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="lv-val" id="v-dpo"></span></div>
-          <input type="range" id="a-dpo" min="-30" max="90" step="5">
+          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in"><input class="ifield num" id="a-dpo" type="number" step="5"><span>dias</span></span></div>
           <div class="lv-eff" id="e-dpo"></div>
-          <div style="margin-top:.6rem;">
-            <div class="lv-head"><span class="lv-name" style="font-size:.74rem;color:var(--soft);">Preço do prazo exigido pelo fornecedor (ou custo do programa SCF)</span><span class="lv-val" id="v-precoPrazo"></span></div>
-            <input type="range" id="a-precoPrazo" min="0" max="5" step="0.1">
-            <div class="lv-eff" id="e-precoPrazo"></div>
-          </div>
-          <details class="why"><summary>Como entra na conta</summary><p>Cada dia a mais de prazo sobre o spend da categoria aumenta Contas a Pagar e <b>reduz o Capital Investido uma única vez</b> (Convenção B). O NOPAT não muda. O ganho anual de valor é o custo de capital que deixa de incidir sobre esse caixa: WACC × capital liberado. Se o fornecedor embute o prazo no preço, compare a <b>taxa implícita anual</b> com o WACC: acima dele, o prazo destrói valor. É aqui que entra o Supply Chain Finance — o banco antecipa ao fornecedor a uma taxa ancorada no risco do comprador.</p></details>
+          <details class="why"><summary>Como entra na conta</summary><p>Dias a mais (ou a menos, com sinal negativo) para pagar o fornecedor. Contas a Pagar sobe e o <b>Capital Investido cai uma única vez</b> (Convenção B). O NOPAT não muda. O ganho anual de valor é o custo de capital que deixa de incidir sobre esse caixa: WACC × caixa liberado.</p></details>
         </div>
 
-        <div class="lever" id="lv-estoque">
-          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="lv-val" id="v-estoque"></span></div>
-          <input type="range" id="a-estoque" min="-60" max="60" step="5">
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in" id="u-estoque"><input class="ifield num" id="a-estoque" type="number" step="5"><span>dias</span></span></div>
           <div class="lv-eff" id="e-estoque"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Variação dos dias de cobertura do material (ou do estoque em trânsito, quando o lead time muda). Valor negativo = menos estoque: VMI, consignação, lotes menores, fornecedor mais próximo. Valor positivo = mais estoque: lote maior por desconto de volume, sourcing offshore com lead time longo, estoque de segurança em item gargalo. Só se aplica a gasto direto.</p></details>
+          <details class="why"><summary>Como entra na conta</summary><p>Variação dos dias de cobertura do material. Negativo = menos estoque (VMI, consignação, entregas mais frequentes, fornecedor mais próximo). Positivo = mais estoque (lote maior por desconto de volume, importação com lead time longo, estoque de segurança). Só se aplica a gasto direto.</p></details>
+        </div>
+
+        <div class="opt-title">Opcionais</div>
+
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Preço do prazo <span class="tag t-num">OPCIONAL</span></span><span class="unit-in"><input class="ifield num" id="a-precoPrazo" type="number" step="0.1"><span>% do spend</span></span></div>
+          <div class="hint" style="margin:.1rem 0 .3rem;">Desconto que você deixa de ganhar, ou acréscimo no preço, por pagar no prazo maior.</div>
+          <div class="lv-eff" id="e-precoPrazo"></div>
+          <details class="why"><summary>Onde encontrar este número</summary><p><b>1. Desconto à vista:</b> se o fornecedor dá 2% para pagar em 10 dias em vez de 40, os 30 dias custam 2%.<br><b>2. Cotação em duas condições:</b> a diferença entre o preço a 30 e a 60 dias.<br><b>3. Custo de financiamento do fornecedor:</b> taxa mensal com que ele desconta duplicatas × dias ÷ 30 (ex.: 1,5% a.m. por 30 dias ≈ 1,5%). Com risco sacado, use a taxa que o banco cobra do fornecedor.<br>Sem nenhuma das três, deixe em zero: o prazo será tratado como gratuito.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Receita habilitada pelo fornecedor <span class="tag t-num">NUMERADOR</span></span><span class="lv-val" id="v-receita"></span></div>
-          <input type="range" id="a-receita" min="0" max="500" step="5">
+          <div class="lv-head"><span class="lv-name">Proteção de fornecimento <span class="tag t-risk">OPCIONAL</span></span></div>
           <div class="lv-sub">
-            <div class="f"><label>Margem de contribuição da receita nova (%)</label><input class="ifield" id="a-mc" type="number" step="0.5"></div>
-            <div class="hint" style="align-self:end;">Padrão = margem bruta da empresa. Ajuste se a receita nova tiver margem diferente.</div>
+            <div class="f"><label>Custo anual da proteção (R$ mi)</label><input class="ifield" id="a-custoProt" type="number" step="0.5"></div>
+            <div class="f"><label>Prejuízo de uma parada (R$ mi)</label><input class="ifield" id="a-prejParada" type="number" step="1"></div>
           </div>
-          <div class="lv-eff" id="e-receita"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Vendas que só acontecem por causa do fornecedor: inovação codesenvolvida, lançamento antecipado, disponibilidade (OTIF) que evita venda perdida, revenue sharing. Entra pela margem de contribuição, e a receita nova também <b>consome capital de giro</b> (recebíveis + estoque − fornecedores) nos prazos da empresa — por isso o efeito no EVA é menor que o efeito no EBIT.</p></details>
-        </div>
-
-        <div class="lever">
-          <div class="lv-head"><span class="lv-name">Risco de ruptura <span class="tag t-risk">RISCO</span></span><span class="lv-val" id="v-risco"></span></div>
-          <div class="lv-sub">
-            <div class="f"><label>Prob. anual hoje (%)</label><input class="ifield" id="a-p0" type="number" step="1" min="0" max="100"></div>
-            <div class="f"><label>Prob. anual após mitigação (%)</label><input class="ifield" id="a-p1" type="number" step="1" min="0" max="100"></div>
-            <div class="f"><label>Impacto de uma ruptura (R$ mi)</label><input class="ifield" id="a-imp" type="number" step="1" min="0"></div>
-            <div class="f"><label>Custo anual da mitigação (R$ mi)</label><input class="ifield" id="a-custoMit" type="number" step="0.5" min="0"></div>
-          </div>
-          <div class="lv-eff" id="e-risco"></div>
-          <div class="hint" id="riskHint" style="margin-top:.4rem;"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Perda esperada = probabilidade × impacto (margem perdida, frete emergencial, multas, recall). A mitigação — dual sourcing, estoque de segurança, desenvolvimento de fornecedor — vale a pena quando a redução da perda esperada supera seu custo anual. O resultado entra como <b>EBIT esperado</b>: não aparece no balanço do ano, mas em média aparece no resultado.</p></details>
+          <div class="lv-eff" id="e-protecao"></div>
+          <details class="why"><summary>Como usar</summary><p>Quanto custa por ano proteger o fornecimento — segundo fornecedor homologado, estoque de segurança, contrato de reserva de capacidade — e quanto a empresa perde se a linha parar por falta do item (margem perdida, frete emergencial, multas). O custo entra no EBIT. A ferramenta responde de quantos em quantos anos a proteção precisa evitar uma parada para se pagar; o grupo julga se isso é plausível.</p></details>
         </div>
 
         <div class="btn-row">
@@ -297,7 +287,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
       <div class="card">
         <div class="card-title"><span>Resultado para a empresa</span><span class="mono" id="resCat" style="font-size:.6rem;color:var(--blue-l);text-transform:none;letter-spacing:0;"></span></div>
         <div class="kpis">
-          <div class="kpi"><div class="l">Δ EBIT esperado · por ano</div><div class="v" id="k-ebit">—</div><div class="d" id="kd-ebit"></div></div>
+          <div class="kpi"><div class="l">Δ EBIT · por ano</div><div class="v" id="k-ebit">—</div><div class="d" id="kd-ebit"></div></div>
           <div class="kpi"><div class="l">Δ Capital Investido · uma vez</div><div class="v" id="k-ci">—</div><div class="d" id="kd-ci"></div></div>
           <div class="kpi"><div class="l">ROIC</div><div class="v" id="k-roic">—</div><div class="d" id="kd-roic"></div></div>
           <div class="kpi hl"><div class="l">Δ EVA · por ano</div><div class="v" id="k-eva">—</div><div class="d" id="kd-eva"></div></div>
@@ -351,16 +341,13 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
           <li>Saving: <code>ΔEBIT = S × saving%</code></li>
           <li>Prazo: <code>ΔFornecedores = S ÷ 365 × Δdias</code> → <code>ΔCI = −ΔFornecedores</code>; preço do prazo: <code>ΔEBIT = −S × k%</code>; taxa implícita anual <code>≈ k% × 365 ÷ Δdias</code></li>
           <li>Estoque (só gasto direto): <code>ΔEstoque = S ÷ 365 × Δdias</code> — o spend é usado como proxy do valor do material em estoque</li>
-          <li>Receita habilitada R: <code>ΔEBIT = R × margem de contribuição</code>; <code>ΔCI = R ÷ 365 × DSO + CPV(R) ÷ 365 × (DIOH − DPO)</code></li>
-          <li>Risco: <code>ΔEBIT esperado = (p₀ − p₁) × impacto − custo da mitigação</code></li>
+          <li>Proteção de fornecimento: <code>ΔEBIT = −custo anual</code>; ponto de equilíbrio <code>= prejuízo de uma parada ÷ custo anual</code> (anos entre paradas evitadas)</li>
           <li>Ponte de valor: <code>ΔEVA = ΔEBIT × (1 − IR) − WACC × ΔCI</code>. As parcelas somam exatamente o total.</li>
         </ul>
         <h4>Simplificações deliberadas</h4>
         <ul>
           <li>Saldos de fornecedores e estoque calculados sobre o spend antes do saving (efeito de 2ª ordem desprezado).</li>
-          <li>Risco tratado como valor esperado anual, não como evento contábil do ano.</li>
           <li>“Valor criado em perpetuidade” = ΔEVA ÷ WACC: ordem de grandeza, sem crescimento nem prazo de contrato. Repare que, para o prazo, ele devolve exatamente o caixa liberado.</li>
-          <li>A probabilidade sugerida a partir do Registro de Riscos usa uma conversão didática da escala 1–5: 1 = 2%, 2 = 5%, 3 = 10%, 4 = 20%, 5 = 40% ao ano.</li>
         </ul>
         <h4>Fonte do preset Whirlpool</h4>
         <p id="srcWhirl"></p>
@@ -459,18 +446,10 @@ function selecionarCategoria(id) {
     cat = { spend: Math.round(sp * 10) / 10, direto: true };
     alav = Object.assign({}, F.ALAV_ZERO);
   }
-  preencherRiscoDoRegistro(!fin);
   const back = $('backLink');
   back.href = 'index.html';
   escreverCategoria(); escreverAlavancas(); atualizar();
   history.replaceState(null, '', id && id !== AVULSA_ID ? '?cat=' + encodeURIComponent(id) : location.pathname);
-}
-function preencherRiscoDoRegistro(definirProb) {
-  const s = sup(); const rs = riscosCat(s);
-  if (!rs.length) { $('riskHint').textContent = ''; return; }
-  const top = [...rs].sort((a, b) => (b.p * b.i) - (a.p * a.i))[0];
-  if (definirProb && !alav.p0) alav.p0 = F.PROB_ESCALA[top.p] || 0;
-  $('riskHint').innerHTML = `Maior risco registrado: <b style="color:var(--soft)">${top.desc}</b> (P${top.p} × I${top.i}). Probabilidade sugerida pela conversão didática da escala: ${F.PROB_ESCALA[top.p]}% ao ano. Informe o impacto em R$.`;
 }
 function escreverCategoria() {
   $('c-spend').value = cat.spend;
@@ -482,7 +461,7 @@ function escreverCategoria() {
   $('btnSug').textContent = q ? `Aplicar ponto de partida · ${q}` : 'Aplicar ponto de partida do quadrante';
   $('btnSug').disabled = !q; $('btnSug').style.opacity = q ? 1 : .4;
   $('sugHint').textContent = q ? 'Preenche alavancas típicas da estratégia do quadrante como hipótese inicial — o grupo deve ajustar com os dados da categoria.' : 'Disponível para categorias cadastradas e posicionadas na Kraljic.';
-  $('lv-estoque').classList.toggle('off', !cat.direto);
+  $('a-estoque').disabled = !cat.direto; $('u-estoque').style.opacity = cat.direto ? 1 : .4;
 }
 function setNatureza(d) { cat.direto = d; escreverCategoria(); atualizar(); agendar(); }
 
@@ -509,24 +488,16 @@ function lerBase() {
 }
 
 // ---------- alavancas ----------
-const SLIDERS = ['saving', 'dpo', 'precoPrazo', 'estoque', 'receita'];
-const NUMS = ['mc', 'p0', 'p1', 'imp', 'custoMit'];
+const CAMPOS = ['saving', 'dpo', 'estoque', 'precoPrazo', 'custoProt', 'prejParada'];
 function escreverAlavancas() {
-  const maxR = Math.max(50, Math.round(base.receita * 0.05 / 5) * 5);
-  $('a-receita').max = maxR; $('a-receita').step = maxR > 200 ? 5 : 1;
-  SLIDERS.forEach(k => $('a-' + k).value = alav[k]);
-  $('a-mc').value = (alav.mc === null || alav.mc === undefined) ? '' : alav.mc;
-  $('a-mc').placeholder = (100 - base.cpv).toFixed(1);
-  ['p0', 'p1', 'imp', 'custoMit'].forEach(k => $('a-' + k).value = alav[k]);
+  CAMPOS.forEach(k => $('a-' + k).value = alav[k] || 0);
 }
 function lerAlavancas() {
-  SLIDERS.forEach(k => alav[k] = +$('a-' + k).value);
-  const mc = $('a-mc').value.trim(); alav.mc = mc === '' ? null : +mc;
-  ['p0', 'p1', 'imp', 'custoMit'].forEach(k => { const v = parseFloat($('a-' + k).value); alav[k] = isFinite(v) ? v : 0; });
+  CAMPOS.forEach(k => { const v = parseFloat(String($('a-' + k).value).replace(',', '.')); alav[k] = isFinite(v) ? v : 0; });
 }
 function aplicarSugestao() {
   const q = quadAtual(); if (!q) return;
-  alav = F.sugestaoQuadrante(q, cat.spend, base);
+  alav = F.sugestaoQuadrante(q, cat.spend);
   if (!cat.direto) alav.estoque = 0;
   escreverAlavancas(); atualizar(); agendar();
   toast('Ponto de partida aplicado: ' + q);
@@ -547,23 +518,18 @@ function atualizar() {
 
   // rótulos das alavancas
   const L = Object.fromEntries(r.L.map(x => [x.k, x]));
-  $('v-saving').textContent = F.fmtPct(alav.saving) + ' do spend';
   $('e-saving').innerHTML = `ΔEBIT <b>${F.fmtSig(L.saving.dEbit)}</b>/ano · ΔEVA <b>${F.fmtSig(L.saving.dEva)}</b>/ano`;
-  $('v-dpo').textContent = (alav.dpo > 0 ? '+' : '') + alav.dpo + ' dias';
   $('e-dpo').innerHTML = `Caixa liberado uma vez <b>${F.fmtSig(-L.dpo.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.dpo.dEva)}</b>/ano (WACC × caixa)`;
-  $('v-precoPrazo').textContent = F.fmtPct(alav.precoPrazo) + ' do spend';
   let tx = '';
   if (r.taxaPrazo !== null) {
     const ok = r.taxaPrazo <= base.wacc;
-    tx = ` · taxa implícita <b style="color:${ok ? 'var(--green)' : 'var(--red)'}">${F.fmtPct(r.taxaPrazo)} a.a.</b> vs WACC ${F.fmtPct(base.wacc)}`;
-  }
+    tx = ` · equivale a <b style="color:${ok ? 'var(--green)' : 'var(--red)'}">${F.fmtPct(r.taxaPrazo)} a.a.</b> vs WACC ${F.fmtPct(base.wacc)}`;
+  } else if (alav.precoPrazo > 0) tx = ' · informe os dias de prazo para calcular a taxa anual';
   $('e-precoPrazo').innerHTML = `ΔEBIT <b>${F.fmtSig(L.precoPrazo.dEbit)}</b>/ano${tx}`;
-  $('v-estoque').textContent = cat.direto ? ((alav.estoque > 0 ? '+' : '') + alav.estoque + ' dias') : 'n/a';
   $('e-estoque').innerHTML = cat.direto ? `ΔEstoque <b>${F.fmtSig(L.estoque.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.estoque.dEva)}</b>/ano` : 'Gasto indireto não forma estoque de material.';
-  $('v-receita').textContent = F.fmtMi(alav.receita) + '/ano';
-  $('e-receita').innerHTML = `ΔEBIT <b>${F.fmtSig(L.receita.dEbit)}</b> · capital de giro consumido <b>${F.fmtSig(L.receita.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.receita.dEva)}</b>/ano`;
-  $('v-risco').textContent = F.fmtSig(L.risco.dEbit) + '/ano';
-  $('e-risco').innerHTML = `Perda esperada ${F.fmtMi(r.perdaAntes)} → ${F.fmtMi(r.perdaDepois)} · custo da mitigação ${F.fmtMi(alav.custoMit)} · ΔEVA <b>${F.fmtSig(L.risco.dEva)}</b>/ano`;
+  $('e-protecao').innerHTML = r.anosEquilibrio !== null
+    ? `ΔEBIT <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · <b style="color:var(--gold)">se paga se evitar uma parada a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos</b>`
+    : (alav.custoProt > 0 ? `ΔEBIT <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · informe o prejuízo de uma parada para ver o ponto de equilíbrio` : 'Deixe em branco se a estratégia não envolve proteção de fornecimento.');
 
   // KPIs
   $('resCat').textContent = ($('catNome').textContent || '') + (S ? ' · spend ' + F.fmtMi(S) : '');
@@ -628,6 +594,7 @@ function leitura(r, L) {
     if (r.taxaPrazo > w) p.push(`<span class="warn">⚠ O fornecedor está cobrando ${F.fmtPct(r.taxaPrazo)} ao ano pelo prazo, acima do WACC de ${F.fmtPct(w)}. Pagar à vista sairia mais barato — ou ofereça um programa de SCF, em que o banco antecipa ao fornecedor com taxa ancorada no risco da sua empresa.</span>`);
     else p.push(`O custo do prazo (${F.fmtPct(r.taxaPrazo)} a.a.) está abaixo do WACC: financiar-se no fornecedor ainda compensa.`);
   }
+  if (alav.dpo > 0 && !(alav.precoPrazo > 0)) p.push(`O prazo foi tratado como gratuito. Se o fornecedor oferece desconto à vista, ou cotou preços diferentes para 30 e 60 dias, informe esse custo em "Preço do prazo".`);
   if (alav.dpo >= 45) p.push(`<span class="warn">⚠ +${alav.dpo} dias é o DSO do fornecedor aumentando na mesma medida. Em fornecedor de menor porte, isso pressiona o caixa dele e pode virar ruptura, queda de qualidade ou perda de prioridade.</span>`);
   if (cat.direto && alav.estoque > 0) {
     const q = quadAtual();
@@ -635,11 +602,10 @@ function leitura(r, L) {
       ? `Mais estoque em item gargalo é seguro, não desperdício: compare o custo de capital (${F.fmtSig(L.estoque.dEva)}/ano) com a redução da perda esperada.`
       : `<span class="warn">Mais ${alav.estoque} dias de estoque custam ${F.fmtSig(-L.estoque.dEva)}/ano em capital. Se veio de desconto por volume ou sourcing offshore, o saving precisa pagar esse custo — é a conta do TCO.</span>`);
   }
-  if (alav.receita > 0) p.push(`A receita habilitada gera ${F.fmtSig(L.receita.dEbit)} de EBIT, mas consome ${F.fmtMi(L.receita.dCi)} de capital de giro — o efeito líquido no EVA é ${F.fmtSig(L.receita.dEva)}/ano.`);
-  if (alav.imp > 0 && (alav.p0 !== alav.p1 || alav.custoMit > 0)) {
-    p.push(L.risco.dEbit >= 0
-      ? `A mitigação se paga: reduz a perda esperada em ${F.fmtMi(r.perdaAntes - r.perdaDepois)} por ano${alav.custoMit > 0 ? ' contra um custo de ' + F.fmtMi(alav.custoMit) : ', sem custo adicional informado'}. No ROCE de superfície ela pareceria custo.`
-      : `<span class="warn">A mitigação custa ${F.fmtMi(alav.custoMit)} por ano e reduz a perda esperada em só ${F.fmtMi(r.perdaAntes - r.perdaDepois)} — revise o desenho ou o tamanho do seguro.</span>`);
+  if (alav.custoProt > 0) {
+    p.push(r.anosEquilibrio !== null
+      ? `A proteção custa ${F.fmtMi(alav.custoProt)} por ano e se paga se evitar uma parada de ${F.fmtMi(alav.prejParada)} a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos. A pergunta para o grupo: com que frequência essa categoria já parou ou quase parou a linha? No ROCE de superfície, essa proteção aparece só como custo.`
+      : `A proteção custa ${F.fmtMi(alav.custoProt)} por ano. Informe o prejuízo de uma parada para saber se ela se paga.`);
   }
   if (r.equivReceita > 0) p.push(`Para o Conselho: o saving líquido equivale a vender <b>${F.fmtMi(r.equivReceita)}</b> a mais por ano com a margem atual.`);
   return p.map(x => `<p>${x}</p>`).join('');
@@ -678,8 +644,7 @@ function salvarCategoria(manual) {
 
 // ---------- eventos ----------
 BASE_IDS.forEach(k => $('b-' + k).addEventListener('input', () => { lerBase(); escreverAlavancas(); atualizar(); renderPortfolio(); agendar(); }));
-SLIDERS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
-NUMS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
+CAMPOS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
 $('c-spend').addEventListener('input', () => { const v = parseFloat($('c-spend').value); cat.spend = isFinite(v) ? v : 0; atualizar(); agendar(); });
 
 // ---------- init ----------

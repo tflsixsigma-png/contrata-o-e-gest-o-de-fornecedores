@@ -27,35 +27,25 @@ const FinCalc = (function () {
   // Alavanca vazia
   const ALAV_ZERO = {
     saving: 0, dpo: 0, precoPrazo: 0, estoque: 0,
-    receita: 0, mc: null, p0: 0, p1: 0, imp: 0, custoMit: 0
+    custoProt: 0, prejParada: 0
   };
 
   // Pontos de partida didáticos por quadrante Kraljic (o aluno ajusta)
-  function sugestaoQuadrante(quad, spend, base) {
+  function sugestaoQuadrante(quad, spend) {
     const z = Object.assign({}, ALAV_ZERO);
-    const mg = Math.round((100 - base.cpv) * 10) / 10;
     switch (quad) {
       case 'Alavancagem':
         return Object.assign(z, { saving: 6, dpo: 15 });
       case 'Estratégico':
-        return Object.assign(z, {
-          saving: 2, dpo: 30, precoPrazo: 0.4, estoque: -15,
-          receita: Math.round(base.receita * 0.005), mc: mg
-        });
+        return Object.assign(z, { saving: 2, dpo: 30, precoPrazo: 0.4, estoque: -15 });
       case 'Gargalo':
-        return Object.assign(z, {
-          estoque: 15, p0: 20, p1: 5,
-          imp: Math.round(spend * 3), custoMit: +(spend * 0.02).toFixed(1)
-        });
+        return Object.assign(z, { estoque: 15, custoProt: +(spend * 0.02).toFixed(1) });
       case 'Não-crítico':
         return Object.assign(z, { saving: 4, dpo: 10 });
       default:
         return z;
     }
   }
-
-  // Escala de probabilidade 1–5 do registro de riscos → % anual (conversão didática)
-  const PROB_ESCALA = { 1: 2, 2: 5, 3: 10, 4: 20, 5: 40 };
 
   // ---------- Situação base da empresa ----------
   function base(b) {
@@ -84,7 +74,6 @@ const FinCalc = (function () {
     const B = base(b);
     const t = b.ir / 100, w = b.wacc / 100;
     const S = Math.max(0, +cat.spend || 0);
-    const mc = (a.mc === null || a.mc === undefined || a.mc === '') ? (100 - b.cpv) : +a.mc;
 
     // Efeitos (saldos calculados sobre o spend base — efeito de 2ª ordem do novo preço ignorado)
     const L = [];
@@ -101,17 +90,8 @@ const FinCalc = (function () {
     const dEst = cat.direto ? S / 365 * a.estoque : 0;
     push('estoque', 'Estoque da categoria', 0, dEst, dEst);
 
-    // Receita habilitada pelo fornecedor: margem de contribuição + capital de giro que ela consome
-    const R = Math.max(0, +a.receita || 0);
-    const cogsR = R * b.cpv / 100;
-    const wcR = R / 365 * b.dso + cogsR / 365 * b.dioh - cogsR / 365 * b.dpo;
-    const ceR = R / 365 * b.dso + cogsR / 365 * b.dioh;
-    push('receita', 'Receita habilitada', R * mc / 100, wcR, ceR);
-
-    // Risco: variação da perda esperada (prob × impacto) menos o custo anual da mitigação
-    const perdaAntes = a.p0 / 100 * a.imp;
-    const perdaDepois = a.p1 / 100 * a.imp;
-    push('risco', 'Risco (perda esperada)', (perdaAntes - perdaDepois) - a.custoMit, 0, 0);
+    // Proteção de fornecimento: custo anual (2º fornecedor, estoque de segurança, contrato de reserva)
+    push('protecao', 'Proteção de fornecimento', -(+a.custoProt || 0), 0, 0);
 
     const sum = (f) => L.reduce((s, x) => s + x[f], 0);
     const dEbit = sum('dEbit'), dCi = sum('dCi'), dCe = sum('dCe'), dEva = sum('dEva');
@@ -136,7 +116,9 @@ const FinCalc = (function () {
       recorrente: dEbit,                                  // efeito anual no resultado
       equivReceita: b.ebit > 0 ? precoLiquido / (b.ebit / 100) : 0,
       valorPerpetuidade: w > 0 ? dEva / w : 0,
-      taxaPrazo, perdaAntes, perdaDepois, mcUsada: mc, spend: S
+      taxaPrazo, spend: S,
+      // a proteção se paga se evitar uma parada a cada N anos
+      anosEquilibrio: (a.custoProt > 0 && a.prejParada > 0) ? a.prejParada / a.custoProt : null
     };
   }
 
@@ -169,5 +151,5 @@ const FinCalc = (function () {
   const fmtPct = (v, d = 1) => isFinite(v) ? v.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d }) + '%' : '—';
   const fmtPP = (v, d = 1) => (v > 0.049 ? '+' : (v < -0.049 ? '−' : '')) + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' p.p.';
 
-  return { PRESETS, BASE_PADRAO, ALAV_ZERO, PROB_ESCALA, base, impacto, sugestaoQuadrante, parseSpend, fmtMi, fmtSig, fmtPct, fmtPP };
+  return { PRESETS, BASE_PADRAO, ALAV_ZERO, base, impacto, sugestaoQuadrante, parseSpend, fmtMi, fmtSig, fmtPct, fmtPP };
 })();

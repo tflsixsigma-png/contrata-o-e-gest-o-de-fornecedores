@@ -1348,7 +1348,7 @@ function generatePDF(){
             h+=`<h2>💰 Impacto Financeiro — ${s.name}</h2>
             <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Spend ${F.fmtMi(r.spend)} · gasto ${s.fin.direto!==false?'direto (CPV)':'indireto'} · base ${finB.nome||'empresa do grupo'}</div>
             <table><thead><tr><th>Alavanca</th><th>Premissa</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>`;
-            const prem={saving:F.fmtPct(a.saving)+' do spend',precoPrazo:F.fmtPct(a.precoPrazo)+' do spend'+(r.taxaPrazo!==null?' ('+F.fmtPct(r.taxaPrazo)+' a.a.)':''),dpo:(a.dpo>0?'+':'')+a.dpo+' dias',estoque:s.fin.direto!==false?(a.estoque>0?'+':'')+a.estoque+' dias':'n/a',receita:F.fmtMi(a.receita)+'/ano · MC '+F.fmtPct(r.mcUsada),risco:'p '+a.p0+'% → '+a.p1+'% · impacto '+F.fmtMi(a.imp)+' · mitigação '+F.fmtMi(a.custoMit)};
+            const prem={saving:F.fmtPct(a.saving)+' do spend',precoPrazo:F.fmtPct(a.precoPrazo)+' do spend'+(r.taxaPrazo!==null?' ('+F.fmtPct(r.taxaPrazo)+' a.a.)':''),dpo:(a.dpo>0?'+':'')+a.dpo+' dias',estoque:s.fin.direto!==false?(a.estoque>0?'+':'')+a.estoque+' dias':'n/a',protecao:F.fmtMi(a.custoProt)+'/ano'+(r.anosEquilibrio!==null?' · se paga com 1 parada evitada a cada '+r.anosEquilibrio.toLocaleString('pt-BR',{maximumFractionDigits:1})+' anos':'')};
             const z=v=>Math.abs(v)<0.005?'—':F.fmtSig(v);
             r.L.filter(x=>Math.abs(x.dEbit)>=0.005||Math.abs(x.dCi)>=0.005).forEach(x=>{h+=`<tr><td>${x.nome}</td><td>${prem[x.k]}</td><td>${z(x.dEbit)}</td><td>${z(x.dCi)}</td><td>${z(x.dEva)}</td></tr>`;});
             h+=`<tr><td><b>Total</b></td><td></td><td><b>${F.fmtSig(r.dEbit)}</b></td><td><b>${F.fmtSig(r.dCi)}</b></td><td><b>${F.fmtSig(r.dEva)}</b></td></tr></tbody></table>
