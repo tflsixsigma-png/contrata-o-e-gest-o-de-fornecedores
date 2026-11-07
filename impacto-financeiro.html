@@ -37,6 +37,14 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);line-h
 
 /* LAYOUT */
 main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem;}
+.ex-card{display:block;text-decoration:none;background:linear-gradient(135deg,rgba(201,169,97,.16),rgba(201,169,97,.04));border:2px solid var(--gold);border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:.8rem;color:var(--text);transition:transform .15s;}
+.ex-card:hover{transform:translateY(-2px);}
+.ex-step{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--gold);text-transform:uppercase;letter-spacing:.16em;font-weight:700;margin-bottom:.35rem;}
+.ex-row{display:flex;justify-content:space-between;align-items:center;gap:1.2rem;flex-wrap:wrap;}
+.ex-title{font-size:1.25rem;font-weight:800;margin-bottom:.25rem;}
+.ex-text{font-size:.86rem;color:var(--soft);max-width:760px;line-height:1.55;}
+.ex-btn{background:var(--gold);color:#0a0f1e;font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;padding:.7rem 1.2rem;border-radius:8px;white-space:nowrap;}
+.ex-next{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.16em;font-weight:700;margin:1.2rem 0 .5rem;}
 .intro{padding:1rem 1.2rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);margin-bottom:1.3rem;font-size:.84rem;color:var(--soft);line-height:1.65;}
 .intro b{color:var(--text);}
 .intro .eq{font-family:'Space Mono',monospace;font-size:.74rem;color:var(--gold);display:block;margin-top:.45rem;}
@@ -180,6 +188,18 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 </div>
 
 <main>
+  <a class="ex-card" href="exercicio-whirlpool.html">
+    <div class="ex-step">Passo 1 · comece por aqui</div>
+    <div class="ex-row">
+      <div>
+        <div class="ex-title">🎓 Exercício Whirlpool</div>
+        <div class="ex-text">Cinco negociações da Whirlpool com fornecedores — aço, compressores, resinas, placas eletrônicas e embalagens. Você digita os dados, vê a conta passo a passo e descobre quais criaram valor. Os conceitos de finanças são explicados ao longo do caminho.</div>
+      </div>
+      <span class="ex-btn">Abrir o exercício →</span>
+    </div>
+  </a>
+  <div class="ex-next">Passo 2 · depois do exercício, simule aqui uma categoria da sua empresa</div>
+
   <div class="intro">
     <b>A pergunta desta aba:</b> a estratégia escolhida para a categoria cria valor para a empresa? Compras ganha dinheiro de dois jeitos:
     <b>pagando menos</b> (o desconto vira lucro a mais, todo ano) e <b>deixando menos dinheiro parado</b> (pagar o fornecedor mais tarde ou ter menos estoque libera caixa uma única vez).
@@ -192,7 +212,6 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
       <b>ROIC:</b> quanto a operação rende sobre o dinheiro parado nela (lucro após imposto ÷ capital investido).<br>
       <b>Valor criado (EVA):</b> o lucro que sobra depois de pagar o custo de todo o dinheiro parado. Se uma decisão aumenta o EVA, ela criou valor.
     </p></details>
-    <span style="display:block;margin-top:.6rem;">Primeira vez? Comece pelo <a href="exercicio-whirlpool.html" style="color:var(--gold);font-weight:700;">🎓 Exercício Whirlpool</a>: cinco negociações guiadas, com os conceitos explicados passo a passo.</span>
   </div>
 
   <div class="layout">
