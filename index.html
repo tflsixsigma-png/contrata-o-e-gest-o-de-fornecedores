@@ -1278,15 +1278,15 @@ function generatePDF(){
     if(finSups.length){
         const F=FinCalc, B=F.base(finB); let tE=0,tC=0,tV=0,tS=0;
         h+=`<h2>💰 Impacto Financeiro de Compras — portfólio</h2>
-        <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Base: ${finB.nome||'empresa do grupo'} · receita ${F.fmtMi(finB.receita)} · margem EBIT ${F.fmtPct(finB.ebit)} · WACC ${F.fmtPct(finB.wacc)} · ROIC base ${F.fmtPct(B.roic)}</div>
-        <table><thead><tr><th>Categoria</th><th>Spend</th><th>Δ EBIT/ano</th><th>Δ Capital Investido</th><th>Δ EVA/ano</th></tr></thead><tbody>`;
+        <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Base: ${finB.nome||'empresa do grupo'} · receita ${F.fmtMi(finB.receita)} · margem EBIT ${F.fmtPct(finB.ebit)} · custo do dinheiro (WACC) ${F.fmtPct(finB.wacc)} · ROIC hoje ${F.fmtPct(B.roic)}</div>
+        <table><thead><tr><th>Categoria</th><th>Spend</th><th>Lucro a mais/ano (EBIT)</th><th>Caixa liberado (uma vez)</th><th>Valor criado/ano (EVA)</th></tr></thead><tbody>`;
         finSups.forEach(s=>{
             const r=F.impacto(finB,{spend:s.fin.spend,direto:s.fin.direto!==false},s.fin.alav);
             tE+=r.dEbit;tC+=r.dCi;tV+=r.dEva;tS+=r.spend;
-            h+=`<tr><td><b>${s.name}</b></td><td>${F.fmtMi(r.spend)}</td><td>${F.fmtSig(r.dEbit)}</td><td>${F.fmtSig(r.dCi)}</td><td>${F.fmtSig(r.dEva)}</td></tr>`;
+            h+=`<tr><td><b>${s.name}</b></td><td>${F.fmtMi(r.spend)}</td><td>${F.fmtSig(r.dEbit)}</td><td>${F.fmtSig(-r.dCi)}</td><td>${F.fmtSig(r.dEva)}</td></tr>`;
         });
         const roicN=((B.ebit+tE)*(1-finB.ir/100))/(B.ci+tC)*100;
-        h+=`<tr><td><b>Total</b></td><td><b>${F.fmtMi(tS)}</b></td><td><b>${F.fmtSig(tE)}</b></td><td><b>${F.fmtSig(tC)}</b></td><td><b>${F.fmtSig(tV)}</b></td></tr></tbody></table>
+        h+=`<tr><td><b>Total</b></td><td><b>${F.fmtMi(tS)}</b></td><td><b>${F.fmtSig(tE)}</b></td><td><b>${F.fmtSig(-tC)}</b></td><td><b>${F.fmtSig(tV)}</b></td></tr></tbody></table>
         <div style="font-size:.74rem;">ROIC da empresa: <b>${F.fmtPct(B.roic)} → ${F.fmtPct(roicN)}</b> (${F.fmtPP(roicN-B.roic,2)}).</div>`;
     }
     h+=`</div>`;
@@ -1348,12 +1348,12 @@ function generatePDF(){
             const r=F.impacto(finB,{spend:s.fin.spend,direto:s.fin.direto!==false},a);
             h+=`<h2>💰 Impacto Financeiro — ${s.name}</h2>
             <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Spend ${F.fmtMi(r.spend)} · gasto ${s.fin.direto!==false?'direto (CPV)':'indireto'} · base ${finB.nome||'empresa do grupo'}</div>
-            <table><thead><tr><th>Alavanca</th><th>Premissa</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>`;
+            <table><thead><tr><th>Alavanca</th><th>Premissa</th><th>Lucro a mais/ano</th><th>Caixa liberado</th><th>Valor criado/ano</th></tr></thead><tbody>`;
             const prem={saving:F.fmtPct(a.saving)+' do spend',precoPrazo:F.fmtPct(a.precoPrazo)+' do spend'+(r.taxaPrazo!==null?' ('+F.fmtPct(r.taxaPrazo)+' a.a.)':''),dpo:(a.dpo>0?'+':'')+a.dpo+' dias',estoque:s.fin.direto!==false?(a.estoque>0?'+':'')+a.estoque+' dias':'n/a',protecao:F.fmtMi(a.custoProt)+'/ano'+(r.anosEquilibrio!==null?' · se paga com 1 parada evitada a cada '+r.anosEquilibrio.toLocaleString('pt-BR',{maximumFractionDigits:1})+' anos':'')};
             const z=v=>Math.abs(v)<0.005?'—':F.fmtSig(v);
-            r.L.filter(x=>Math.abs(x.dEbit)>=0.005||Math.abs(x.dCi)>=0.005).forEach(x=>{h+=`<tr><td>${x.nome}</td><td>${prem[x.k]}</td><td>${z(x.dEbit)}</td><td>${z(x.dCi)}</td><td>${z(x.dEva)}</td></tr>`;});
-            h+=`<tr><td><b>Total</b></td><td></td><td><b>${F.fmtSig(r.dEbit)}</b></td><td><b>${F.fmtSig(r.dCi)}</b></td><td><b>${F.fmtSig(r.dEva)}</b></td></tr></tbody></table>
-            <div style="font-size:.74rem;">ROIC ${F.fmtPct(r.B.roic)} → <b>${F.fmtPct(r.N.roic)}</b> · resultado recorrente ${F.fmtSig(r.dNopat)} NOPAT/ano · caixa liberado uma vez ${F.fmtSig(r.caixaUnico)}${r.equivReceita>0?' · saving líquido equivale a '+F.fmtMi(r.equivReceita)+' de vendas':''}</div>`;
+            r.L.filter(x=>Math.abs(x.dEbit)>=0.005||Math.abs(x.dCi)>=0.005).forEach(x=>{h+=`<tr><td>${x.nome}</td><td>${prem[x.k]}</td><td>${z(x.dEbit)}</td><td>${z(-x.dCi)}</td><td>${z(x.dEva)}</td></tr>`;});
+            h+=`<tr><td><b>Total</b></td><td></td><td><b>${F.fmtSig(r.dEbit)}</b></td><td><b>${F.fmtSig(-r.dCi)}</b></td><td><b>${F.fmtSig(r.dEva)}</b></td></tr></tbody></table>
+            <div style="font-size:.74rem;">ROIC ${F.fmtPct(r.B.roic)} → <b>${F.fmtPct(r.N.roic)}</b> · lucro após imposto a mais ${F.fmtSig(r.dNopat)}/ano · caixa liberado uma vez ${F.fmtSig(r.caixaUnico)}${r.equivReceita>0?' · o desconto equivale a vender '+F.fmtMi(r.equivReceita)+' a mais':''}</div>`;
         }
         if(incC){
             h+=`<h2>✅ Checklist de Contrato</h2>`;

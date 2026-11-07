@@ -49,7 +49,7 @@ main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem;}
 .hint{font-size:.7rem;color:var(--muted);line-height:1.5;}
 
 /* FIELDS */
-.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;align-items:end;}
 .f label{display:block;font-size:.64rem;color:var(--muted);margin-bottom:.22rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
 .ifield{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Space Mono',monospace;font-size:.82rem;width:100%;outline:none;}
 .ifield:focus{border-color:var(--blue);}
@@ -181,10 +181,17 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 
 <main>
   <div class="intro">
-    <b>A pergunta desta aba:</b> a estratégia escolhida para a categoria cria valor para o acionista — e por qual linha da equação?
-    Compras mexe no numerador (preço) e no denominador (prazo e estoque) do ROIC. Os efeitos são de natureza diferente:
-    o preço se repete todo ano no resultado; o prazo e o estoque liberam caixa <b>uma vez</b>.
-    <span class="eq">ROIC = NOPAT ÷ Capital Investido &nbsp;·&nbsp; EVA = NOPAT − WACC × Capital Investido</span>
+    <b>A pergunta desta aba:</b> a estratégia escolhida para a categoria cria valor para a empresa? Compras ganha dinheiro de dois jeitos:
+    <b>pagando menos</b> (o desconto vira lucro a mais, todo ano) e <b>deixando menos dinheiro parado</b> (pagar o fornecedor mais tarde ou ter menos estoque libera caixa uma única vez).
+    Como os dois não se somam diretamente, a aba converte tudo em <b>valor criado por ano</b> (EVA): lucro após imposto + custo do dinheiro × caixa liberado.
+    <details class="why" style="margin-top:.6rem;"><summary>Seis palavras que aparecem nesta aba</summary><p>
+      <b>Lucro operacional (EBIT):</b> o que sobra das vendas depois dos custos da operação, antes de juros e impostos.<br>
+      <b>Lucro após imposto (NOPAT):</b> o lucro operacional depois do imposto de renda.<br>
+      <b>Capital investido:</b> o dinheiro parado para a operação funcionar — estoque, valores a receber de clientes e fábricas, menos o que se deve a fornecedores.<br>
+      <b>Custo do dinheiro (WACC):</b> quanto custa, por ano, cada real desse dinheiro parado; a média entre os juros dos bancos e o retorno que os acionistas exigem.<br>
+      <b>ROIC:</b> quanto a operação rende sobre o dinheiro parado nela (lucro após imposto ÷ capital investido).<br>
+      <b>Valor criado (EVA):</b> o lucro que sobra depois de pagar o custo de todo o dinheiro parado. Se uma decisão aumenta o EVA, ela criou valor.
+    </p></details>
     <span style="display:block;margin-top:.6rem;">Primeira vez? Comece pelo <a href="exercicio-whirlpool.html" style="color:var(--gold);font-weight:700;">🎓 Exercício Whirlpool</a>: cinco negociações guiadas, com os conceitos explicados passo a passo.</span>
   </div>
 
@@ -199,21 +206,21 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
           <button class="chip" data-p="propria" onclick="aplicarPreset('propria')">Minha empresa</button>
         </div>
         <div class="fgrid">
-          <div class="f"><label>Receita líquida</label><input class="ifield" id="b-receita" type="number" step="10"></div>
-          <div class="f"><label>CPV (% receita)</label><input class="ifield" id="b-cpv" type="number" step="0.1"></div>
-          <div class="f"><label>Margem EBIT (%)</label><input class="ifield" id="b-ebit" type="number" step="0.1"></div>
-          <div class="f"><label>DIOH (dias)</label><input class="ifield" id="b-dioh" type="number" step="1"></div>
-          <div class="f"><label>DSO (dias)</label><input class="ifield" id="b-dso" type="number" step="1"></div>
-          <div class="f"><label>DPO (dias)</label><input class="ifield" id="b-dpo" type="number" step="1"></div>
-          <div class="f"><label>Ativo fixo líquido</label><input class="ifield" id="b-fixo" type="number" step="10"></div>
-          <div class="f"><label>Alíquota IR (%)</label><input class="ifield" id="b-ir" type="number" step="1"></div>
-          <div class="f"><label>WACC (%)</label><input class="ifield" id="b-wacc" type="number" step="0.5"></div>
+          <div class="f"><label>Receita líquida (R$ mi)</label><input class="ifield" id="b-receita" type="number" step="10"></div>
+          <div class="f"><label>Custo dos produtos · CPV (% da receita)</label><input class="ifield" id="b-cpv" type="number" step="0.1"></div>
+          <div class="f"><label>Margem operacional · EBIT (%)</label><input class="ifield" id="b-ebit" type="number" step="0.1"></div>
+          <div class="f"><label>Dias de estoque · DIOH</label><input class="ifield" id="b-dioh" type="number" step="1"></div>
+          <div class="f"><label>Dias para receber · DSO</label><input class="ifield" id="b-dso" type="number" step="1"></div>
+          <div class="f"><label>Dias para pagar · DPO</label><input class="ifield" id="b-dpo" type="number" step="1"></div>
+          <div class="f"><label>Fábricas e equipamentos (R$ mi)</label><input class="ifield" id="b-fixo" type="number" step="10"></div>
+          <div class="f"><label>Imposto de renda (%)</label><input class="ifield" id="b-ir" type="number" step="1"></div>
+          <div class="f"><label>Custo do dinheiro · WACC (%)</label><input class="ifield" id="b-wacc" type="number" step="0.5"></div>
         </div>
         <div class="mini-kpis">
-          <div class="mk"><div class="l">ROIC base</div><div class="v" id="mk-roic">—</div></div>
-          <div class="mk"><div class="l">ROCE base</div><div class="v" id="mk-roce">—</div></div>
-          <div class="mk"><div class="l">EVA base</div><div class="v" id="mk-eva">—</div></div>
-          <div class="mk"><div class="l">CCC</div><div class="v" id="mk-ccc">—</div></div>
+          <div class="mk"><div class="l">ROIC hoje</div><div class="v" id="mk-roic">—</div></div>
+          <div class="mk"><div class="l">ROCE hoje</div><div class="v" id="mk-roce">—</div></div>
+          <div class="mk"><div class="l">Valor criado hoje (EVA)</div><div class="v" id="mk-eva">—</div></div>
+          <div class="mk"><div class="l">Ciclo de caixa (CCC)</div><div class="v" id="mk-ccc">—</div></div>
         </div>
         <div class="src" id="baseSrc"></div>
       </div>
@@ -241,21 +248,21 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <div class="card-title"><span><span class="step">③</span>Alavancas de Compras</span></div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="unit-in"><input class="ifield num" id="a-saving" type="text" inputmode="decimal" autocomplete="off"><span>% do spend</span></span></div>
+          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">PAGAR MENOS</span></span><span class="unit-in"><input class="ifield num" id="a-saving" type="text" inputmode="decimal" autocomplete="off"><span>% do spend</span></span></div>
           <div class="lv-eff" id="e-saving"></div>
-          <details class="why"><summary>De onde vem o número</summary><p>Redução de preço obtida na negociação, sobre o spend da categoria. Vai inteira para o EBIT e se repete todo ano enquanto o contrato durar. Use o saving <b>líquido de TCO</b>: se o fornecedor mais barato traz frete, lead time ou estoque extra, lance esses efeitos nas outras alavancas.</p></details>
+          <details class="why"><summary>De onde vem o número</summary><p>Quanto o preço caiu na negociação, em % do gasto da categoria. Cada real de desconto vira lucro a mais, e isso se repete todo ano enquanto o contrato durar. Se o fornecedor mais barato traz frete, demora ou estoque extra, lance esses efeitos nas outras alavancas: o que importa é o custo total (TCO), não só o preço.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in"><button type="button" class="pm" data-for="a-dpo" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-dpo" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
+          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">MENOS DINHEIRO PARADO</span></span><span class="unit-in"><button type="button" class="pm" data-for="a-dpo" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-dpo" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
           <div class="lv-eff" id="e-dpo"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Dias a mais (ou a menos, com sinal negativo) para pagar o fornecedor. Contas a Pagar sobe e o <b>Capital Investido cai uma única vez</b> (Convenção B). O NOPAT não muda. O ganho anual de valor é o custo de capital que deixa de incidir sobre esse caixa: WACC × caixa liberado.</p></details>
+          <details class="why"><summary>Como entra na conta</summary><p>Quantos dias a mais a empresa passa a ter para pagar o fornecedor (use ± para dias a menos). Pagar mais tarde deixa dinheiro no caixa, uma única vez; o lucro não muda. Esse caixa vale, por ano, o custo do dinheiro (WACC) × o valor liberado.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in" id="u-estoque"><button type="button" class="pm" data-for="a-estoque" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-estoque" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
+          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">MENOS DINHEIRO PARADO</span></span><span class="unit-in" id="u-estoque"><button type="button" class="pm" data-for="a-estoque" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-estoque" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
           <div class="lv-eff" id="e-estoque"></div>
-          <details class="why"><summary>Como entra na conta</summary><p>Variação dos dias de cobertura do material. Negativo = menos estoque (VMI, consignação, entregas mais frequentes, fornecedor mais próximo). Positivo = mais estoque (lote maior por desconto de volume, importação com lead time longo, estoque de segurança). Só se aplica a gasto direto.</p></details>
+          <details class="why"><summary>Como entra na conta</summary><p>Quantos dias de consumo do material ficam a mais (ou a menos, com ±) parados no estoque. Menos estoque: VMI, consignação, entregas mais frequentes. Mais estoque: lote maior por desconto de volume, importação com prazo longo, estoque de segurança. Estoque é dinheiro parado e custa o WACC por ano. Só vale para gasto direto.</p></details>
         </div>
 
         <div class="opt-title">Opcionais</div>
@@ -274,7 +281,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
             <div class="f"><label>Prejuízo de uma parada (R$ mi)</label><input class="ifield" id="a-prejParada" type="text" inputmode="decimal" autocomplete="off"></div>
           </div>
           <div class="lv-eff" id="e-protecao"></div>
-          <details class="why"><summary>Como usar</summary><p>Quanto custa por ano proteger o fornecimento — segundo fornecedor homologado, estoque de segurança, contrato de reserva de capacidade — e quanto a empresa perde se a linha parar por falta do item (margem perdida, frete emergencial, multas). O custo entra no EBIT. A ferramenta responde de quantos em quantos anos a proteção precisa evitar uma parada para se pagar; o grupo julga se isso é plausível.</p></details>
+          <details class="why"><summary>Como usar</summary><p>Quanto custa por ano proteger o fornecimento — segundo fornecedor homologado, estoque de segurança, contrato de reserva de capacidade — e quanto a empresa perde se a linha parar por falta do item (margem perdida, frete emergencial, multas). O custo entra como lucro a menos. A ferramenta responde de quantos em quantos anos a proteção precisa evitar uma parada para se pagar; o grupo julga se isso é plausível.</p></details>
         </div>
 
         <div class="btn-row">
@@ -290,27 +297,27 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
       <div class="card">
         <div class="card-title"><span>Resultado para a empresa</span><span class="mono" id="resCat" style="font-size:.6rem;color:var(--blue-l);text-transform:none;letter-spacing:0;"></span></div>
         <div class="kpis">
-          <div class="kpi"><div class="l">Δ EBIT · por ano</div><div class="v" id="k-ebit">—</div><div class="d" id="kd-ebit"></div></div>
-          <div class="kpi"><div class="l">Δ Capital Investido · uma vez</div><div class="v" id="k-ci">—</div><div class="d" id="kd-ci"></div></div>
-          <div class="kpi"><div class="l">ROIC</div><div class="v" id="k-roic">—</div><div class="d" id="kd-roic"></div></div>
-          <div class="kpi hl"><div class="l">Δ EVA · por ano</div><div class="v" id="k-eva">—</div><div class="d" id="kd-eva"></div></div>
+          <div class="kpi"><div class="l">Lucro operacional a mais · por ano</div><div class="v" id="k-ebit">—</div><div class="d" id="kd-ebit"></div></div>
+          <div class="kpi"><div class="l">Caixa liberado · uma vez</div><div class="v" id="k-ci">—</div><div class="d" id="kd-ci"></div></div>
+          <div class="kpi"><div class="l">ROIC da empresa</div><div class="v" id="k-roic">—</div><div class="d" id="kd-roic"></div></div>
+          <div class="kpi hl"><div class="l">Valor criado (EVA) · por ano</div><div class="v" id="k-eva">—</div><div class="d" id="kd-eva"></div></div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title"><span>Ponte de valor · Δ EVA por alavanca</span><span class="mono" style="font-size:.58rem;color:var(--muted);text-transform:none;letter-spacing:0;">R$ mi / ano</span></div>
+        <div class="card-title"><span>De onde vem o valor criado (EVA)</span><span class="mono" style="font-size:.58rem;color:var(--muted);text-transform:none;letter-spacing:0;">R$ mi / ano</span></div>
         <div id="bridge"></div>
       </div>
 
       <div class="card">
-        <div class="card-title"><span>Recorrente × uma vez</span></div>
+        <div class="card-title"><span>Todo ano × uma vez só</span></div>
         <div class="compare">
-          <div class="cmp" style="border-color:rgba(52,211,153,.35);"><div class="l">Resultado recorrente</div><div class="v pos" id="c-rec">—</div><div class="s" id="cs-rec"></div></div>
+          <div class="cmp" style="border-color:rgba(52,211,153,.35);"><div class="l">Lucro após imposto a mais</div><div class="v pos" id="c-rec">—</div><div class="s" id="cs-rec"></div></div>
           <div class="cmp" style="border-color:rgba(201,169,97,.4);"><div class="l">Caixa liberado uma vez</div><div class="v" style="color:var(--gold);" id="c-cx">—</div><div class="s" id="cs-cx"></div></div>
         </div>
         <div class="compare" style="margin-top:.7rem;">
           <div class="cmp"><div class="l">Equivalente em vendas</div><div class="v" id="c-eq" style="color:var(--text);">—</div><div class="s" id="cs-eq"></div></div>
-          <div class="cmp"><div class="l">ROCE (cego ao prazo)</div><div class="v" id="c-roce" style="color:var(--text);">—</div><div class="s" id="cs-roce"></div></div>
+          <div class="cmp"><div class="l">ROCE (não enxerga o prazo)</div><div class="v" id="c-roce" style="color:var(--text);">—</div><div class="s" id="cs-roce"></div></div>
         </div>
       </div>
 
@@ -350,7 +357,6 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <h4>Simplificações deliberadas</h4>
         <ul>
           <li>Saldos de fornecedores e estoque calculados sobre o spend antes do saving (efeito de 2ª ordem desprezado).</li>
-          <li>“Valor criado em perpetuidade” = ΔEVA ÷ WACC: ordem de grandeza, sem crescimento nem prazo de contrato. Repare que, para o prazo, ele devolve exatamente o caixa liberado.</li>
         </ul>
         <h4>Fonte do preset Whirlpool</h4>
         <p id="srcWhirl"></p>
@@ -521,26 +527,26 @@ function atualizar() {
 
   // rótulos das alavancas
   const L = Object.fromEntries(r.L.map(x => [x.k, x]));
-  $('e-saving').innerHTML = `ΔEBIT <b>${F.fmtSig(L.saving.dEbit)}</b>/ano · ΔEVA <b>${F.fmtSig(L.saving.dEva)}</b>/ano`;
-  $('e-dpo').innerHTML = `Caixa liberado uma vez <b>${F.fmtSig(-L.dpo.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.dpo.dEva)}</b>/ano (WACC × caixa)`;
+  $('e-saving').innerHTML = `Lucro a mais <b>${F.fmtSig(L.saving.dEbit)}</b>/ano · valor criado <b>${F.fmtSig(L.saving.dEva)}</b>/ano`;
+  $('e-dpo').innerHTML = `Caixa liberado uma vez <b>${F.fmtSig(-L.dpo.dCi)}</b> · valor criado <b>${F.fmtSig(L.dpo.dEva)}</b>/ano (custo do dinheiro × caixa)`;
   let tx = '';
   if (r.taxaPrazo !== null) {
     const ok = r.taxaPrazo <= base.wacc;
-    tx = ` · equivale a <b style="color:${ok ? 'var(--green)' : 'var(--red)'}">${F.fmtPct(r.taxaPrazo)} a.a.</b> vs WACC ${F.fmtPct(base.wacc)}`;
+    tx = ` · é como pagar juros de <b style="color:${ok ? 'var(--green)' : 'var(--red)'}">${F.fmtPct(r.taxaPrazo)} ao ano</b>; o dinheiro da empresa custa ${F.fmtPct(base.wacc)}`;
   } else if (alav.precoPrazo > 0) tx = ' · informe os dias de prazo para calcular a taxa anual';
-  $('e-precoPrazo').innerHTML = `ΔEBIT <b>${F.fmtSig(L.precoPrazo.dEbit)}</b>/ano${tx}`;
-  $('e-estoque').innerHTML = cat.direto ? `ΔEstoque <b>${F.fmtSig(L.estoque.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.estoque.dEva)}</b>/ano` : 'Gasto indireto não forma estoque de material.';
+  $('e-precoPrazo').innerHTML = `Lucro a menos <b>${F.fmtSig(L.precoPrazo.dEbit)}</b>/ano${tx}`;
+  $('e-estoque').innerHTML = cat.direto ? `${L.estoque.dCi > 0 ? 'Dinheiro a mais parado em estoque' : 'Caixa liberado do estoque'} <b>${F.fmtMi(Math.abs(L.estoque.dCi))}</b> · valor criado <b>${F.fmtSig(L.estoque.dEva)}</b>/ano` : 'Gasto indireto não forma estoque de material.';
   $('e-protecao').innerHTML = r.anosEquilibrio !== null
-    ? `ΔEBIT <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · <b style="color:var(--gold)">se paga se evitar uma parada a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos</b>`
-    : (alav.custoProt > 0 ? `ΔEBIT <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · informe o prejuízo de uma parada para ver o ponto de equilíbrio` : 'Deixe em branco se a estratégia não envolve proteção de fornecimento.');
+    ? `Lucro a menos <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · <b style="color:var(--gold)">se paga se evitar uma parada a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos</b>`
+    : (alav.custoProt > 0 ? `Lucro a menos <b>${F.fmtSig(L.protecao.dEbit)}</b>/ano · informe o prejuízo de uma parada para ver o ponto de equilíbrio` : 'Deixe em branco se a estratégia não envolve proteção de fornecimento.');
 
   // KPIs
   $('resCat').textContent = ($('catNome').textContent || '') + (S ? ' · spend ' + F.fmtMi(S) : '');
   const set = (id, txt, c) => { const e = $(id); e.textContent = txt; e.className = 'v ' + (c || ''); };
   set('k-ebit', F.fmtSig(r.dEbit), cls(r.dEbit));
   $('kd-ebit').textContent = `${F.fmtMi(B.ebit)} → ${F.fmtMi(r.N.ebit)}`;
-  set('k-ci', F.fmtSig(r.dCi), cls(-r.dCi));
-  $('kd-ci').textContent = `${F.fmtMi(B.ci)} → ${F.fmtMi(r.N.ci)}`;
+  set('k-ci', F.fmtSig(-r.dCi), cls(-r.dCi));
+  $('kd-ci').textContent = `capital investido ${F.fmtMi(B.ci)} → ${F.fmtMi(r.N.ci)}`;
   set('k-roic', F.fmtPct(r.N.roic), cls(r.dRoic));
   $('kd-roic').textContent = `base ${F.fmtPct(B.roic)} · ${F.fmtPP(r.dRoic, 2)}`;
   set('k-eva', F.fmtSig(r.dEva), cls(r.dEva));
@@ -556,17 +562,17 @@ function atualizar() {
       <div class="btrack"><div class="bbar" style="left:${left}%;width:${pct}%;background:${total ? 'var(--gold)' : col};"></div></div>
       <span class="bv ${total ? '' : cls(v)}" style="${total ? 'color:var(--gold)' : ''}">${F.fmtSig(v)}</span></div>`;
   };
-  $('bridge').innerHTML = r.L.map(x => row(x.nome, x.dEva)).join('') + row('Δ EVA total', r.dEva, true);
+  $('bridge').innerHTML = r.L.map(x => row(x.nome, x.dEva)).join('') + row('Valor criado total', r.dEva, true);
 
   // recorrente × uma vez
   set('c-rec', F.fmtSig(r.dNopat), cls(r.dNopat));
-  $('cs-rec').textContent = 'Δ NOPAT por ano, enquanto as condições durarem';
+  $('cs-rec').textContent = 'Todo ano, enquanto as condições negociadas durarem (NOPAT)';
   const cx = $('c-cx'); cx.textContent = F.fmtSig(r.caixaUnico);
-  $('cs-cx').textContent = r.caixaUnico >= 0 ? 'Capital liberado (prazo, estoque, giro). Vale WACC × caixa por ano: ' + F.fmtSig(r.caixaUnico * w) : 'Capital adicional consumido. Custa WACC × caixa por ano: ' + F.fmtSig(r.caixaUnico * w);
+  $('cs-cx').textContent = r.caixaUnico >= 0 ? `Acontece uma vez. A ${F.fmtPct(base.wacc, 0)} ao ano (custo do dinheiro), vale ${F.fmtSig(r.caixaUnico * w)} por ano` : `Dinheiro a mais parado, uma vez. A ${F.fmtPct(base.wacc, 0)} ao ano, custa ${F.fmtSig(r.caixaUnico * w)} por ano`;
   $('c-eq').textContent = F.fmtMi(Math.max(0, r.equivReceita));
-  $('cs-eq').textContent = `Vendas extras necessárias para gerar o mesmo EBIT do saving líquido, à margem EBIT de ${F.fmtPct(base.ebit)}`;
+  $('cs-eq').textContent = `Quanto a empresa teria de vender a mais para ganhar o mesmo lucro do desconto: de cada R$ 100 vendidos, sobram R$ ${F.fmtPct(base.ebit).replace('%', '')} de lucro operacional`;
   $('c-roce').textContent = F.fmtPct(r.N.roce);
-  $('cs-roce').textContent = `base ${F.fmtPct(B.roce)} · ${F.fmtPP(r.dRoce, 2)} — o ROCE não subtrai fornecedores, então não registra o prazo`;
+  $('cs-roce').textContent = `hoje ${F.fmtPct(B.roce)} · ${F.fmtPP(r.dRoce, 2)}. O ROCE não desconta o que se deve a fornecedores, por isso não muda com o prazo de pagamento`;
 
   // veredito
   $('verdict').innerHTML = leitura(r, L);
@@ -577,10 +583,10 @@ function leitura(r, L) {
   const w = base.wacc;
   if (!r.spend) return '<p>Informe o <b>spend anual da categoria</b> para ver o impacto.</p>';
   const nada = r.L.every(x => Math.abs(x.dEva) < 0.005 && Math.abs(x.dCi) < 0.005);
-  if (nada) return `<p>Mova as alavancas. Para referência: nesta categoria, <b>1% de saving</b> vale ${F.fmtSig(r.spend * 0.01 * (1 - base.ir / 100))} de EVA por ano; <b>+10 dias de prazo</b> liberam ${F.fmtMi(r.spend / 365 * 10)} uma vez e valem ${F.fmtSig(r.spend / 365 * 10 * w / 100)} de EVA por ano.</p>`;
+  if (nada) return `<p>Mova as alavancas. Para referência: nesta categoria, <b>1% de saving</b> cria ${F.fmtSig(r.spend * 0.01 * (1 - base.ir / 100))} de valor por ano; <b>+10 dias de prazo</b> liberam ${F.fmtMi(r.spend / 365 * 10)} uma vez, o que vale ${F.fmtSig(r.spend / 365 * 10 * w / 100)} por ano.</p>`;
 
   const s = r.dEva > 0.005 ? '<b class="pos">cria valor</b>' : (r.dEva < -0.005 ? '<b class="neg">destrói valor</b>' : '<b>é neutro em valor</b>');
-  p.push(`O cenário ${s}: ${F.fmtSig(r.dEva)} de EVA por ano, levando o ROIC de ${F.fmtPct(r.B.roic)} para ${F.fmtPct(r.N.roic)}. Em perpetuidade, sem crescimento, isso equivale a cerca de ${F.fmtSig(r.valorPerpetuidade)} de valor (indicativo).`);
+  p.push(`O cenário ${s}: ${F.fmtSig(r.dEva)} por ano de valor criado (EVA), e o ROIC da empresa vai de ${F.fmtPct(r.B.roic)} para ${F.fmtPct(r.N.roic)}.`);
 
   // maior alavanca
   const top = [...r.L].sort((a, b) => Math.abs(b.dEva) - Math.abs(a.dEva))[0];
@@ -591,26 +597,26 @@ function leitura(r, L) {
   // preço vs prazo
   if (alav.saving > 0 && alav.dpo > 0) {
     const ratio = L.saving.dEva / Math.max(0.0001, L.dpo.dEva);
-    p.push(`Preço × prazo: o saving rende ${F.fmtSig(L.saving.dEva)}/ano todo ano; o prazo libera ${F.fmtMi(-L.dpo.dCi)} uma vez e rende ${F.fmtSig(L.dpo.dEva)}/ano em custo de capital evitado${ratio > 1.05 ? ` — aqui o preço vale ${ratio.toFixed(1).replace('.', ',')}× mais em valor` : ratio < 0.95 ? ` — aqui o prazo vale mais em valor` : ''}.`);
+    p.push(`Desconto × prazo: o desconto rende ${F.fmtSig(L.saving.dEva)} todo ano; o prazo libera ${F.fmtMi(-L.dpo.dCi)} uma vez só, o que vale ${F.fmtSig(L.dpo.dEva)} por ano${ratio > 1.05 ? ` — aqui o desconto cria ${ratio.toFixed(1).replace('.', ',')} vezes mais valor` : ratio < 0.95 ? ` — aqui o prazo cria mais valor` : ''}.`);
   }
   if (r.taxaPrazo !== null) {
-    if (r.taxaPrazo > w) p.push(`<span class="warn">⚠ O fornecedor está cobrando ${F.fmtPct(r.taxaPrazo)} ao ano pelo prazo, acima do WACC de ${F.fmtPct(w)}. Pagar à vista sairia mais barato — ou ofereça um programa de SCF, em que o banco antecipa ao fornecedor com taxa ancorada no risco da sua empresa.</span>`);
-    else p.push(`O custo do prazo (${F.fmtPct(r.taxaPrazo)} a.a.) está abaixo do WACC: financiar-se no fornecedor ainda compensa.`);
+    if (r.taxaPrazo > w) p.push(`<span class="warn">⚠ Pelo prazo, o fornecedor está cobrando o equivalente a juros de ${F.fmtPct(r.taxaPrazo)} ao ano, mais que os ${F.fmtPct(w)} que o dinheiro da empresa já custa. Pagar no prazo antigo sairia mais barato — ou ofereça um programa de SCF, em que o banco antecipa ao fornecedor com taxa ancorada no risco da sua empresa.</span>`);
+    else p.push(`O prazo custa o equivalente a juros de ${F.fmtPct(r.taxaPrazo)} ao ano, menos que os ${F.fmtPct(w)} do dinheiro da empresa: usar o fornecedor como "banco" compensa.`);
   }
   if (alav.dpo > 0 && !(alav.precoPrazo > 0)) p.push(`O prazo foi tratado como gratuito. Se o fornecedor oferece desconto à vista, ou cotou preços diferentes para 30 e 60 dias, informe esse custo em "Preço do prazo".`);
-  if (alav.dpo >= 45) p.push(`<span class="warn">⚠ +${alav.dpo} dias é o DSO do fornecedor aumentando na mesma medida. Em fornecedor de menor porte, isso pressiona o caixa dele e pode virar ruptura, queda de qualidade ou perda de prioridade.</span>`);
+  if (alav.dpo >= 45) p.push(`<span class="warn">⚠ +${alav.dpo} dias para você pagar são +${alav.dpo} dias para o fornecedor receber. Em fornecedor de menor porte, isso pressiona o caixa dele e pode virar ruptura, queda de qualidade ou perda de prioridade.</span>`);
   if (cat.direto && alav.estoque > 0) {
     const q = quadAtual();
     p.push(q === 'Gargalo'
-      ? `Mais estoque em item gargalo é seguro, não desperdício: compare o custo de capital (${F.fmtSig(L.estoque.dEva)}/ano) com a redução da perda esperada.`
-      : `<span class="warn">Mais ${alav.estoque} dias de estoque custam ${F.fmtSig(-L.estoque.dEva)}/ano em capital. Se veio de desconto por volume ou sourcing offshore, o saving precisa pagar esse custo — é a conta do TCO.</span>`);
+      ? `Mais estoque em item gargalo é seguro, não desperdício: compare o custo de manter esse estoque (${F.fmtSig(L.estoque.dEva)}/ano) com o prejuízo de uma parada.`
+      : `<span class="warn">Mais ${alav.estoque} dias de estoque custam ${F.fmtSig(-L.estoque.dEva)} por ano em dinheiro parado. Se vieram de desconto por volume ou importação, o desconto precisa pagar esse custo: é a conta do custo total (TCO).</span>`);
   }
   if (alav.custoProt > 0) {
     p.push(r.anosEquilibrio !== null
-      ? `A proteção custa ${F.fmtMi(alav.custoProt)} por ano e se paga se evitar uma parada de ${F.fmtMi(alav.prejParada)} a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos. A pergunta para o grupo: com que frequência essa categoria já parou ou quase parou a linha? No ROCE de superfície, essa proteção aparece só como custo.`
+      ? `A proteção custa ${F.fmtMi(alav.custoProt)} por ano e se paga se evitar uma parada de ${F.fmtMi(alav.prejParada)} a cada ${r.anosEquilibrio.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} anos. A pergunta para o grupo: com que frequência essa categoria já parou ou quase parou a linha? Olhando só o lucro, essa proteção aparece apenas como custo.`
       : `A proteção custa ${F.fmtMi(alav.custoProt)} por ano. Informe o prejuízo de uma parada para saber se ela se paga.`);
   }
-  if (r.equivReceita > 0) p.push(`Para o Conselho: o saving líquido equivale a vender <b>${F.fmtMi(r.equivReceita)}</b> a mais por ano com a margem atual.`);
+  if (r.equivReceita > 0) p.push(`Para o Conselho: para ganhar o mesmo lucro do desconto, a empresa teria de vender <b>${F.fmtMi(r.equivReceita)}</b> a mais por ano.`);
   return p.map(x => `<p>${x}</p>`).join('');
 }
 
@@ -621,16 +627,16 @@ function renderPortfolio() {
   if (!list.length) { $('portfolio').innerHTML = '<p class="hint">Nenhuma categoria com cenário salvo ainda. Salve o cenário de cada categoria para ver o impacto somado da área de Compras.</p>'; return; }
   let tE = 0, tC = 0, tV = 0, tS = 0;
   const w = base.wacc / 100, t = base.ir / 100;
-  let h = '<table class="ptable"><thead><tr><th>Categoria</th><th>Kraljic</th><th>Spend</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>';
+  let h = '<table class="ptable"><thead><tr><th>Categoria</th><th>Kraljic</th><th>Spend</th><th>Lucro a mais/ano</th><th>Caixa liberado</th><th>Valor criado/ano</th></tr></thead><tbody>';
   list.forEach(s => {
     const r = F.impacto(base, { spend: s.fin.spend, direto: s.fin.direto !== false }, s.fin.alav);
     tE += r.dEbit; tC += r.dCi; tV += r.dEva; tS += r.spend;
     const q = s.id === AVULSA_ID ? '—' : kQuad(s.kx ?? 50, s.ky ?? 50).n;
-    h += `<tr style="cursor:pointer" onclick="selecionarCategoria('${s.id}');document.getElementById('catSel').value='${s.id}';window.scrollTo({top:0,behavior:'smooth'})"><td>${s.name}</td><td>${q}</td><td>${F.fmtMi(r.spend)}</td><td class="${cls(r.dEbit)}">${F.fmtSig(r.dEbit)}</td><td class="${cls(-r.dCi)}">${F.fmtSig(r.dCi)}</td><td class="${cls(r.dEva)}">${F.fmtSig(r.dEva)}</td></tr>`;
+    h += `<tr style="cursor:pointer" onclick="selecionarCategoria('${s.id}');document.getElementById('catSel').value='${s.id}';window.scrollTo({top:0,behavior:'smooth'})"><td>${s.name}</td><td>${q}</td><td>${F.fmtMi(r.spend)}</td><td class="${cls(r.dEbit)}">${F.fmtSig(r.dEbit)}</td><td class="${cls(-r.dCi)}">${F.fmtSig(-r.dCi)}</td><td class="${cls(r.dEva)}">${F.fmtSig(r.dEva)}</td></tr>`;
   });
   const B = F.base(base);
   const roicN = ((B.ebit + tE) * (1 - t)) / (B.ci + tC) * 100;
-  h += `<tr class="tot"><td>Total Compras</td><td></td><td>${F.fmtMi(tS)}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
+  h += `<tr class="tot"><td>Total Compras</td><td></td><td>${F.fmtMi(tS)}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(-tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
   h += `<p class="hint" style="margin-top:.7rem;">ROIC da empresa com todas as categorias: <b style="color:var(--gold)">${F.fmtPct(B.roic)} → ${F.fmtPct(roicN)}</b> (${F.fmtPP(roicN - B.roic, 2)}) · spend analisado = ${F.fmtPct(tS / B.cogs * 100)} do CPV. Clique em uma linha para abrir a categoria.</p>`;
   $('portfolio').innerHTML = h;
 }
