@@ -10,9 +10,12 @@ const FinCalc = (function () {
     whirlpool: {
       nome: 'Whirlpool S.A. (Brasil) · 2024',
       receita: 12930, cpv: 82.9, ebit: 9.0,
-      dioh: 50, dso: 55, dpo: 95, fixo: 2500, ir: 34, wacc: 14,
-      fonte: 'Receita líquida (R$ 12,93 bi), CPV (R$ 10,72 bi) e EBIT (R$ 1,17 bi) da DFP 2024 da Whirlpool S.A. ' +
-             'Prazos (DIOH, DSO, DPO), ativo fixo e WACC são valores didáticos, calibrados para um ROIC próximo ao reportado (~24%).'
+      dioh: 51, dso: 60, dpo: 95, fixo: 1750, ir: 34, wacc: 14,
+      fonte: 'DFP 2024 da Whirlpool S.A.: receita líquida R$ 12,93 bi, CPV R$ 10,72 bi, EBIT R$ 1,17 bi; ' +
+             'DIOH 51 e DSO 60 dias calculados de estoques (R$ 1,50 bi) e contas a receber de clientes (R$ 2,14 bi); ' +
+             'ativo fixo = imobilizado + intangível (R$ 1,75 bi). DPO didático de 95 dias: o real é de ~161 dias ' +
+             '(fornecedores de R$ 4,72 bi), o que leva o ROIC operacional a ~119%. WACC de 14%: meio da faixa usual ' +
+             'de 12% a 16% a.a. em reais para empresas brasileiras de capital aberto. IR pela alíquota nominal de 34%.'
     },
     neutra: {
       nome: 'Base neutra (simulador SCF)',
