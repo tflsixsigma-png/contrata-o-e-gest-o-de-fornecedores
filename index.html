@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchasing Chessboard Dashboard | Prof. Dr. Thiago Lima</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="fin-calc.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -150,6 +151,7 @@
     <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
     <div class="tab" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
     <div class="tab" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
+    <a class="tab tab-link" id="tabFin" href="impacto-financeiro.html" title="Impacto das decisões de Compras no EBIT, no capital, no ROIC e no EVA"><span class="tl-dot"></span>💰 Impacto Financeiro</a>
     <div class="tab-div"></div>
     <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
     <div class="tab-div"></div>
@@ -167,7 +169,8 @@
         <span style="color:#60a5fa;font-weight:700;">② avalie os riscos</span> (eles definem o eixo de risco da Kraljic) →
         <span style="color:#60a5fa;font-weight:700;">③ confira o posicionamento na matriz</span> →
         <span style="color:#60a5fa;font-weight:700;">④ diagnostique o poder (PCB)</span> →
-        <span style="color:#60a5fa;font-weight:700;">⑤ selecione estratégias e alavancas</span> → relatório.
+        <span style="color:#60a5fa;font-weight:700;">⑤ selecione estratégias e alavancas</span> →
+        <a href="impacto-financeiro.html" id="flowFin" style="color:#C9A961;font-weight:700;text-decoration:none;">⑥ meça o impacto financeiro</a> → relatório.
     </div>
     <div class="grid2" style="align-items:start;">
         <div class="card">
@@ -508,6 +511,7 @@
             </div>
             <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-tax" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">🗂 Estratégias Selecionadas</div><div style="font-size:.67rem;color:var(--muted);">Métodos do Chessboard marcados por categoria</div></div></label>
             <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-riscos" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">⚠️ Registro de Riscos</div><div style="font-size:.67rem;color:var(--muted);">Ameaças mapeadas com probabilidade × impacto</div></div></label>
+            <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-fin" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">💰 Impacto Financeiro</div><div style="font-size:.67rem;color:var(--muted);">Alavancas, Δ EBIT, Δ capital, ROIC e EVA das categorias com cenário salvo</div></div></label>
             <div class="card-title">Categorias a Incluir</div>
             <div id="rSupList" style="margin-bottom:1.1rem;"><p style="font-size:.74rem;color:var(--muted);">Nenhuma categoria cadastrada.</p></div>
             <button class="btn btn-p" style="width:100%;padding:.8rem;" onclick="generatePDF()">🖨 Gerar Relatório PDF</button>
@@ -739,8 +743,9 @@ function checkDupName(){
 /* ---------- persistência ---------- */
 const STORE_KEY='pcb_dashboard_v1';
 let saveTimer=null;
+let estadoExtra={}; // chaves de outras páginas (ex.: finBase, finAvulsa do Impacto Financeiro) — preservadas
 function estadoAtual(){
-    return {v:1, salvoEm:new Date().toISOString(), suppliers:suppliers, risks:risks, curId:curId};
+    return Object.assign({}, estadoExtra, {v:1, salvoEm:new Date().toISOString(), suppliers:suppliers, risks:risks, curId:curId});
 }
 function salvarLocal(){
     try{
@@ -776,6 +781,8 @@ function aplicarEstado(d){
         checklist:{}, scores:[5,5,5,5,5,5], kx:50, ky:50, pcbX:50, pcbY:50, tax:[]
     }, s));
     risks=d.risks||[];
+    estadoExtra={};
+    Object.keys(d).forEach(k=>{if(!['v','salvoEm','suppliers','risks','curId'].includes(k)) estadoExtra[k]=d[k];});
     curId=d.curId&&suppliers.some(s=>s.id===d.curId)?d.curId:(suppliers[0]?suppliers[0].id:null);
     syncKraljicX();
     updateGlobalSel();
@@ -869,6 +876,10 @@ function selectSup(id){
 }
 
 function atualizarLinkCanvas(){
+    const fin=document.getElementById('tabFin'), flow=document.getElementById('flowFin');
+    const sf=cur(), hf='impacto-financeiro.html'+(sf?'?cat='+encodeURIComponent(sf.id):'');
+    if(fin){fin.href=hf;fin.title=sf?'Impacto financeiro de '+sf.name+(sf.fin?' — cenário salvo':''):'Impacto Financeiro de Compras';}
+    if(flow) flow.href=hf;
     const a=document.getElementById('tabCanvas'); if(!a)return;
     const s=cur();
     if(!s){a.href='canvas-strategic-sourcing.html';a.title='Canvas Strategic Sourcing';return;}
@@ -1260,6 +1271,23 @@ function generatePDF(){
         });
         h+=`</tbody></table>`;
     }
+    const incF=document.getElementById('rs-fin')?document.getElementById('rs-fin').checked:false;
+    const finB=(estadoExtra.finBase)||(typeof FinCalc!=='undefined'?FinCalc.BASE_PADRAO:null);
+    const finSups=(incF&&finB)?sups.filter(s=>s.fin&&s.fin.alav):[];
+    if(finSups.length){
+        const F=FinCalc, B=F.base(finB); let tE=0,tC=0,tV=0,tS=0;
+        h+=`<h2>💰 Impacto Financeiro de Compras — portfólio</h2>
+        <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Base: ${finB.nome||'empresa do grupo'} · receita ${F.fmtMi(finB.receita)} · margem EBIT ${F.fmtPct(finB.ebit)} · WACC ${F.fmtPct(finB.wacc)} · ROIC base ${F.fmtPct(B.roic)}</div>
+        <table><thead><tr><th>Categoria</th><th>Spend</th><th>Δ EBIT/ano</th><th>Δ Capital Investido</th><th>Δ EVA/ano</th></tr></thead><tbody>`;
+        finSups.forEach(s=>{
+            const r=F.impacto(finB,{spend:s.fin.spend,direto:s.fin.direto!==false},s.fin.alav);
+            tE+=r.dEbit;tC+=r.dCi;tV+=r.dEva;tS+=r.spend;
+            h+=`<tr><td><b>${s.name}</b></td><td>${F.fmtMi(r.spend)}</td><td>${F.fmtSig(r.dEbit)}</td><td>${F.fmtSig(r.dCi)}</td><td>${F.fmtSig(r.dEva)}</td></tr>`;
+        });
+        const roicN=((B.ebit+tE)*(1-finB.ir/100))/(B.ci+tC)*100;
+        h+=`<tr><td><b>Total</b></td><td><b>${F.fmtMi(tS)}</b></td><td><b>${F.fmtSig(tE)}</b></td><td><b>${F.fmtSig(tC)}</b></td><td><b>${F.fmtSig(tV)}</b></td></tr></tbody></table>
+        <div style="font-size:.74rem;">ROIC da empresa: <b>${F.fmtPct(B.roic)} → ${F.fmtPct(roicN)}</b> (${F.fmtPP(roicN-B.roic,2)}).</div>`;
+    }
     h+=`</div>`;
 
     // DOSSIÊ POR FORNECEDOR
@@ -1313,6 +1341,18 @@ function generatePDF(){
                 h+=`<h3>${est.t}</h3>`;
                 ms.forEach(m=>{h+=`<div class="cl">☑ <b>${m.c}. ${m.n}</b> — ${m.al}. ${m.d}</div>`;});
             });
+        }
+        if(incF&&finB&&s.fin&&s.fin.alav){
+            const F=FinCalc, a=Object.assign({},F.ALAV_ZERO,s.fin.alav);
+            const r=F.impacto(finB,{spend:s.fin.spend,direto:s.fin.direto!==false},a);
+            h+=`<h2>💰 Impacto Financeiro — ${s.name}</h2>
+            <div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem;">Spend ${F.fmtMi(r.spend)} · gasto ${s.fin.direto!==false?'direto (CPV)':'indireto'} · base ${finB.nome||'empresa do grupo'}</div>
+            <table><thead><tr><th>Alavanca</th><th>Premissa</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>`;
+            const prem={saving:F.fmtPct(a.saving)+' do spend',precoPrazo:F.fmtPct(a.precoPrazo)+' do spend'+(r.taxaPrazo!==null?' ('+F.fmtPct(r.taxaPrazo)+' a.a.)':''),dpo:(a.dpo>0?'+':'')+a.dpo+' dias',estoque:s.fin.direto!==false?(a.estoque>0?'+':'')+a.estoque+' dias':'n/a',receita:F.fmtMi(a.receita)+'/ano · MC '+F.fmtPct(r.mcUsada),risco:'p '+a.p0+'% → '+a.p1+'% · impacto '+F.fmtMi(a.imp)+' · mitigação '+F.fmtMi(a.custoMit)};
+            const z=v=>Math.abs(v)<0.005?'—':F.fmtSig(v);
+            r.L.filter(x=>Math.abs(x.dEbit)>=0.005||Math.abs(x.dCi)>=0.005).forEach(x=>{h+=`<tr><td>${x.nome}</td><td>${prem[x.k]}</td><td>${z(x.dEbit)}</td><td>${z(x.dCi)}</td><td>${z(x.dEva)}</td></tr>`;});
+            h+=`<tr><td><b>Total</b></td><td></td><td><b>${F.fmtSig(r.dEbit)}</b></td><td><b>${F.fmtSig(r.dCi)}</b></td><td><b>${F.fmtSig(r.dEva)}</b></td></tr></tbody></table>
+            <div style="font-size:.74rem;">ROIC ${F.fmtPct(r.B.roic)} → <b>${F.fmtPct(r.N.roic)}</b> · resultado recorrente ${F.fmtSig(r.dNopat)} NOPAT/ano · caixa liberado uma vez ${F.fmtSig(r.caixaUnico)}${r.equivReceita>0?' · saving líquido equivale a '+F.fmtMi(r.equivReceita)+' de vendas':''}</div>`;
         }
         if(incC){
             h+=`<h2>✅ Checklist de Contrato</h2>`;
@@ -1640,6 +1680,7 @@ function renderRiskMatrix(){
 // ================================================================
 // INIT
 // ================================================================
+window.addEventListener('pageshow',e=>{if(e.persisted) location.reload();});
 window.addEventListener('load',()=>{
     const restaurado=carregarLocal();
     renderSupList();

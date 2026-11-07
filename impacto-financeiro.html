@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impacto Financeiro de Compras | Prof. Dr. Thiago Lima</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="fin-calc.js"></script>
+<style>
+:root{
+  --bg:#0a0f1e; --surface:#111827; --surface2:#1a2236; --surface3:#0f172a;
+  --border:#1e2d45; --text:#e2e8f0; --soft:#cbd5e1; --muted:#94a3b8;
+  --blue:#3b82f6; --blue-l:#60a5fa; --red:#f87171; --purple:#c084fc; --green:#34d399; --gold:#C9A961; --amber:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;}
+.mono{font-family:'Space Mono',monospace;}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;position:sticky;top:0;z-index:200;flex-wrap:wrap;}
+.nav-title{font-size:1rem;font-weight:800;color:var(--blue-l);text-transform:uppercase;letter-spacing:-.02em;}
+.nav-title .g{color:var(--gold);}
+.nav-sub{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-top:.1rem;}
+.back{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--soft);text-decoration:none;border:1px solid var(--border);background:var(--surface2);padding:.4rem .8rem;border-radius:6px;letter-spacing:.06em;text-transform:uppercase;}
+.back:hover{color:var(--blue-l);border-color:var(--blue-l);}
+#saveState{font-size:.6rem;color:var(--muted);}
+
+/* CATEGORY BAR */
+.sup-bar{background:var(--surface3);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;position:sticky;top:58px;z-index:190;}
+.sup-bar-label{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.sup-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.4rem .85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.8rem;outline:none;cursor:pointer;min-width:220px;}
+.badge{display:inline-block;padding:.22rem .7rem;border-radius:999px;font-size:.68rem;font-weight:700;font-family:'Space Mono',monospace;}
+.be{background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.35);}
+.ba{background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.35);}
+.bg{background:rgba(124,58,237,.15);color:#c084fc;border:1px solid rgba(124,58,237,.35);}
+.bn{background:rgba(71,85,105,.2);color:#cbd5e1;border:1px solid rgba(71,85,105,.4);}
+
+/* LAYOUT */
+main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem;}
+.intro{padding:1rem 1.2rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);margin-bottom:1.3rem;font-size:.84rem;color:var(--soft);line-height:1.65;}
+.intro b{color:var(--text);}
+.intro .eq{font-family:'Space Mono',monospace;font-size:.74rem;color:var(--gold);display:block;margin-top:.45rem;}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:1.4rem;align-items:start;}
+.col-res{position:sticky;top:118px;display:flex;flex-direction:column;gap:1rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:1rem;}
+.col-res .card{margin-bottom:0;}
+.card-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--soft);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.card-title .step{color:var(--gold);font-family:'Space Mono',monospace;margin-right:.4rem;}
+.hint{font-size:.7rem;color:var(--muted);line-height:1.5;}
+
+/* FIELDS */
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;}
+.f label{display:block;font-size:.64rem;color:var(--muted);margin-bottom:.22rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+.ifield{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Space Mono',monospace;font-size:.82rem;width:100%;outline:none;}
+.ifield:focus{border-color:var(--blue);}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem;}
+.chip{background:var(--surface2);border:1px solid var(--border);color:var(--soft);border-radius:999px;padding:.32rem .8rem;font-size:.68rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;}
+.chip:hover,.chip.on{border-color:var(--gold);color:var(--gold);}
+.mini-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.9rem;}
+.mk{background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;}
+.mk .l{font-size:.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.mk .v{font-family:'Space Mono',monospace;font-size:.86rem;color:var(--text);font-weight:700;}
+.src{font-size:.64rem;color:var(--muted);margin-top:.7rem;line-height:1.5;}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.seg button{background:var(--surface2);color:var(--muted);border:none;padding:.45rem .8rem;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;}
+.seg button.on{background:var(--blue);color:#fff;}
+
+/* LEVERS */
+.lever{padding:.85rem 0;border-top:1px dashed var(--border);}
+.lever:first-of-type{border-top:none;padding-top:0;}
+.lv-head{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;margin-bottom:.35rem;}
+.lv-name{font-size:.8rem;font-weight:700;color:var(--text);}
+.lv-name .tag{font-family:'Space Mono',monospace;font-size:.56rem;padding:.1rem .4rem;border-radius:4px;margin-left:.4rem;vertical-align:2px;}
+.t-num{background:rgba(52,211,153,.12);color:var(--green);}
+.t-den{background:rgba(201,169,97,.14);color:var(--gold);}
+.t-risk{background:rgba(248,113,113,.12);color:var(--red);}
+.lv-val{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--blue-l);font-weight:700;white-space:nowrap;}
+input[type=range]{accent-color:var(--blue);cursor:pointer;width:100%;}
+.lv-eff{font-size:.68rem;color:var(--muted);margin-top:.2rem;font-family:'Space Mono',monospace;}
+.lv-eff b{color:var(--soft);}
+.lv-sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.5rem;}
+.lever.off{opacity:.4;pointer-events:none;}
+details.why{margin-top:.35rem;}
+details.why summary{font-size:.64rem;color:var(--gold);cursor:pointer;list-style:none;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
+details.why summary::-webkit-details-marker{display:none;}
+details.why summary::before{content:'+ ';}
+details.why[open] summary::before{content:'− ';}
+details.why p{font-size:.74rem;color:var(--soft);margin-top:.35rem;line-height:1.55;}
+.btn{padding:.55rem 1.1rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;}
+.btn-p{background:var(--blue);color:#fff;}.btn-p:hover{background:#2563eb;}
+.btn-g{background:var(--surface2);color:var(--soft);border:1px solid var(--border);}.btn-g:hover{color:var(--gold);border-color:var(--gold);}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;}
+
+/* RESULTS */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;}
+.kpi{background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;}
+.kpi .l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
+.kpi .v{font-family:'Space Mono',monospace;font-size:1.25rem;font-weight:700;color:var(--text);line-height:1.25;margin-top:.15rem;}
+.kpi .d{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:.1rem;}
+.kpi.hl{border-color:rgba(201,169,97,.5);background:rgba(201,169,97,.06);}
+.kpi.hl .v{color:var(--gold);}
+.pos{color:var(--green)!important;}.neg{color:var(--red)!important;}
+.bridge-row{display:grid;grid-template-columns:150px 1fr 92px;gap:.6rem;align-items:center;padding:.3rem 0;font-size:.72rem;}
+.bridge-row .bn-l{color:var(--soft);}
+.bridge-row .bv{font-family:'Space Mono',monospace;text-align:right;font-weight:700;}
+.btrack{position:relative;height:16px;background:var(--surface3);border-radius:4px;}
+.btrack::after{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted);opacity:.5;}
+.bbar{position:absolute;top:2px;bottom:2px;border-radius:3px;}
+.bridge-row.total{border-top:1px solid var(--border);margin-top:.3rem;padding-top:.5rem;font-weight:700;}
+.verdict{font-size:.8rem;color:var(--soft);line-height:1.6;}
+.verdict p{margin-bottom:.55rem;}
+.verdict p:last-child{margin-bottom:0;}
+.verdict b{color:var(--text);}
+.verdict .warn{color:var(--amber);}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+.cmp{border-radius:10px;padding:.75rem .85rem;border:1px solid var(--border);}
+.cmp .l{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--muted);}
+.cmp .v{font-family:'Space Mono',monospace;font-size:1.05rem;font-weight:700;margin-top:.15rem;}
+.cmp .s{font-size:.66rem;color:var(--muted);margin-top:.15rem;line-height:1.4;}
+
+/* PORTFOLIO */
+.ptable{width:100%;border-collapse:collapse;font-size:.74rem;}
+.ptable th{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:right;padding:.45rem .5rem;border-bottom:1px solid var(--border);font-weight:700;}
+.ptable th:first-child,.ptable td:first-child{text-align:left;}
+.ptable td{padding:.5rem;border-bottom:1px solid var(--border);text-align:right;font-family:'Space Mono',monospace;color:var(--soft);}
+.ptable td:first-child{font-family:'Syne',sans-serif;font-weight:700;color:var(--text);}
+.ptable tr.tot td{border-top:2px solid var(--gold);border-bottom:none;color:var(--gold);font-weight:700;}
+.tbl-wrap{overflow-x:auto;}
+
+/* METHOD */
+.method{font-size:.78rem;color:var(--soft);line-height:1.65;}
+.method h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:1rem 0 .4rem;}
+.method h4:first-child{margin-top:0;}
+.method code{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--blue-l);background:var(--surface3);padding:.1rem .35rem;border-radius:4px;}
+.method ul{padding-left:1.1rem;}
+.method li{margin-bottom:.25rem;}
+
+.toast{position:fixed;bottom:2rem;right:2rem;background:#10b981;color:#fff;padding:.6rem 1.2rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}
+footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:.12em;}
+
+@media(max-width:1000px){
+  .layout{grid-template-columns:1fr;}
+  .col-res{position:static;}
+}
+@media(max-width:700px){
+  .nav,.sup-bar{padding:.7rem 1rem;}
+  .sup-bar{position:static;}
+  main{padding:1rem 1rem 3rem;}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .mini-kpis{grid-template-columns:repeat(2,1fr);}
+  .bridge-row{grid-template-columns:96px 1fr 78px;font-size:.66rem;}
+  .compare{grid-template-columns:1fr;}
+  .sup-select{min-width:0;flex:1;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div>
+    <div class="nav-title">⬡ Impacto Financeiro <span class="g">de Compras</span></div>
+    <div class="nav-sub">Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;">
+    <span id="saveState" class="mono"></span>
+    <a class="back" href="index.html" id="backLink">← Voltar ao Dashboard</a>
+  </div>
+</nav>
+
+<div class="sup-bar">
+  <div class="sup-bar-label">Categoria:</div>
+  <select class="sup-select" id="catSel" onchange="selecionarCategoria(this.value)"></select>
+  <span id="bK"></span><span id="bP"></span>
+  <span class="mono" id="bRisk" style="font-size:.66rem;color:var(--muted);"></span>
+</div>
+
+<main>
+  <div class="intro">
+    <b>A pergunta desta aba:</b> a estratégia escolhida para a categoria cria valor para o acionista — e por qual linha da equação?
+    Compras mexe no numerador (preço, receita habilitada, risco) e no denominador (prazo e estoque) do ROIC. Os efeitos são de natureza diferente:
+    o preço se repete todo ano no resultado; o prazo e o estoque liberam caixa <b>uma vez</b>.
+    <span class="eq">ROIC = NOPAT ÷ Capital Investido &nbsp;·&nbsp; EVA = NOPAT − WACC × Capital Investido</span>
+  </div>
+
+  <div class="layout">
+    <!-- ================= COLUNA DE ENTRADAS ================= -->
+    <div>
+      <div class="card">
+        <div class="card-title"><span><span class="step">①</span>Base da empresa</span><span class="mono" style="font-size:.58rem;color:var(--muted);text-transform:none;letter-spacing:0;">R$ milhões / ano</span></div>
+        <div class="chips" id="presetChips">
+          <button class="chip" data-p="whirlpool" onclick="aplicarPreset('whirlpool')">Whirlpool S.A. · 2024</button>
+          <button class="chip" data-p="neutra" onclick="aplicarPreset('neutra')">Base neutra</button>
+          <button class="chip" data-p="propria" onclick="aplicarPreset('propria')">Minha empresa</button>
+        </div>
+        <div class="fgrid">
+          <div class="f"><label>Receita líquida</label><input class="ifield" id="b-receita" type="number" step="10"></div>
+          <div class="f"><label>CPV (% receita)</label><input class="ifield" id="b-cpv" type="number" step="0.1"></div>
+          <div class="f"><label>Margem EBIT (%)</label><input class="ifield" id="b-ebit" type="number" step="0.1"></div>
+          <div class="f"><label>DIOH (dias)</label><input class="ifield" id="b-dioh" type="number" step="1"></div>
+          <div class="f"><label>DSO (dias)</label><input class="ifield" id="b-dso" type="number" step="1"></div>
+          <div class="f"><label>DPO (dias)</label><input class="ifield" id="b-dpo" type="number" step="1"></div>
+          <div class="f"><label>Ativo fixo líquido</label><input class="ifield" id="b-fixo" type="number" step="10"></div>
+          <div class="f"><label>Alíquota IR (%)</label><input class="ifield" id="b-ir" type="number" step="1"></div>
+          <div class="f"><label>WACC (%)</label><input class="ifield" id="b-wacc" type="number" step="0.5"></div>
+        </div>
+        <div class="mini-kpis">
+          <div class="mk"><div class="l">ROIC base</div><div class="v" id="mk-roic">—</div></div>
+          <div class="mk"><div class="l">ROCE base</div><div class="v" id="mk-roce">—</div></div>
+          <div class="mk"><div class="l">EVA base</div><div class="v" id="mk-eva">—</div></div>
+          <div class="mk"><div class="l">CCC</div><div class="v" id="mk-ccc">—</div></div>
+        </div>
+        <div class="src" id="baseSrc"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span><span class="step">②</span>Categoria · <span id="catNome" style="color:var(--blue-l);"></span></span></div>
+        <div class="fgrid" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+          <div class="f"><label>Spend anual da categoria (R$ mi)</label><input class="ifield" id="c-spend" type="number" step="1" min="0"></div>
+          <div class="f"><label>Natureza do gasto</label>
+            <div class="seg" id="segNat">
+              <button data-v="1" onclick="setNatureza(true)">Direto (CPV)</button>
+              <button data-v="0" onclick="setNatureza(false)">Indireto</button>
+            </div>
+          </div>
+        </div>
+        <div class="hint" id="spendHint" style="margin-top:.5rem;"></div>
+        <div class="btn-row" style="margin-top:.8rem;">
+          <button class="btn btn-g" id="btnSug" onclick="aplicarSugestao()">Aplicar ponto de partida do quadrante</button>
+          <button class="btn btn-g" onclick="zerarAlavancas()">Zerar alavancas</button>
+        </div>
+        <div class="hint" id="sugHint" style="margin-top:.5rem;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span><span class="step">③</span>Alavancas de Compras</span></div>
+
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="lv-val" id="v-saving"></span></div>
+          <input type="range" id="a-saving" min="0" max="20" step="0.5">
+          <div class="lv-eff" id="e-saving"></div>
+          <details class="why"><summary>Como entra na conta</summary><p>Redução do preço pago sobre o spend da categoria. Vai inteira para o EBIT (direto via CPV, indireto via despesas) e se repete todo ano enquanto o contrato durar. Use o saving <b>líquido de TCO</b>: se a troca de fornecedor traz frete, qualidade ou estoque extra, desconte aqui ou nas outras alavancas.</p></details>
+        </div>
+
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="lv-val" id="v-dpo"></span></div>
+          <input type="range" id="a-dpo" min="-30" max="90" step="5">
+          <div class="lv-eff" id="e-dpo"></div>
+          <div style="margin-top:.6rem;">
+            <div class="lv-head"><span class="lv-name" style="font-size:.74rem;color:var(--soft);">Preço do prazo exigido pelo fornecedor (ou custo do programa SCF)</span><span class="lv-val" id="v-precoPrazo"></span></div>
+            <input type="range" id="a-precoPrazo" min="0" max="5" step="0.1">
+            <div class="lv-eff" id="e-precoPrazo"></div>
+          </div>
+          <details class="why"><summary>Como entra na conta</summary><p>Cada dia a mais de prazo sobre o spend da categoria aumenta Contas a Pagar e <b>reduz o Capital Investido uma única vez</b> (Convenção B). O NOPAT não muda. O ganho anual de valor é o custo de capital que deixa de incidir sobre esse caixa: WACC × capital liberado. Se o fornecedor embute o prazo no preço, compare a <b>taxa implícita anual</b> com o WACC: acima dele, o prazo destrói valor. É aqui que entra o Supply Chain Finance — o banco antecipa ao fornecedor a uma taxa ancorada no risco do comprador.</p></details>
+        </div>
+
+        <div class="lever" id="lv-estoque">
+          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="lv-val" id="v-estoque"></span></div>
+          <input type="range" id="a-estoque" min="-60" max="60" step="5">
+          <div class="lv-eff" id="e-estoque"></div>
+          <details class="why"><summary>Como entra na conta</summary><p>Variação dos dias de cobertura do material (ou do estoque em trânsito, quando o lead time muda). Valor negativo = menos estoque: VMI, consignação, lotes menores, fornecedor mais próximo. Valor positivo = mais estoque: lote maior por desconto de volume, sourcing offshore com lead time longo, estoque de segurança em item gargalo. Só se aplica a gasto direto.</p></details>
+        </div>
+
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Receita habilitada pelo fornecedor <span class="tag t-num">NUMERADOR</span></span><span class="lv-val" id="v-receita"></span></div>
+          <input type="range" id="a-receita" min="0" max="500" step="5">
+          <div class="lv-sub">
+            <div class="f"><label>Margem de contribuição da receita nova (%)</label><input class="ifield" id="a-mc" type="number" step="0.5"></div>
+            <div class="hint" style="align-self:end;">Padrão = margem bruta da empresa. Ajuste se a receita nova tiver margem diferente.</div>
+          </div>
+          <div class="lv-eff" id="e-receita"></div>
+          <details class="why"><summary>Como entra na conta</summary><p>Vendas que só acontecem por causa do fornecedor: inovação codesenvolvida, lançamento antecipado, disponibilidade (OTIF) que evita venda perdida, revenue sharing. Entra pela margem de contribuição, e a receita nova também <b>consome capital de giro</b> (recebíveis + estoque − fornecedores) nos prazos da empresa — por isso o efeito no EVA é menor que o efeito no EBIT.</p></details>
+        </div>
+
+        <div class="lever">
+          <div class="lv-head"><span class="lv-name">Risco de ruptura <span class="tag t-risk">RISCO</span></span><span class="lv-val" id="v-risco"></span></div>
+          <div class="lv-sub">
+            <div class="f"><label>Prob. anual hoje (%)</label><input class="ifield" id="a-p0" type="number" step="1" min="0" max="100"></div>
+            <div class="f"><label>Prob. anual após mitigação (%)</label><input class="ifield" id="a-p1" type="number" step="1" min="0" max="100"></div>
+            <div class="f"><label>Impacto de uma ruptura (R$ mi)</label><input class="ifield" id="a-imp" type="number" step="1" min="0"></div>
+            <div class="f"><label>Custo anual da mitigação (R$ mi)</label><input class="ifield" id="a-custoMit" type="number" step="0.5" min="0"></div>
+          </div>
+          <div class="lv-eff" id="e-risco"></div>
+          <div class="hint" id="riskHint" style="margin-top:.4rem;"></div>
+          <details class="why"><summary>Como entra na conta</summary><p>Perda esperada = probabilidade × impacto (margem perdida, frete emergencial, multas, recall). A mitigação — dual sourcing, estoque de segurança, desenvolvimento de fornecedor — vale a pena quando a redução da perda esperada supera seu custo anual. O resultado entra como <b>EBIT esperado</b>: não aparece no balanço do ano, mas em média aparece no resultado.</p></details>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-p" onclick="salvarCategoria(true)">💾 Salvar na categoria</button>
+          <a class="btn btn-g" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;">Ir para o Relatório PDF</a>
+        </div>
+        <div class="hint" style="margin-top:.5rem;">O cenário é salvo automaticamente neste navegador e entra no arquivo “Salvar arquivo” e no Relatório PDF do dashboard.</div>
+      </div>
+    </div>
+
+    <!-- ================= COLUNA DE RESULTADOS ================= -->
+    <div class="col-res">
+      <div class="card">
+        <div class="card-title"><span>Resultado para a empresa</span><span class="mono" id="resCat" style="font-size:.6rem;color:var(--blue-l);text-transform:none;letter-spacing:0;"></span></div>
+        <div class="kpis">
+          <div class="kpi"><div class="l">Δ EBIT esperado · por ano</div><div class="v" id="k-ebit">—</div><div class="d" id="kd-ebit"></div></div>
+          <div class="kpi"><div class="l">Δ Capital Investido · uma vez</div><div class="v" id="k-ci">—</div><div class="d" id="kd-ci"></div></div>
+          <div class="kpi"><div class="l">ROIC</div><div class="v" id="k-roic">—</div><div class="d" id="kd-roic"></div></div>
+          <div class="kpi hl"><div class="l">Δ EVA · por ano</div><div class="v" id="k-eva">—</div><div class="d" id="kd-eva"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>Ponte de valor · Δ EVA por alavanca</span><span class="mono" style="font-size:.58rem;color:var(--muted);text-transform:none;letter-spacing:0;">R$ mi / ano</span></div>
+        <div id="bridge"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>Recorrente × uma vez</span></div>
+        <div class="compare">
+          <div class="cmp" style="border-color:rgba(52,211,153,.35);"><div class="l">Resultado recorrente</div><div class="v pos" id="c-rec">—</div><div class="s" id="cs-rec"></div></div>
+          <div class="cmp" style="border-color:rgba(201,169,97,.4);"><div class="l">Caixa liberado uma vez</div><div class="v" style="color:var(--gold);" id="c-cx">—</div><div class="s" id="cs-cx"></div></div>
+        </div>
+        <div class="compare" style="margin-top:.7rem;">
+          <div class="cmp"><div class="l">Equivalente em vendas</div><div class="v" id="c-eq" style="color:var(--text);">—</div><div class="s" id="cs-eq"></div></div>
+          <div class="cmp"><div class="l">ROCE (cego ao prazo)</div><div class="v" id="c-roce" style="color:var(--text);">—</div><div class="s" id="cs-roce"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>Leitura do cenário</span></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PORTFÓLIO ================= -->
+  <div class="card" style="margin-top:1.4rem;">
+    <div class="card-title"><span><span class="step">④</span>Portfólio de categorias · impacto somado</span><span class="mono" style="font-size:.58rem;color:var(--muted);text-transform:none;letter-spacing:0;">categorias com cenário salvo</span></div>
+    <div class="tbl-wrap"><div id="portfolio"></div></div>
+  </div>
+
+  <!-- ================= MÉTODO ================= -->
+  <div class="card">
+    <details>
+      <summary class="card-title" style="cursor:pointer;list-style:none;margin-bottom:0;border-bottom:none;padding-bottom:0;"><span><span class="step">＋</span>Como o cálculo funciona · premissas</span></summary>
+      <div class="method" style="margin-top:1rem;">
+        <h4>Base da empresa</h4>
+        <ul>
+          <li><code>Estoque = CPV ÷ 365 × DIOH</code> · <code>Recebíveis = Receita ÷ 365 × DSO</code> · <code>Fornecedores = CPV ÷ 365 × DPO</code></li>
+          <li><code>Capital Investido = Estoque + Recebíveis − Fornecedores + Ativo fixo</code> (Convenção B: Contas a Pagar isolada como alavanca)</li>
+          <li><code>Capital Empregado = Estoque + Recebíveis + Ativo fixo</code> — por isso o ROCE não enxerga o prazo de pagamento</li>
+          <li><code>NOPAT = EBIT × (1 − IR)</code> · <code>ROIC = NOPAT ÷ CI</code> · <code>EVA = NOPAT − WACC × CI</code></li>
+        </ul>
+        <h4>Alavancas (sobre o spend S da categoria)</h4>
+        <ul>
+          <li>Saving: <code>ΔEBIT = S × saving%</code></li>
+          <li>Prazo: <code>ΔFornecedores = S ÷ 365 × Δdias</code> → <code>ΔCI = −ΔFornecedores</code>; preço do prazo: <code>ΔEBIT = −S × k%</code>; taxa implícita anual <code>≈ k% × 365 ÷ Δdias</code></li>
+          <li>Estoque (só gasto direto): <code>ΔEstoque = S ÷ 365 × Δdias</code> — o spend é usado como proxy do valor do material em estoque</li>
+          <li>Receita habilitada R: <code>ΔEBIT = R × margem de contribuição</code>; <code>ΔCI = R ÷ 365 × DSO + CPV(R) ÷ 365 × (DIOH − DPO)</code></li>
+          <li>Risco: <code>ΔEBIT esperado = (p₀ − p₁) × impacto − custo da mitigação</code></li>
+          <li>Ponte de valor: <code>ΔEVA = ΔEBIT × (1 − IR) − WACC × ΔCI</code>. As parcelas somam exatamente o total.</li>
+        </ul>
+        <h4>Simplificações deliberadas</h4>
+        <ul>
+          <li>Saldos de fornecedores e estoque calculados sobre o spend antes do saving (efeito de 2ª ordem desprezado).</li>
+          <li>Risco tratado como valor esperado anual, não como evento contábil do ano.</li>
+          <li>“Valor criado em perpetuidade” = ΔEVA ÷ WACC: ordem de grandeza, sem crescimento nem prazo de contrato. Repare que, para o prazo, ele devolve exatamente o caixa liberado.</li>
+          <li>A probabilidade sugerida a partir do Registro de Riscos usa uma conversão didática da escala 1–5: 1 = 2%, 2 = 5%, 3 = 10%, 4 = 20%, 5 = 40% ao ano.</li>
+        </ul>
+        <h4>Fonte do preset Whirlpool</h4>
+        <p id="srcWhirl"></p>
+      </div>
+    </details>
+  </div>
+</main>
+
+<footer>Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORE_KEY = 'pcb_dashboard_v1';
+const AVULSA_ID = '__avulsa';
+let estado = null;       // estado completo do dashboard (localStorage)
+let curId = null;
+let base = null;         // base da empresa em uso
+let cat = { spend: 0, direto: true };
+let alav = Object.assign({}, FinCalc.ALAV_ZERO);
+let saveTimer = null;
+
+// ---------- helpers ----------
+const $ = (id) => document.getElementById(id);
+const F = FinCalc;
+function kQuad(x, y) {
+  if (y >= 50 && x >= 50) return { n: 'Estratégico', cls: 'be' };
+  if (y >= 50 && x < 50)  return { n: 'Alavancagem', cls: 'ba' };
+  if (y < 50 && x >= 50)  return { n: 'Gargalo', cls: 'bg' };
+  return { n: 'Não-crítico', cls: 'bn' };
+}
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
+function sup() { return (estado.suppliers || []).find(s => s.id === curId) || null; }
+function riscosCat(s) { if (!s) return []; return (estado.risks || []).filter(r => r.catId ? r.catId === s.id : r.cat === s.name); }
+function quadAtual() { const s = sup(); return s ? kQuad(s.kx ?? 50, s.ky ?? 50).n : null; }
+const cls = (v) => v > 0.005 ? 'pos' : (v < -0.005 ? 'neg' : '');
+
+// ---------- estado ----------
+function lerEstado() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    const d = raw ? JSON.parse(raw) : null;
+    if (d && Array.isArray(d.suppliers)) return d;
+  } catch (e) {}
+  return { v: 1, suppliers: [], risks: [], curId: null };
+}
+function gravarEstado(msg) {
+  try {
+    // relê o que está salvo para não sobrescrever mudanças feitas no dashboard em outra aba
+    const atual = lerEstado();
+    atual.finBase = estado.finBase;
+    if (curId === AVULSA_ID) atual.finAvulsa = estado.finAvulsa;
+    else {
+      const s = atual.suppliers.find(o => o.id === curId);
+      const mine = sup();
+      if (s && mine) s.fin = mine.fin;
+    }
+    atual.salvoEm = new Date().toISOString();
+    localStorage.setItem(STORE_KEY, JSON.stringify(atual));
+    estado = Object.assign(atual, {});
+    $('saveState').textContent = msg || 'salvo automaticamente';
+  } catch (e) { $('saveState').textContent = 'não foi possível salvar neste navegador'; }
+}
+function agendar() { clearTimeout(saveTimer); saveTimer = setTimeout(() => salvarCategoria(false), 700); }
+
+// ---------- categoria ----------
+function montarSeletor() {
+  const sel = $('catSel');
+  const list = estado.suppliers || [];
+  let h = list.map(s => `<option value="${s.id}">${s.name}${s.fin ? ' · ✓' : ''}</option>`).join('');
+  h += `<option value="${AVULSA_ID}">${list.length ? '— Categoria avulsa (sem cadastro) —' : 'Categoria avulsa (cadastre categorias no Dashboard)'}</option>`;
+  sel.innerHTML = h;
+  sel.value = curId;
+}
+function selecionarCategoria(id) {
+  curId = id;
+  const s = sup();
+  let fin = null;
+  if (id === AVULSA_ID) {
+    fin = estado.finAvulsa || null;
+    $('catNome').textContent = 'avulsa';
+    $('bK').innerHTML = ''; $('bP').innerHTML = ''; $('bRisk').textContent = '';
+  } else if (s) {
+    fin = s.fin || null;
+    $('catNome').textContent = s.name;
+    const q = kQuad(s.kx ?? 50, s.ky ?? 50);
+    $('bK').innerHTML = `<span class="badge ${q.cls}">Kraljic · ${q.n}</span>`;
+    $('bP').innerHTML = s.pcbQuad ? `<span class="badge bn">PCB · ${s.pcbQuad}</span>` : '';
+    const rs = riscosCat(s);
+    $('bRisk').textContent = rs.length ? `${rs.length} risco(s) registrado(s)` : 'sem riscos registrados';
+  }
+  if (fin) {
+    cat = { spend: +fin.spend || 0, direto: fin.direto !== false };
+    alav = Object.assign({}, F.ALAV_ZERO, fin.alav || {});
+  } else {
+    const sp = s ? F.parseSpend(s.spend) : 0;
+    cat = { spend: Math.round(sp * 10) / 10, direto: true };
+    alav = Object.assign({}, F.ALAV_ZERO);
+  }
+  preencherRiscoDoRegistro(!fin);
+  const back = $('backLink');
+  back.href = 'index.html';
+  escreverCategoria(); escreverAlavancas(); atualizar();
+  history.replaceState(null, '', id && id !== AVULSA_ID ? '?cat=' + encodeURIComponent(id) : location.pathname);
+}
+function preencherRiscoDoRegistro(definirProb) {
+  const s = sup(); const rs = riscosCat(s);
+  if (!rs.length) { $('riskHint').textContent = ''; return; }
+  const top = [...rs].sort((a, b) => (b.p * b.i) - (a.p * a.i))[0];
+  if (definirProb && !alav.p0) alav.p0 = F.PROB_ESCALA[top.p] || 0;
+  $('riskHint').innerHTML = `Maior risco registrado: <b style="color:var(--soft)">${top.desc}</b> (P${top.p} × I${top.i}). Probabilidade sugerida pela conversão didática da escala: ${F.PROB_ESCALA[top.p]}% ao ano. Informe o impacto em R$.`;
+}
+function escreverCategoria() {
+  $('c-spend').value = cat.spend;
+  document.querySelectorAll('#segNat button').forEach(b => b.classList.toggle('on', (b.dataset.v === '1') === cat.direto));
+  const s = sup();
+  if (s && s.spend) $('spendHint').innerHTML = `Spend cadastrado no dashboard: <b style="color:var(--soft)">R$ ${s.spend}</b> → ${F.fmtMi(F.parseSpend(s.spend))}. Ajuste se necessário.`;
+  else $('spendHint').textContent = curId === AVULSA_ID ? 'Informe o spend anual da categoria em R$ milhões.' : 'A categoria não tem spend cadastrado no dashboard — informe aqui, em R$ milhões.';
+  const q = quadAtual();
+  $('btnSug').textContent = q ? `Aplicar ponto de partida · ${q}` : 'Aplicar ponto de partida do quadrante';
+  $('btnSug').disabled = !q; $('btnSug').style.opacity = q ? 1 : .4;
+  $('sugHint').textContent = q ? 'Preenche alavancas típicas da estratégia do quadrante como hipótese inicial — o grupo deve ajustar com os dados da categoria.' : 'Disponível para categorias cadastradas e posicionadas na Kraljic.';
+  $('lv-estoque').classList.toggle('off', !cat.direto);
+}
+function setNatureza(d) { cat.direto = d; escreverCategoria(); atualizar(); agendar(); }
+
+// ---------- base ----------
+const BASE_IDS = ['receita', 'cpv', 'ebit', 'dioh', 'dso', 'dpo', 'fixo', 'ir', 'wacc'];
+function escreverBase() {
+  BASE_IDS.forEach(k => $('b-' + k).value = base[k]);
+  document.querySelectorAll('#presetChips .chip').forEach(c => c.classList.toggle('on', c.dataset.p === base.preset));
+  const p = F.PRESETS[base.preset];
+  $('baseSrc').textContent = p ? p.fonte : 'Base própria do grupo.';
+}
+function aplicarPreset(k) {
+  if (k === 'propria') { base.preset = 'propria'; }
+  else base = Object.assign({ preset: k }, F.PRESETS[k]);
+  estado.finBase = base;
+  escreverBase(); escreverAlavancas(); atualizar(); gravarEstado();
+}
+function lerBase() {
+  BASE_IDS.forEach(k => { const v = parseFloat($('b-' + k).value); if (isFinite(v)) base[k] = v; });
+  base.preset = 'propria';
+  document.querySelectorAll('#presetChips .chip').forEach(c => c.classList.toggle('on', c.dataset.p === 'propria'));
+  $('baseSrc').textContent = 'Base própria do grupo.';
+  estado.finBase = base;
+}
+
+// ---------- alavancas ----------
+const SLIDERS = ['saving', 'dpo', 'precoPrazo', 'estoque', 'receita'];
+const NUMS = ['mc', 'p0', 'p1', 'imp', 'custoMit'];
+function escreverAlavancas() {
+  const maxR = Math.max(50, Math.round(base.receita * 0.05 / 5) * 5);
+  $('a-receita').max = maxR; $('a-receita').step = maxR > 200 ? 5 : 1;
+  SLIDERS.forEach(k => $('a-' + k).value = alav[k]);
+  $('a-mc').value = (alav.mc === null || alav.mc === undefined) ? '' : alav.mc;
+  $('a-mc').placeholder = (100 - base.cpv).toFixed(1);
+  ['p0', 'p1', 'imp', 'custoMit'].forEach(k => $('a-' + k).value = alav[k]);
+}
+function lerAlavancas() {
+  SLIDERS.forEach(k => alav[k] = +$('a-' + k).value);
+  const mc = $('a-mc').value.trim(); alav.mc = mc === '' ? null : +mc;
+  ['p0', 'p1', 'imp', 'custoMit'].forEach(k => { const v = parseFloat($('a-' + k).value); alav[k] = isFinite(v) ? v : 0; });
+}
+function aplicarSugestao() {
+  const q = quadAtual(); if (!q) return;
+  alav = F.sugestaoQuadrante(q, cat.spend, base);
+  if (!cat.direto) alav.estoque = 0;
+  escreverAlavancas(); atualizar(); agendar();
+  toast('Ponto de partida aplicado: ' + q);
+}
+function zerarAlavancas() { alav = Object.assign({}, F.ALAV_ZERO); escreverAlavancas(); atualizar(); agendar(); }
+
+// ---------- render ----------
+function atualizar() {
+  const r = F.impacto(base, cat, alav);
+  const B = r.B, t = base.ir / 100, w = base.wacc / 100;
+  const S = r.spend;
+
+  // mini KPIs da base
+  $('mk-roic').textContent = F.fmtPct(B.roic);
+  $('mk-roce').textContent = F.fmtPct(B.roce);
+  $('mk-eva').textContent = F.fmtMi(B.eva);
+  $('mk-ccc').textContent = Math.round(B.ccc) + ' d';
+
+  // rótulos das alavancas
+  const L = Object.fromEntries(r.L.map(x => [x.k, x]));
+  $('v-saving').textContent = F.fmtPct(alav.saving) + ' do spend';
+  $('e-saving').innerHTML = `ΔEBIT <b>${F.fmtSig(L.saving.dEbit)}</b>/ano · ΔEVA <b>${F.fmtSig(L.saving.dEva)}</b>/ano`;
+  $('v-dpo').textContent = (alav.dpo > 0 ? '+' : '') + alav.dpo + ' dias';
+  $('e-dpo').innerHTML = `Caixa liberado uma vez <b>${F.fmtSig(-L.dpo.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.dpo.dEva)}</b>/ano (WACC × caixa)`;
+  $('v-precoPrazo').textContent = F.fmtPct(alav.precoPrazo) + ' do spend';
+  let tx = '';
+  if (r.taxaPrazo !== null) {
+    const ok = r.taxaPrazo <= base.wacc;
+    tx = ` · taxa implícita <b style="color:${ok ? 'var(--green)' : 'var(--red)'}">${F.fmtPct(r.taxaPrazo)} a.a.</b> vs WACC ${F.fmtPct(base.wacc)}`;
+  }
+  $('e-precoPrazo').innerHTML = `ΔEBIT <b>${F.fmtSig(L.precoPrazo.dEbit)}</b>/ano${tx}`;
+  $('v-estoque').textContent = cat.direto ? ((alav.estoque > 0 ? '+' : '') + alav.estoque + ' dias') : 'n/a';
+  $('e-estoque').innerHTML = cat.direto ? `ΔEstoque <b>${F.fmtSig(L.estoque.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.estoque.dEva)}</b>/ano` : 'Gasto indireto não forma estoque de material.';
+  $('v-receita').textContent = F.fmtMi(alav.receita) + '/ano';
+  $('e-receita').innerHTML = `ΔEBIT <b>${F.fmtSig(L.receita.dEbit)}</b> · capital de giro consumido <b>${F.fmtSig(L.receita.dCi)}</b> · ΔEVA <b>${F.fmtSig(L.receita.dEva)}</b>/ano`;
+  $('v-risco').textContent = F.fmtSig(L.risco.dEbit) + '/ano';
+  $('e-risco').innerHTML = `Perda esperada ${F.fmtMi(r.perdaAntes)} → ${F.fmtMi(r.perdaDepois)} · custo da mitigação ${F.fmtMi(alav.custoMit)} · ΔEVA <b>${F.fmtSig(L.risco.dEva)}</b>/ano`;
+
+  // KPIs
+  $('resCat').textContent = ($('catNome').textContent || '') + (S ? ' · spend ' + F.fmtMi(S) : '');
+  const set = (id, txt, c) => { const e = $(id); e.textContent = txt; e.className = 'v ' + (c || ''); };
+  set('k-ebit', F.fmtSig(r.dEbit), cls(r.dEbit));
+  $('kd-ebit').textContent = `${F.fmtMi(B.ebit)} → ${F.fmtMi(r.N.ebit)}`;
+  set('k-ci', F.fmtSig(r.dCi), cls(-r.dCi));
+  $('kd-ci').textContent = `${F.fmtMi(B.ci)} → ${F.fmtMi(r.N.ci)}`;
+  set('k-roic', F.fmtPct(r.N.roic), cls(r.dRoic));
+  $('kd-roic').textContent = `base ${F.fmtPct(B.roic)} · ${F.fmtPP(r.dRoic, 2)}`;
+  set('k-eva', F.fmtSig(r.dEva), cls(r.dEva));
+  $('kd-eva').textContent = `${F.fmtMi(B.eva)} → ${F.fmtMi(r.N.eva)}`;
+
+  // ponte
+  const maxAbs = Math.max(0.01, ...r.L.map(x => Math.abs(x.dEva)), Math.abs(r.dEva));
+  const row = (nome, v, total) => {
+    const pct = Math.abs(v) / maxAbs * 50;
+    const left = v >= 0 ? 50 : 50 - pct;
+    const col = v >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<div class="bridge-row${total ? ' total' : ''}"><span class="bn-l">${nome}</span>
+      <div class="btrack"><div class="bbar" style="left:${left}%;width:${pct}%;background:${total ? 'var(--gold)' : col};"></div></div>
+      <span class="bv ${total ? '' : cls(v)}" style="${total ? 'color:var(--gold)' : ''}">${F.fmtSig(v)}</span></div>`;
+  };
+  $('bridge').innerHTML = r.L.map(x => row(x.nome, x.dEva)).join('') + row('Δ EVA total', r.dEva, true);
+
+  // recorrente × uma vez
+  set('c-rec', F.fmtSig(r.dNopat), cls(r.dNopat));
+  $('cs-rec').textContent = 'Δ NOPAT por ano, enquanto as condições durarem';
+  const cx = $('c-cx'); cx.textContent = F.fmtSig(r.caixaUnico);
+  $('cs-cx').textContent = r.caixaUnico >= 0 ? 'Capital liberado (prazo, estoque, giro). Vale WACC × caixa por ano: ' + F.fmtSig(r.caixaUnico * w) : 'Capital adicional consumido. Custa WACC × caixa por ano: ' + F.fmtSig(r.caixaUnico * w);
+  $('c-eq').textContent = F.fmtMi(Math.max(0, r.equivReceita));
+  $('cs-eq').textContent = `Vendas extras necessárias para gerar o mesmo EBIT do saving líquido, à margem EBIT de ${F.fmtPct(base.ebit)}`;
+  $('c-roce').textContent = F.fmtPct(r.N.roce);
+  $('cs-roce').textContent = `base ${F.fmtPct(B.roce)} · ${F.fmtPP(r.dRoce, 2)} — o ROCE não subtrai fornecedores, então não registra o prazo`;
+
+  // veredito
+  $('verdict').innerHTML = leitura(r, L);
+}
+
+function leitura(r, L) {
+  const p = [];
+  const w = base.wacc;
+  if (!r.spend) return '<p>Informe o <b>spend anual da categoria</b> para ver o impacto.</p>';
+  const nada = r.L.every(x => Math.abs(x.dEva) < 0.005 && Math.abs(x.dCi) < 0.005);
+  if (nada) return `<p>Mova as alavancas. Para referência: nesta categoria, <b>1% de saving</b> vale ${F.fmtSig(r.spend * 0.01 * (1 - base.ir / 100))} de EVA por ano; <b>+10 dias de prazo</b> liberam ${F.fmtMi(r.spend / 365 * 10)} uma vez e valem ${F.fmtSig(r.spend / 365 * 10 * w / 100)} de EVA por ano.</p>`;
+
+  const s = r.dEva > 0.005 ? '<b class="pos">cria valor</b>' : (r.dEva < -0.005 ? '<b class="neg">destrói valor</b>' : '<b>é neutro em valor</b>');
+  p.push(`O cenário ${s}: ${F.fmtSig(r.dEva)} de EVA por ano, levando o ROIC de ${F.fmtPct(r.B.roic)} para ${F.fmtPct(r.N.roic)}. Em perpetuidade, sem crescimento, isso equivale a cerca de ${F.fmtSig(r.valorPerpetuidade)} de valor (indicativo).`);
+
+  // maior alavanca
+  const top = [...r.L].sort((a, b) => Math.abs(b.dEva) - Math.abs(a.dEva))[0];
+  if (Math.abs(top.dEva) > 0.005) {
+    const share = Math.abs(r.dEva) > 0.005 ? Math.round(top.dEva / r.dEva * 100) : null;
+    p.push(`A alavanca que mais pesa é <b>${top.nome.toLowerCase()}</b> (${F.fmtSig(top.dEva)}/ano${share !== null && share > 0 && share <= 300 ? ', ' + share + '% do total' : ''}).`);
+  }
+  // preço vs prazo
+  if (alav.saving > 0 && alav.dpo > 0) {
+    const ratio = L.saving.dEva / Math.max(0.0001, L.dpo.dEva);
+    p.push(`Preço × prazo: o saving rende ${F.fmtSig(L.saving.dEva)}/ano todo ano; o prazo libera ${F.fmtMi(-L.dpo.dCi)} uma vez e rende ${F.fmtSig(L.dpo.dEva)}/ano em custo de capital evitado${ratio > 1.05 ? ` — aqui o preço vale ${ratio.toFixed(1).replace('.', ',')}× mais em valor` : ratio < 0.95 ? ` — aqui o prazo vale mais em valor` : ''}.`);
+  }
+  if (r.taxaPrazo !== null) {
+    if (r.taxaPrazo > w) p.push(`<span class="warn">⚠ O fornecedor está cobrando ${F.fmtPct(r.taxaPrazo)} ao ano pelo prazo, acima do WACC de ${F.fmtPct(w)}. Pagar à vista sairia mais barato — ou ofereça um programa de SCF, em que o banco antecipa ao fornecedor com taxa ancorada no risco da sua empresa.</span>`);
+    else p.push(`O custo do prazo (${F.fmtPct(r.taxaPrazo)} a.a.) está abaixo do WACC: financiar-se no fornecedor ainda compensa.`);
+  }
+  if (alav.dpo >= 45) p.push(`<span class="warn">⚠ +${alav.dpo} dias é o DSO do fornecedor aumentando na mesma medida. Em fornecedor de menor porte, isso pressiona o caixa dele e pode virar ruptura, queda de qualidade ou perda de prioridade.</span>`);
+  if (cat.direto && alav.estoque > 0) {
+    const q = quadAtual();
+    p.push(q === 'Gargalo'
+      ? `Mais estoque em item gargalo é seguro, não desperdício: compare o custo de capital (${F.fmtSig(L.estoque.dEva)}/ano) com a redução da perda esperada.`
+      : `<span class="warn">Mais ${alav.estoque} dias de estoque custam ${F.fmtSig(-L.estoque.dEva)}/ano em capital. Se veio de desconto por volume ou sourcing offshore, o saving precisa pagar esse custo — é a conta do TCO.</span>`);
+  }
+  if (alav.receita > 0) p.push(`A receita habilitada gera ${F.fmtSig(L.receita.dEbit)} de EBIT, mas consome ${F.fmtMi(L.receita.dCi)} de capital de giro — o efeito líquido no EVA é ${F.fmtSig(L.receita.dEva)}/ano.`);
+  if (alav.imp > 0 && (alav.p0 !== alav.p1 || alav.custoMit > 0)) {
+    p.push(L.risco.dEbit >= 0
+      ? `A mitigação se paga: reduz a perda esperada em ${F.fmtMi(r.perdaAntes - r.perdaDepois)} por ano${alav.custoMit > 0 ? ' contra um custo de ' + F.fmtMi(alav.custoMit) : ', sem custo adicional informado'}. No ROCE de superfície ela pareceria custo.`
+      : `<span class="warn">A mitigação custa ${F.fmtMi(alav.custoMit)} por ano e reduz a perda esperada em só ${F.fmtMi(r.perdaAntes - r.perdaDepois)} — revise o desenho ou o tamanho do seguro.</span>`);
+  }
+  if (r.equivReceita > 0) p.push(`Para o Conselho: o saving líquido equivale a vender <b>${F.fmtMi(r.equivReceita)}</b> a mais por ano com a margem atual.`);
+  return p.map(x => `<p>${x}</p>`).join('');
+}
+
+// ---------- portfólio ----------
+function renderPortfolio() {
+  const list = (estado.suppliers || []).filter(s => s.fin && s.fin.alav);
+  if (estado.finAvulsa && estado.finAvulsa.alav) list.push({ id: AVULSA_ID, name: 'Categoria avulsa', fin: estado.finAvulsa });
+  if (!list.length) { $('portfolio').innerHTML = '<p class="hint">Nenhuma categoria com cenário salvo ainda. Salve o cenário de cada categoria para ver o impacto somado da área de Compras.</p>'; return; }
+  let tE = 0, tC = 0, tV = 0, tS = 0;
+  const w = base.wacc / 100, t = base.ir / 100;
+  let h = '<table class="ptable"><thead><tr><th>Categoria</th><th>Kraljic</th><th>Spend</th><th>Δ EBIT/ano</th><th>Δ Capital</th><th>Δ EVA/ano</th></tr></thead><tbody>';
+  list.forEach(s => {
+    const r = F.impacto(base, { spend: s.fin.spend, direto: s.fin.direto !== false }, s.fin.alav);
+    tE += r.dEbit; tC += r.dCi; tV += r.dEva; tS += r.spend;
+    const q = s.id === AVULSA_ID ? '—' : kQuad(s.kx ?? 50, s.ky ?? 50).n;
+    h += `<tr style="cursor:pointer" onclick="selecionarCategoria('${s.id}');document.getElementById('catSel').value='${s.id}';window.scrollTo({top:0,behavior:'smooth'})"><td>${s.name}</td><td>${q}</td><td>${F.fmtMi(r.spend)}</td><td class="${cls(r.dEbit)}">${F.fmtSig(r.dEbit)}</td><td class="${cls(-r.dCi)}">${F.fmtSig(r.dCi)}</td><td class="${cls(r.dEva)}">${F.fmtSig(r.dEva)}</td></tr>`;
+  });
+  const B = F.base(base);
+  const roicN = ((B.ebit + tE) * (1 - t)) / (B.ci + tC) * 100;
+  h += `<tr class="tot"><td>Total Compras</td><td></td><td>${F.fmtMi(tS)}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
+  h += `<p class="hint" style="margin-top:.7rem;">ROIC da empresa com todas as categorias: <b style="color:var(--gold)">${F.fmtPct(B.roic)} → ${F.fmtPct(roicN)}</b> (${F.fmtPP(roicN - B.roic, 2)}) · spend analisado = ${F.fmtPct(tS / B.cogs * 100)} do CPV. Clique em uma linha para abrir a categoria.</p>`;
+  $('portfolio').innerHTML = h;
+}
+
+// ---------- salvar ----------
+function salvarCategoria(manual) {
+  const fin = { spend: cat.spend, direto: cat.direto, alav: Object.assign({}, alav), salvoEm: new Date().toISOString() };
+  if (curId === AVULSA_ID) estado.finAvulsa = fin;
+  else { const s = sup(); if (s) s.fin = fin; }
+  gravarEstado(manual ? 'cenário salvo' : 'salvo automaticamente');
+  montarSeletor(); renderPortfolio();
+  if (manual) toast('Cenário salvo na categoria!');
+}
+
+// ---------- eventos ----------
+BASE_IDS.forEach(k => $('b-' + k).addEventListener('input', () => { lerBase(); escreverAlavancas(); atualizar(); renderPortfolio(); agendar(); }));
+SLIDERS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
+NUMS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
+$('c-spend').addEventListener('input', () => { const v = parseFloat($('c-spend').value); cat.spend = isFinite(v) ? v : 0; atualizar(); agendar(); });
+
+// ---------- init ----------
+(function init() {
+  estado = lerEstado();
+  base = estado.finBase ? Object.assign({}, estado.finBase) : Object.assign({ preset: 'whirlpool' }, F.BASE_PADRAO);
+  estado.finBase = base;
+  $('srcWhirl').textContent = F.PRESETS.whirlpool.fonte;
+  const q = new URLSearchParams(location.search).get('cat');
+  const list = estado.suppliers || [];
+  curId = (q && list.some(s => s.id === q)) ? q : (estado.curId && list.some(s => s.id === estado.curId) ? estado.curId : (list[0] ? list[0].id : AVULSA_ID));
+  escreverBase();
+  montarSeletor();
+  selecionarCategoria(curId);
+  renderPortfolio();
+  $('saveState').textContent = list.length ? list.length + ' categoria(s) do dashboard' : 'sem categorias no dashboard';
+})();
+window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>
