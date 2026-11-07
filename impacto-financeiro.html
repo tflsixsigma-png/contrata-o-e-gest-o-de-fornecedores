@@ -81,6 +81,8 @@ input[type=range]{accent-color:var(--blue);cursor:pointer;width:100%;}
 .lv-sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.5rem;}
 .lever.off{opacity:.4;pointer-events:none;}
 .unit-in{display:inline-flex;align-items:center;gap:.4rem;font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);white-space:nowrap;}
+.pm{background:var(--surface2);border:1px solid var(--border);color:var(--gold);border-radius:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:1rem;min-width:38px;height:36px;cursor:pointer;}
+.pm:active{background:var(--gold);color:var(--bg);}
 .ifield.num{width:96px;text-align:right;font-weight:700;color:var(--blue-l);font-size:.9rem;padding:.4rem .6rem;}
 .opt-title{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gold);margin:1rem 0 .2rem;padding-top:.8rem;border-top:1px solid var(--border);}
 details.why{margin-top:.35rem;}
@@ -239,19 +241,19 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <div class="card-title"><span><span class="step">③</span>Alavancas de Compras</span></div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="unit-in"><input class="ifield num" id="a-saving" type="number" step="0.5"><span>% do spend</span></span></div>
+          <div class="lv-head"><span class="lv-name">Saving de preço <span class="tag t-num">NUMERADOR</span></span><span class="unit-in"><input class="ifield num" id="a-saving" type="text" inputmode="decimal" autocomplete="off"><span>% do spend</span></span></div>
           <div class="lv-eff" id="e-saving"></div>
           <details class="why"><summary>De onde vem o número</summary><p>Redução de preço obtida na negociação, sobre o spend da categoria. Vai inteira para o EBIT e se repete todo ano enquanto o contrato durar. Use o saving <b>líquido de TCO</b>: se o fornecedor mais barato traz frete, lead time ou estoque extra, lance esses efeitos nas outras alavancas.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in"><input class="ifield num" id="a-dpo" type="number" step="5"><span>dias</span></span></div>
+          <div class="lv-head"><span class="lv-name">Prazo de pagamento adicional <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in"><button type="button" class="pm" data-for="a-dpo" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-dpo" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
           <div class="lv-eff" id="e-dpo"></div>
           <details class="why"><summary>Como entra na conta</summary><p>Dias a mais (ou a menos, com sinal negativo) para pagar o fornecedor. Contas a Pagar sobe e o <b>Capital Investido cai uma única vez</b> (Convenção B). O NOPAT não muda. O ganho anual de valor é o custo de capital que deixa de incidir sobre esse caixa: WACC × caixa liberado.</p></details>
         </div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in" id="u-estoque"><input class="ifield num" id="a-estoque" type="number" step="5"><span>dias</span></span></div>
+          <div class="lv-head"><span class="lv-name">Dias de estoque da categoria <span class="tag t-den">DENOMINADOR</span></span><span class="unit-in" id="u-estoque"><button type="button" class="pm" data-for="a-estoque" title="Trocar o sinal (+/−)">±</button><input class="ifield num" id="a-estoque" type="text" inputmode="decimal" autocomplete="off"><span>dias</span></span></div>
           <div class="lv-eff" id="e-estoque"></div>
           <details class="why"><summary>Como entra na conta</summary><p>Variação dos dias de cobertura do material. Negativo = menos estoque (VMI, consignação, entregas mais frequentes, fornecedor mais próximo). Positivo = mais estoque (lote maior por desconto de volume, importação com lead time longo, estoque de segurança). Só se aplica a gasto direto.</p></details>
         </div>
@@ -259,7 +261,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <div class="opt-title">Opcionais</div>
 
         <div class="lever">
-          <div class="lv-head"><span class="lv-name">Preço do prazo <span class="tag t-num">OPCIONAL</span></span><span class="unit-in"><input class="ifield num" id="a-precoPrazo" type="number" step="0.1"><span>% do spend</span></span></div>
+          <div class="lv-head"><span class="lv-name">Preço do prazo <span class="tag t-num">OPCIONAL</span></span><span class="unit-in"><input class="ifield num" id="a-precoPrazo" type="text" inputmode="decimal" autocomplete="off"><span>% do spend</span></span></div>
           <div class="hint" style="margin:.1rem 0 .3rem;">Desconto que você deixa de ganhar, ou acréscimo no preço, por pagar no prazo maior.</div>
           <div class="lv-eff" id="e-precoPrazo"></div>
           <details class="why"><summary>Onde encontrar este número</summary><p><b>1. Desconto à vista:</b> se o fornecedor dá 2% para pagar em 10 dias em vez de 40, os 30 dias custam 2%.<br><b>2. Cotação em duas condições:</b> a diferença entre o preço a 30 e a 60 dias.<br><b>3. Custo de financiamento do fornecedor:</b> taxa mensal com que ele desconta duplicatas × dias ÷ 30 (ex.: 1,5% a.m. por 30 dias ≈ 1,5%). Com risco sacado, use a taxa que o banco cobra do fornecedor.<br>Sem nenhuma das três, deixe em zero: o prazo será tratado como gratuito.</p></details>
@@ -268,8 +270,8 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
         <div class="lever">
           <div class="lv-head"><span class="lv-name">Proteção de fornecimento <span class="tag t-risk">OPCIONAL</span></span></div>
           <div class="lv-sub">
-            <div class="f"><label>Custo anual da proteção (R$ mi)</label><input class="ifield" id="a-custoProt" type="number" step="0.5"></div>
-            <div class="f"><label>Prejuízo de uma parada (R$ mi)</label><input class="ifield" id="a-prejParada" type="number" step="1"></div>
+            <div class="f"><label>Custo anual da proteção (R$ mi)</label><input class="ifield" id="a-custoProt" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="f"><label>Prejuízo de uma parada (R$ mi)</label><input class="ifield" id="a-prejParada" type="text" inputmode="decimal" autocomplete="off"></div>
           </div>
           <div class="lv-eff" id="e-protecao"></div>
           <details class="why"><summary>Como usar</summary><p>Quanto custa por ano proteger o fornecimento — segundo fornecedor homologado, estoque de segurança, contrato de reserva de capacidade — e quanto a empresa perde se a linha parar por falta do item (margem perdida, frete emergencial, multas). O custo entra no EBIT. A ferramenta responde de quantos em quantos anos a proteção precisa evitar uma parada para se pagar; o grupo julga se isso é plausível.</p></details>
@@ -491,10 +493,10 @@ function lerBase() {
 // ---------- alavancas ----------
 const CAMPOS = ['saving', 'dpo', 'estoque', 'precoPrazo', 'custoProt', 'prejParada'];
 function escreverAlavancas() {
-  CAMPOS.forEach(k => $('a-' + k).value = alav[k] || 0);
+  CAMPOS.forEach(k => $('a-' + k).value = String(alav[k] || 0).replace('.', ','));
 }
 function lerAlavancas() {
-  CAMPOS.forEach(k => { const v = parseFloat(String($('a-' + k).value).replace(',', '.')); alav[k] = isFinite(v) ? v : 0; });
+  CAMPOS.forEach(k => { const v = parseFloat(String($('a-' + k).value).replace(/[−–]/g, '-').replace(',', '.')); alav[k] = isFinite(v) ? v : 0; });
 }
 function aplicarSugestao() {
   const q = quadAtual(); if (!q) return;
@@ -646,6 +648,11 @@ function salvarCategoria(manual) {
 // ---------- eventos ----------
 BASE_IDS.forEach(k => $('b-' + k).addEventListener('input', () => { lerBase(); escreverAlavancas(); atualizar(); renderPortfolio(); agendar(); }));
 CAMPOS.forEach(k => $('a-' + k).addEventListener('input', () => { lerAlavancas(); atualizar(); agendar(); }));
+document.querySelectorAll('.pm').forEach(b => b.addEventListener('click', () => {
+  const inp = $(b.dataset.for); const v = inp.value.trim();
+  inp.value = v.startsWith('-') || v.startsWith('−') ? v.replace(/^[-−]/, '') : '-' + (v === '0' ? '' : v);
+  inp.dispatchEvent(new Event('input')); inp.focus();
+}));
 $('c-spend').addEventListener('input', () => { const v = parseFloat($('c-spend').value); cat.spend = isFinite(v) ? v : 0; atualizar(); agendar(); });
 
 // ---------- init ----------

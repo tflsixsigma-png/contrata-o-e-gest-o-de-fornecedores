@@ -80,6 +80,8 @@ p{color:var(--soft);font-size:.92rem;margin-bottom:.7rem;}
 .fld input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;color:var(--blue-l);font-family:'Space Mono',monospace;font-size:.92rem;font-weight:700;width:100%;outline:none;text-align:right;}
 .fld input:focus{border-color:var(--blue);}
 .fld input.ok{border-color:rgba(52,211,153,.6);}
+.pm{background:var(--surface2);border:1px solid var(--border);color:var(--gold);border-radius:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:1rem;min-width:40px;height:38px;cursor:pointer;flex-shrink:0;}
+.pm:active{background:var(--gold);color:var(--bg);}
 .fld .u{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--muted);white-space:nowrap;}
 .check{font-size:.74rem;margin-top:.6rem;font-family:'Space Mono',monospace;}
 .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;}
@@ -234,8 +236,8 @@ const cls = (v) => v > 0.005 ? 'pos' : (v < -0.005 ? 'neg' : '');
 const CAMPOS = {
   saving:     { label: 'Saving de preço', unit: '% do spend' },
   precoPrazo: { label: 'Preço do prazo', unit: '% do spend' },
-  dpo:        { label: 'Prazo de pagamento adicional', unit: 'dias' },
-  estoque:    { label: 'Dias de estoque da categoria', unit: 'dias' },
+  dpo:        { label: 'Prazo de pagamento adicional', unit: 'dias', neg: true },
+  estoque:    { label: 'Dias de estoque da categoria', unit: 'dias', neg: true },
   custoProt:  { label: 'Custo anual da proteção', unit: 'R$ mi' },
   prejParada: { label: 'Prejuízo de uma parada', unit: 'R$ mi' }
 };
@@ -346,7 +348,7 @@ function renderMissoes() {
         <div class="sub-t" style="margin-top:0;">Digite os dados</div>
         <div class="fields">${m.campos.map(c => `
           <div class="fld"><label for="${m.id}-${c}">${CAMPOS[c].label}</label>
-            <div class="row"><input id="${m.id}-${c}" type="number" step="any" inputmode="decimal" placeholder="—" value="${resp[m.id] && resp[m.id][c] !== undefined ? resp[m.id][c] : ''}"><span class="u">${CAMPOS[c].unit}</span></div></div>`).join('')}
+            <div class="row">${CAMPOS[c].neg ? `<button type="button" class="pm" data-for="${m.id}-${c}" title="Trocar o sinal (+/−)">±</button>` : ''}<input id="${m.id}-${c}" type="text" inputmode="decimal" autocomplete="off" placeholder="—" value="${resp[m.id] && isFinite(resp[m.id][c]) ? String(resp[m.id][c]).replace('.', ',') : ''}"><span class="u">${CAMPOS[c].unit}</span></div></div>`).join('')}
         </div>
         <div class="check" id="${m.id}-check"></div>
         <div class="sub-t">Resultado para a Whirlpool</div>
@@ -366,9 +368,15 @@ function renderMissoes() {
   MISSOES.forEach(m => m.campos.forEach(c => $(`${m.id}-${c}`).addEventListener('input', () => {
     const v = $(`${m.id}-${c}`).value.trim();
     resp[m.id] = resp[m.id] || {};
-    if (v === '') delete resp[m.id][c]; else resp[m.id][c] = parseFloat(v.replace(',', '.'));
+    const num = parseFloat(v.replace(/[−–]/g, '-').replace(',', '.'));
+    if (v === '' || !isFinite(num)) delete resp[m.id][c]; else resp[m.id][c] = num;
     salvar(); calcular(m); placar();
   })));
+  document.querySelectorAll('.pm').forEach(b => b.addEventListener('click', () => {
+    const inp = $(b.dataset.for); const v = inp.value.trim();
+    inp.value = v.startsWith('-') || v.startsWith('−') ? v.replace(/^[-−]/, '') : '-' + v;
+    inp.dispatchEvent(new Event('input')); inp.focus();
+  }));
   MISSOES.forEach(calcular);
 }
 
