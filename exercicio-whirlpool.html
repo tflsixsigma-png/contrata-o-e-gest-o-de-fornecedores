@@ -137,6 +137,13 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   .nav,.cta,.no-print{display:none!important;} body{font-size:11px;}
   .mission,.concept,.card{break-inside:avoid;}
 }
+.bookcard{display:flex;gap:1.1rem;align-items:center;background:linear-gradient(135deg,rgba(201,169,97,.12),rgba(201,169,97,.03));border:1px solid rgba(201,169,97,.55);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1rem;text-decoration:none;color:inherit;}
+.bookcard img{width:84px;height:auto;border-radius:4px;box-shadow:4px 4px 0 rgba(201,169,97,.35);flex-shrink:0;}
+.bookcard .bk-k{font-family:'Space Mono',monospace;font-size:.6rem;color:#C9A961;text-transform:uppercase;letter-spacing:.16em;font-weight:700;}
+.bookcard .bk-t{font-weight:800;font-size:1rem;color:#e2e8f0;line-height:1.25;margin:.15rem 0 .2rem;}
+.bookcard .bk-s{font-size:.78rem;color:#cbd5e1;line-height:1.45;}
+.bookcard .bk-b{display:inline-block;margin-top:.5rem;background:#C9A961;color:#0a0f1e;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;padding:.4rem .8rem;border-radius:6px;}
+@media print{.bookcard{display:none;}}
 </style>
 </head>
 <body>
@@ -165,6 +172,12 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
     <div><span class="k">3 · Discuta</span>as perguntas com o grupo e anote as respostas.</div>
     <div><span class="k">4 · Confira</span>só então abra "Análise do professor" e compare.</div>
   </div>
+
+  <a class="bookcard" href="https://atenaeditora.com.br/index.php/catalogo/ebook/contratacao-e-gestao-de-fornecedores-estrategicos-teoria-modelos-e-praticas-para-a-gestao-de-compras-e-suprimentos" target="_blank" rel="noopener">
+  <img src="img/capa-contratacao-fornecedores.jpg" alt="Capa do livro Contratação e Gestão de Fornecedores Estratégicos, de Thiago Lima">
+  <div><div class="bk-k">Leitura de apoio</div><div class="bk-t">Contratação e Gestão de Fornecedores Estratégicos</div>
+  <div class="bk-s">Alavancas de compras, custo total (TCO) e gestão de fornecedores: o livro aprofunda os conceitos usados nas cinco missões.</div><span class="bk-b">Baixar o e-book · Atena Editora</span></div>
+</a>
 
   <!-- ================= CONCEITOS ================= -->
   <h2><span class="n">00</span>Antes de começar: o mínimo de finanças que você precisa</h2>

@@ -107,7 +107,14 @@
         .empty p{font-size:.82rem;}
 
         @media(max-width:768px){.grid2{grid-template-columns:1fr;}.panel{padding:1rem;}.guide-body{grid-template-columns:1fr;}}
-    </style>
+    .bookcard{display:flex;gap:1.1rem;align-items:center;background:linear-gradient(135deg,rgba(201,169,97,.12),rgba(201,169,97,.03));border:1px solid rgba(201,169,97,.55);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1rem;text-decoration:none;color:inherit;}
+.bookcard img{width:84px;height:auto;border-radius:4px;box-shadow:4px 4px 0 rgba(201,169,97,.35);flex-shrink:0;}
+.bookcard .bk-k{font-family:'Space Mono',monospace;font-size:.6rem;color:#C9A961;text-transform:uppercase;letter-spacing:.16em;font-weight:700;}
+.bookcard .bk-t{font-weight:800;font-size:1rem;color:#e2e8f0;line-height:1.25;margin:.15rem 0 .2rem;}
+.bookcard .bk-s{font-size:.78rem;color:#cbd5e1;line-height:1.45;}
+.bookcard .bk-b{display:inline-block;margin-top:.5rem;background:#C9A961;color:#0a0f1e;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;padding:.4rem .8rem;border-radius:6px;}
+@media print{.bookcard{display:none;}}
+</style>
 </head>
 <body>
 
@@ -121,6 +128,7 @@
         <label class="btn-file" style="cursor:pointer;" title="Abrir uma análise salva">&#8679; Abrir arquivo
             <input type="file" accept=".json,application/json" style="display:none" onchange="importarDados(this)"></label>
         <span id="saveState" class="mono" style="font-size:.58rem;color:var(--muted);"></span>
+        <a class="btn-file" href="https://atenaeditora.com.br/index.php/catalogo/ebook/contratacao-e-gestao-de-fornecedores-estrategicos-teoria-modelos-e-praticas-para-a-gestao-de-compras-e-suprimentos" target="_blank" rel="noopener" title="Livro-base da plataforma" style="text-decoration:none;color:#C9A961;border-color:rgba(201,169,97,.5);">📚 Livro</a>
         <div class="mono" style="font-size:.62rem;color:var(--muted);">Kraljic · Kearney · v2.4</div>
       </div>
 </nav>
@@ -166,6 +174,11 @@
 <!-- ===== KRALJIC ===== -->
 <!-- ===== CATEGORIAS ===== -->
 <div id="tab-categorias" class="panel active">
+    <a class="bookcard" href="https://atenaeditora.com.br/index.php/catalogo/ebook/contratacao-e-gestao-de-fornecedores-estrategicos-teoria-modelos-e-praticas-para-a-gestao-de-compras-e-suprimentos" target="_blank" rel="noopener">
+  <img src="img/capa-contratacao-fornecedores.jpg" alt="Capa do livro Contratação e Gestão de Fornecedores Estratégicos, de Thiago Lima">
+  <div><div class="bk-k">Livro-base da plataforma · Thiago Lima · Atena, 2026</div><div class="bk-t">Contratação e Gestão de Fornecedores Estratégicos</div>
+  <div class="bk-s">Teorias, modelos e práticas para a gestão de compras e suprimentos. Os conceitos de Kraljic, Purchasing Chessboard, riscos e gestão de fornecedores usados nesta plataforma estão no livro.</div><span class="bk-b">Baixar o e-book · Atena Editora</span></div>
+</a>
     <div style="margin-bottom:1rem;padding:.8rem 1.1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:.73rem;color:#94a3b8;line-height:1.6;">
         <b style="color:var(--text);">Atividade:</b> <a href="caso-motor-cc.html" style="color:#C9A961;font-weight:700;text-decoration:none;">📘 Parte 1 · Caso Motor CC</a> (usa as abas abaixo) e <a href="exercicio-whirlpool.html" style="color:#C9A961;font-weight:700;text-decoration:none;">🎓 Parte 2 · Exercício Whirlpool</a>.<br><b style="color:var(--text);">Fluxo de trabalho:</b>
         <span style="color:#60a5fa;font-weight:700;">① Cadastre a categoria</span> →
