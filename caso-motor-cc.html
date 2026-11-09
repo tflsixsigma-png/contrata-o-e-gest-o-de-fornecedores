@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Parte 1 · Caso Whirlpool China: o motor CC | Prof. Dr. Thiago Lima</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="fonts.css" rel="stylesheet">
+<script src="estado.js"></script>
+<script src="tema.js"></script>
 <style>
 :root{--bg:#0a0f1e;--surface:#111827;--surface2:#1a2236;--surface3:#0f172a;--border:#1e2d45;--text:#e2e8f0;--soft:#cbd5e1;--muted:#94a3b8;--blue:#3b82f6;--blue-l:#60a5fa;--gold:#C9A961;--green:#34d399;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -48,6 +50,13 @@ ol.q li span{display:block;font-size:.82rem;color:var(--muted);margin-top:.15rem
 .cta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem;}
 .btn{padding:.65rem 1.15rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;display:inline-block;}
 .btn-p{background:var(--gold);color:#0a0f1e;}.btn-g{background:var(--surface2);color:var(--soft);border:1px solid var(--border);}
+.ans{width:100%;min-height:86px;margin-top:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;line-height:1.5;resize:vertical;outline:none;}
+.ans:focus{border-color:var(--gold);}
+.ans-print{display:none;}
+.grp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;margin:.25rem 0 1rem;}
+.grp:focus{border-color:var(--gold);}
+.lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);}
+.saved{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--green);margin-left:.5rem;}
 .dl{display:inline-block;margin:-.2rem 0 1rem;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;color:#0a0f1e;background:var(--gold);padding:.5rem .9rem;border-radius:8px;text-decoration:none;letter-spacing:.04em;}
 .tip{margin-top:.6rem;padding:.65rem .8rem;border-left:3px solid var(--gold);background:rgba(201,169,97,.08);border-radius:0 8px 8px 0;font-size:.86rem;color:var(--soft);}
 .skip{border-style:dashed;}
@@ -64,7 +73,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 @media(max-width:700px){td.v{white-space:normal;}td:first-child{width:45%;}.nav{padding:.7rem 1rem;position:static;}main{padding:1rem 1rem 3rem;}h1{font-size:1.45rem;}.parts{grid-template-columns:1fr;}}
 @media print{
   :root{--bg:#fff;--surface:#fff;--surface2:#fff;--surface3:#fff;--border:#cbd5e1;--text:#0f172a;--soft:#1e293b;--muted:#475569;--gold:#8a6d1f;--blue-l:#1d4ed8;}
-  .nav,.cta,.dl,.parts{display:none!important;} main{padding:0;max-width:none;} h1{font-size:1.35rem;margin-bottom:.4rem;}
+  .nav,.cta,.dl,.parts,.ans,.grp,.lbl,.saved{display:none!important;} main{padding:0;max-width:none;} h1{font-size:1.35rem;margin-bottom:.4rem;}
   h2{margin:.8rem 0 .4rem;font-size:.95rem;break-after:avoid;page-break-after:avoid;}
   p,ol.q li{font-size:.8rem;margin-bottom:.35rem;} .card{padding:.7rem .9rem;margin-bottom:.5rem;}
   .card,ol.steps li{break-inside:auto!important;} tr,.tip,ol.steps li,ol.q li,.sk-grid div{break-inside:avoid;}
@@ -142,7 +151,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
     <li>Na aba <span class="tab">📍 Matriz Kraljic</span>, confira em que quadrante a categoria ficou.</li>
     <li>Na aba <span class="tab">🎯 Diagnóstico PCB</span>, posicione o poder da Whirlpool (demanda) e o poder dos fornecedores (oferta). Façam o diagnóstico <b>para cada um dos dois fornecedores</b>: o equilíbrio de poder muda conforme o caminho escolhido.</li>
     <li>Na aba <span class="tab">🗂 Estratégias</span>, selecione as alavancas que o grupo adotaria.</li>
-    <li>Na aba <span class="tab">📄 Relatório PDF</span>, gere e salve o relatório.</li>
+    <li>Volte a esta página e escreva as respostas do grupo no item 05. Depois, na aba <span class="tab">📄 Relatório PDF</span>, gere e salve o relatório: ele já sai com as respostas.</li>
   </ol>
 
   <div class="card skip">
@@ -172,26 +181,46 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 
   <h2><span class="n">05</span>Perguntas para o grupo</h2>
   <div class="card">
+    <div class="lbl">Integrantes do grupo</div>
+    <input class="grp" id="grupo" type="text" placeholder="Nomes dos integrantes" autocomplete="off">
     <ol class="q">
-      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. Como o grupo pesou o spend pequeno contra o impacto do motor no lançamento?</span></li>
-      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores?<span>Compare o PCB do fornecedor atual com o do novo fornecedor. Use fatos do caso.</span></li>
-      <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span></li>
-      <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span></li>
+      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. Como o grupo pesou o spend pequeno contra o impacto do motor no lançamento?</span><textarea class="ans" id="q1" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
+      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores?<span>Compare o PCB do fornecedor atual com o do novo fornecedor. Use fatos do caso.</span><textarea class="ans" id="q2" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
+      <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span><textarea class="ans" id="q3" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
+      <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span><textarea class="ans" id="q4" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
     </ol>
+    <p class="note">As respostas são salvas automaticamente neste aparelho e entram no Relatório PDF.<span class="saved" id="saved"></span></p>
   </div>
 
   <h2><span class="n">06</span>Entrega</h2>
   <div class="card gold">
-    <p style="margin-bottom:.4rem;"><b>O Relatório PDF da plataforma</b> e as <b>respostas às quatro perguntas</b>, em até uma página.</p>
+    <p style="margin-bottom:.4rem;"><b>Um único arquivo: o Relatório PDF da plataforma.</b> Ele reúne a análise (Kraljic, PCB, riscos, estratégias) e as respostas às quatro perguntas escritas nesta página.</p>
     <p class="note" style="margin-top:0;">Depois, siga para a Parte 2: o Exercício Whirlpool, em que vocês simulam o impacto financeiro de cada alavanca de compras.</p>
     <div class="cta">
       <a class="btn btn-p" href="index.html">Começar na plataforma →</a>
       <a class="btn btn-g" href="exercicio-whirlpool.html">Ir para a Parte 2</a>
+      <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button>
       <a class="btn btn-g" href="enunciado-parte1-motor-cc.pdf" download>⬇ Baixar enunciado em PDF</a>
     </div>
   </div>
 </main>
 
 <footer>Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</footer>
+<script>
+(function(){
+  const d=Estado.ler().p1||{}, r=d.r||{};
+  const g=document.getElementById('grupo'); g.value=d.grupo||'';
+  const ids=['q1','q2','q3','q4']; ids.forEach(k=>document.getElementById(k).value=r[k]||'');
+  let t=null;
+  function salvar(){
+    const o={grupo:g.value.trim(), r:{}}; ids.forEach(k=>o.r[k]=document.getElementById(k).value);
+    const ok=Estado.gravarChave('p1',o);
+    document.getElementById('saved').textContent=ok?'✓ salvo':'não foi possível salvar neste navegador';
+  }
+  [g,...ids.map(k=>document.getElementById(k))].forEach(e=>e.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(salvar,500);}));
+  window.addEventListener('pagehide',()=>{if(t){clearTimeout(t);salvar();}});
+  window.copiar=async function(){salvar();const m=await Estado.compartilhar();if(m)document.getElementById('saved').textContent=m;};
+})();
+</script>
 </body>
 </html>

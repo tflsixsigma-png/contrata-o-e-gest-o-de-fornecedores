@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Exercício Whirlpool · Impacto Financeiro de Compras | Prof. Dr. Thiago Lima</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="fonts.css" rel="stylesheet">
+<script src="estado.js"></script>
+<script src="tema.js"></script>
 <script src="fin-calc.js"></script>
 <style>
 :root{
@@ -97,6 +99,13 @@ p{color:var(--soft);font-size:.92rem;margin-bottom:.7rem;}
 .steps li{font-size:.86rem;color:var(--soft);margin-bottom:.45rem;line-height:1.55;}
 .gl td:first-child{white-space:nowrap;width:30%;}
 @media(max-width:600px){.gl td:first-child{white-space:normal;}}
+.ans{width:100%;min-height:86px;margin-top:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;line-height:1.5;resize:vertical;outline:none;}
+.ans:focus{border-color:var(--gold);}
+.ans-print{display:none;}
+.grp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;margin:.25rem 0 1rem;}
+.grp:focus{border-color:var(--gold);}
+.lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);}
+.saved{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--green);margin-left:.5rem;}
 .memo .t{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:.4rem;}
 .memo .ln{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--soft);line-height:1.75;}
 .memo .ln b{color:var(--text);}
@@ -134,7 +143,15 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 
 @media print{
   :root{--bg:#fff;--surface:#fff;--surface2:#fff;--surface3:#f8fafc;--border:#cbd5e1;--text:#0f172a;--soft:#1e293b;--muted:#475569;--gold:#8a6d1f;--blue-l:#1d4ed8;--green:#047857;--red:#b91c1c;}
-  .nav,.cta,.no-print{display:none!important;} body{font-size:11px;}
+  .nav,.cta,.no-print,.ans,.saved,.bookcard,.pm,.how{display:none!important;} body{font-size:11px;}
+  .ans-print{display:block;white-space:pre-wrap;border:1px solid #cbd5e1;border-left:3px solid #8a6d1f;padding:.4rem .6rem;margin:.3rem 0 .5rem;min-height:1.6rem;font-size:.86rem;}
+  .grp{border:none;padding:0;font-weight:700;}
+  main{padding:0;max-width:none;} h1{font-size:1.3rem;} h2{margin:.9rem 0 .4rem;font-size:.95rem;break-after:avoid;}
+  .m-body{grid-template-columns:1fr 1fr!important;} .m-left{border-right:1px solid #cbd5e1!important;border-bottom:none!important;}
+  .m-left,.m-right{padding:.6rem .8rem;} .m-head{padding:.6rem .8rem;} .qs{padding:.6rem .8rem;}
+  .story p,.qs li{font-size:.76rem;} .data-t{font-size:.72rem;} .memo .ln{font-size:.62rem;line-height:1.5;} .kpi .v{font-size:.9rem;}
+  .base-grid{grid-template-columns:repeat(5,1fr)!important;} .fields{grid-template-columns:1fr 1fr!important;}
+  .fld input{padding:.2rem .4rem;font-size:.8rem;} details.reveal:not([open]){display:none;}
   .mission,.concept,.card{break-inside:avoid;}
 }
 .bookcard{display:flex;gap:1.1rem;align-items:center;background:linear-gradient(135deg,rgba(201,169,97,.12),rgba(201,169,97,.03));border:1px solid rgba(201,169,97,.55);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1rem;text-decoration:none;color:inherit;}
@@ -186,8 +203,8 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 </a>
 
   <!-- ================= CONCEITOS ================= -->
-  <h2><span class="n">00</span>Antes de começar: o mínimo de finanças que você precisa</h2>
-  <div class="card">
+  <h2 class="no-print"><span class="n">00</span>Antes de começar: o mínimo de finanças que você precisa</h2>
+  <div class="card no-print">
     <div class="sub-t" style="margin-top:0;">Seis palavras que aparecem no exercício</div>
     <table class="data-t gl"><tbody>
       <tr><td><b>Lucro operacional (EBIT)</b></td><td>O que sobra das vendas depois de pagar os custos da operação, antes de juros e impostos.</td></tr>
@@ -198,7 +215,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
       <tr><td><b>EVA (valor criado)</b></td><td>O lucro que sobra depois de pagar o custo de todo o dinheiro parado. Se uma decisão aumenta o EVA, ela criou valor.</td></tr>
     </tbody></table>
   </div>
-  <div class="concepts">
+  <div class="concepts no-print">
     <div class="concept">
       <h3>1. Compras ganha dinheiro de dois jeitos</h3>
       <p><b>Pagando menos:</b> o desconto vira lucro a mais, todo ano.</p>
@@ -243,12 +260,17 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   <div class="card">
     <div class="sub-t" style="margin-top:0;">Para fechar: pergunta para o grupo</div>
     <p style="font-size:.95rem;color:var(--text);">Depois das cinco missões, explique com as palavras do grupo <b>por que o saving de preço, sozinho, não mede bem o resultado da área de Compras</b>.</p>
+    <textarea class="ans" id="final" data-k="final" style="min-height:150px;" placeholder="Resposta do grupo (até meia página)"></textarea><div class="ans-print" id="final-p"></div>
+    <div class="lbl" style="margin-top:.8rem;">Integrantes do grupo</div>
+    <input class="grp" id="grupo" type="text" placeholder="Nomes dos integrantes" autocomplete="off">
     <p style="font-size:.86rem;">Use pelo menos dois conceitos vistos no exercício — por exemplo: lucro que se repete todo ano × caixa liberado uma vez, custo do dinheiro parado, preço do prazo, custo total (TCO) ou proteção do fornecimento. Se quiser, relacione com os quadrantes da Kraljic: que tipo de ganho tende a pesar mais em cada um?</p>
     <div class="cta">
-      <button class="btn btn-g" onclick="window.print()">🖨 Imprimir / salvar PDF</button>
+      <button class="btn btn-p" onclick="window.print()">🖨 Gerar PDF com as respostas</button>
+      <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button>
       <button class="btn btn-g" onclick="limpar()">Limpar respostas</button>
-      <a class="btn btn-p" href="caso-motor-cc.html">← Voltar à Parte 1</a>
+      <a class="btn btn-g" href="caso-motor-cc.html">← Voltar à Parte 1</a>
     </div>
+    <p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Tudo é salvo automaticamente neste aparelho. O PDF sai com os dados digitados, os resultados e as respostas do grupo.<span class="saved" id="saved"></span></p>
   </div>
 </main>
 
@@ -373,9 +395,29 @@ const MISSOES = [
 ];
 
 // ---------- Estado (respostas digitadas) ----------
-let resp = {};
-try { resp = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { resp = {}; }
-function salvar() { try { localStorage.setItem(STORE, JSON.stringify(resp)); } catch (e) {} }
+let resp = {}, txt = {}, grupo = '';
+(function carregar() {
+  const e = Estado.ler(), x = e.exercicio;
+  if (x) { resp = x.dados || {}; txt = x.txt || {}; grupo = x.grupo || ''; }
+  else { try { resp = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (err) { resp = {}; } }  // versão anterior
+  if (!grupo && e.p1 && e.p1.grupo) grupo = e.p1.grupo;
+})();
+function salvar() {
+  const ok = Estado.gravarChave('exercicio', { dados: resp, txt: txt, grupo: grupo });
+  const el = $('saved'); if (el) el.textContent = ok ? ' ✓ salvo' : ' não foi possível salvar neste navegador';
+}
+let txtTimer = null;
+function ligarTextos() {
+  document.querySelectorAll('textarea.ans').forEach(t => {
+    const k = t.dataset.k, p = $(t.id + '-p');
+    t.value = txt[k] || ''; if (p) p.textContent = t.value;
+    t.addEventListener('input', () => { txt[k] = t.value; if (p) p.textContent = t.value; clearTimeout(txtTimer); txtTimer = setTimeout(salvar, 500); });
+  });
+  const g = $('grupo'); g.value = grupo;
+  g.oninput = () => { grupo = g.value.trim(); clearTimeout(txtTimer); txtTimer = setTimeout(salvar, 500); };
+}
+window.addEventListener('pagehide', () => { if (txtTimer) { clearTimeout(txtTimer); salvar(); } });
+async function copiar() { salvar(); const m = await Estado.compartilhar(); if (m) $('saved').textContent = ' ' + m; }
 
 // ---------- Base ----------
 (function renderBase() {
@@ -422,7 +464,7 @@ function renderMissoes() {
         <div class="memo"><div class="t">Memória de cálculo</div><div id="${m.id}-memo"></div></div>
       </div>
     </div>
-    <div class="qs"><div class="sub-t" style="margin-top:0;">Perguntas para o grupo</div><ol>${m.perguntas.map(q => `<li>${q}</li>`).join('')}</ol></div>
+    <div class="qs"><div class="sub-t" style="margin-top:0;">Perguntas para o grupo</div><ol>${m.perguntas.map((q, j) => `<li>${q}<textarea class="ans" id="${m.id}-t${j}" data-k="${m.id}_${j}" placeholder="Resposta do grupo"></textarea><div class="ans-print" id="${m.id}-t${j}-p"></div></li>`).join('')}</ol></div>
     <details class="reveal"><summary>Análise do professor · abra depois de responder</summary><div class="rv">${m.analise}</div></details>
   </div>`).join('');
 
@@ -518,10 +560,10 @@ function placar() {
 
 function limpar() {
   if (!confirm('Apagar todos os valores digitados no exercício?')) return;
-  resp = {}; salvar(); renderMissoes(); placar();
+  resp = {}; txt = {}; salvar(); renderMissoes(); ligarTextos(); placar();
 }
 
-renderMissoes(); placar();
+renderMissoes(); ligarTextos(); placar();
 </script>
 </body>
 </html>
