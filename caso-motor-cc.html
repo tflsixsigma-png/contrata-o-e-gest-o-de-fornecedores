@@ -48,11 +48,29 @@ ol.q li span{display:block;font-size:.82rem;color:var(--muted);margin-top:.15rem
 .cta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem;}
 .btn{padding:.65rem 1.15rem;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;display:inline-block;}
 .btn-p{background:var(--gold);color:#0a0f1e;}.btn-g{background:var(--surface2);color:var(--soft);border:1px solid var(--border);}
+.dl{display:inline-block;margin:-.2rem 0 1rem;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;color:#0a0f1e;background:var(--gold);padding:.5rem .9rem;border-radius:8px;text-decoration:none;letter-spacing:.04em;}
+.tip{margin-top:.6rem;padding:.65rem .8rem;border-left:3px solid var(--gold);background:rgba(201,169,97,.08);border-radius:0 8px 8px 0;font-size:.86rem;color:var(--soft);}
+.skip{border-style:dashed;}
+.sk-t{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.7rem;}
+.sk-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.sk-grid div{background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:.82rem;opacity:.9;}
+.sk-grid b{display:block;color:var(--soft);text-decoration:line-through;text-decoration-color:rgba(248,113,113,.7);}
+.sk-grid span{font-size:.74rem;color:var(--muted);}
+.paths th{font-size:.62rem;color:var(--gold);vertical-align:bottom;}
+.paths td{vertical-align:top;font-size:.84rem;}
+.paths td:first-child{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;width:16%;}
+@media(max-width:700px){.sk-grid{grid-template-columns:1fr;}.paths td,.paths th{font-size:.76rem;padding:.4rem .3rem;}}
 footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:.12em;}
 @media(max-width:700px){td.v{white-space:normal;}td:first-child{width:45%;}.nav{padding:.7rem 1rem;position:static;}main{padding:1rem 1rem 3rem;}h1{font-size:1.45rem;}.parts{grid-template-columns:1fr;}}
 @media print{
   :root{--bg:#fff;--surface:#fff;--surface2:#fff;--surface3:#fff;--border:#cbd5e1;--text:#0f172a;--soft:#1e293b;--muted:#475569;--gold:#8a6d1f;--blue-l:#1d4ed8;}
-  .nav,.cta{display:none!important;} .card,ol.steps li{break-inside:avoid;}
+  .nav,.cta,.dl,.parts{display:none!important;} main{padding:0;max-width:none;} h1{font-size:1.35rem;margin-bottom:.4rem;}
+  h2{margin:.8rem 0 .4rem;font-size:.95rem;break-after:avoid;page-break-after:avoid;}
+  p,ol.q li{font-size:.8rem;margin-bottom:.35rem;} .card{padding:.7rem .9rem;margin-bottom:.5rem;}
+  .card,ol.steps li{break-inside:auto!important;} tr,.tip,ol.steps li,ol.q li,.sk-grid div{break-inside:avoid;}
+  td,th{padding:.3rem .4rem;font-size:.76rem;} ol.steps li{padding:.45rem .7rem .45rem 2.6rem;font-size:.8rem;margin-bottom:.3rem;}
+  ol.steps li::before{top:.4rem;left:.6rem;width:1.4rem;height:1.4rem;}
+  .tip{background:#f8f5ec;font-size:.76rem;} .sk-grid div{background:#f8fafc;padding:.35rem .5rem;font-size:.74rem;} footer{padding:.8rem;} .card,ol.steps li{break-inside:avoid;}
 }
 .bookcard{display:flex;gap:1.1rem;align-items:center;background:linear-gradient(135deg,rgba(201,169,97,.12),rgba(201,169,97,.03));border:1px solid rgba(201,169,97,.55);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1rem;text-decoration:none;color:inherit;}
 .bookcard img{width:84px;height:auto;border-radius:4px;box-shadow:4px 4px 0 rgba(201,169,97,.35);flex-shrink:0;}
@@ -79,6 +97,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 <main>
   <div class="tagline">Gestão estratégica de uma categoria de compras</div>
   <h1>Parte 1 · Caso Whirlpool China: <span class="g">o motor de corrente contínua</span></h1>
+  <a class="dl" href="enunciado-parte1-motor-cc.pdf" download>⬇ Baixar este enunciado em PDF</a>
 
   <div class="parts">
     <div class="part on"><div class="k">Parte 1 · você está aqui</div><div class="t">Análise do caso</div><div class="d">Classificar o motor CC, avaliar o poder de negociação e escolher a estratégia.</div></div>
@@ -117,32 +136,58 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 
   <h2><span class="n">03</span>Passo a passo na plataforma</h2>
   <ol class="steps">
-    <li>Na aba <span class="tab">📦 Categorias</span>, cadastre a categoria "Motor CC", com os fornecedores que o grupo considerar e o spend anual. Digite o spend em dólares (6.400.000): o rótulo "R$" da plataforma não altera a análise. Defina o <b>valor para o negócio</b> (eixo Y) e anote por que escolheu esse número.</li>
+    <li>Na aba <span class="tab">📦 Categorias</span>, cadastre a categoria "Motor CC" e o spend anual. Digite o spend em dólares (6.400.000): o rótulo "R$" da plataforma não altera a análise. Em fornecedores, cadastre os dois caminhos do item 04: <b>"Fornecedor atual (motor CA)"</b> e <b>"Novo fornecedor de motor CC"</b>.
+      <div class="tip"><b>Como definir o valor para o negócio (eixo Y, de 0 a 100).</b> Não olhe só o peso no gasto (0,64%). Considere também o <b>impacto pontual no negócio</b>: o que acontece se o motor faltar ou atrasar? Sem motor CC não há geladeira nova, e o caso diz que atraso no lançamento significa grande perda de vendas para a concorrência. Um item barato pode ter valor alto. Anote por que o grupo escolheu o número.</div></li>
     <li>Na aba <span class="tab">⚠️ Avaliação de Riscos</span>, registre <b>pelo menos três ameaças tiradas do caso</b>, com probabilidade e impacto. Elas definem o eixo de risco da Kraljic.</li>
     <li>Na aba <span class="tab">📍 Matriz Kraljic</span>, confira em que quadrante a categoria ficou.</li>
-    <li>Na aba <span class="tab">🎯 Diagnóstico PCB</span>, posicione o poder da Whirlpool (demanda) e o poder dos fornecedores (oferta).</li>
+    <li>Na aba <span class="tab">🎯 Diagnóstico PCB</span>, posicione o poder da Whirlpool (demanda) e o poder dos fornecedores (oferta). Façam o diagnóstico <b>para cada um dos dois fornecedores</b>: o equilíbrio de poder muda conforme o caminho escolhido.</li>
     <li>Na aba <span class="tab">🗂 Estratégias</span>, selecione as alavancas que o grupo adotaria.</li>
     <li>Na aba <span class="tab">📄 Relatório PDF</span>, gere e salve o relatório.</li>
   </ol>
 
-  <h2><span class="n">04</span>Perguntas para o grupo</h2>
+  <div class="card skip">
+    <div class="sk-t">Abas que você <u>não</u> vai usar nesta parte</div>
+    <div class="sk-grid">
+      <div><b>✅ Checklist Contrato</b><span>contrato vem depois da escolha do fornecedor</span></div>
+      <div><b>🤝 Gestão do Relacionamento</b><span>só existe com fornecedor já contratado</span></div>
+      <div><b>💰 Impacto Financeiro</b><span>fica para a Parte 2</span></div>
+      <div><b>Canvas · Inteligência de Mercado · Laboratório</b><span>ferramentas de outras atividades</span></div>
+    </div>
+    <p class="note">O <b>📖 Guia Estratégico</b> não precisa ser preenchido, mas vale consultar: ele resume a estratégia, o tipo de contrato e os riscos de cada quadrante da Kraljic.</p>
+  </div>
+
+  <h2><span class="n">04</span>Os caminhos de fornecimento</h2>
+  <div class="card">
+    <p>Castelletti tem dois caminhos principais. Nenhum é a resposta certa: cada um troca um risco por outro. Use os fatos do caso para comparar.</p>
+    <table class="paths">
+      <thead><tr><th></th><th>A · Desenvolver o fornecedor atual (motor CA)</th><th>B · Buscar um novo fornecedor de motor CC</th></tr></thead>
+      <tbody>
+        <tr><td>Ponto a favor</td><td>Já conhece a Whirlpool e já passou no sistema de qualidade. A Whirlpool tem equipes e orçamento para desenvolver fornecedores.</td><td>Já domina a tecnologia CC.</td></tr>
+        <tr><td>Ponto contra</td><td>Não domina motor CC. Aprender a tecnologia pode não caber em seis meses.</td><td>Precisa passar na auditoria (mínimo de 60 pontos; bons fornecedores locais ficam perto de 50), nos testes de amostra e aceitar as condições de pagamento.</td></tr>
+        <tr><td>Pergunta-chave</td><td>Dá tempo?</td><td>Ele passa na qualificação a tempo, e aceita as condições da Whirlpool?</td></tr>
+      </tbody>
+    </table>
+    <p class="note">O grupo pode escolher um dos caminhos ou combinar os dois, desde que justifique.</p>
+  </div>
+
+  <h2><span class="n">05</span>Perguntas para o grupo</h2>
   <div class="card">
     <ol class="q">
-      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. O spend pequeno deveria pesar na classificação?</span></li>
-      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores de motor CC?<span>Use fatos do caso para sustentar a resposta.</span></li>
-      <li>Castelletti deve desenvolver o fornecedor atual ou contratar um fornecedor de motor CC já existente?<span>Justifique considerando o prazo de seis meses.</span></li>
+      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. Como o grupo pesou o spend pequeno contra o impacto do motor no lançamento?</span></li>
+      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores?<span>Compare o PCB do fornecedor atual com o do novo fornecedor. Use fatos do caso.</span></li>
+      <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span></li>
       <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span></li>
     </ol>
   </div>
 
-  <h2><span class="n">05</span>Entrega</h2>
+  <h2><span class="n">06</span>Entrega</h2>
   <div class="card gold">
     <p style="margin-bottom:.4rem;"><b>O Relatório PDF da plataforma</b> e as <b>respostas às quatro perguntas</b>, em até uma página.</p>
     <p class="note" style="margin-top:0;">Depois, siga para a Parte 2: o Exercício Whirlpool, em que vocês simulam o impacto financeiro de cada alavanca de compras.</p>
     <div class="cta">
       <a class="btn btn-p" href="index.html">Começar na plataforma →</a>
       <a class="btn btn-g" href="exercicio-whirlpool.html">Ir para a Parte 2</a>
-      <button class="btn btn-g" onclick="window.print()">🖨 Imprimir enunciado</button>
+      <a class="btn btn-g" href="enunciado-parte1-motor-cc.pdf" download>⬇ Baixar enunciado em PDF</a>
     </div>
   </div>
 </main>
