@@ -131,6 +131,29 @@
             #reportView .rv-bar{display:none!important;}
             #reportDoc{max-width:none;margin:0;box-shadow:none;overflow:visible;}
         }
+
+        /* barra de abas agrupada */
+        .tabs{flex-wrap:wrap;overflow:visible;gap:.5rem 1.4rem;padding:.8rem 2rem .7rem;align-items:flex-start;}
+        .tg{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;}
+        .tg-l{flex-basis:100%;font-family:var(--mono);font-size:.56rem;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:.05rem;}
+        .tg-extra{flex-basis:100%;padding-top:.6rem;border-top:1px dashed var(--border);}
+        .tabs .tab{border-radius:8px;border:1px solid var(--border);background:var(--surface2);padding:.45rem .8rem;}
+        .tabs .tab.active{background:var(--bg);color:#60a5fa;border-color:#60a5fa;}
+        .tabs a.tab-gold{color:#C9A961;border-color:rgba(201,169,97,.55);}
+        .tabs .tg-more{font-family:'Syne',sans-serif;color:var(--muted);border-style:dashed;margin-top:1.05rem;}
+        .tabs .st{display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;border-radius:50%;border:1px solid var(--muted);font-family:var(--mono);font-size:.62rem;margin-right:.4rem;vertical-align:-1px;}
+        .tabs .st.ok{background:#10b981;border-color:#10b981;color:#04130d;}
+        #phaseDots{display:none!important;}
+        .prog{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;padding:.55rem 2rem;background:#0f172a;border-bottom:1px solid var(--border);font-size:.74rem;color:var(--muted);}
+        .prog:empty{display:none;}
+        .prog b{color:var(--text);}
+        .prog .pbar{flex:0 0 120px;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;}
+        .prog .pbar i{display:block;height:100%;background:#10b981;}
+        .prog button{background:none;border:1px solid #C9A961;color:#C9A961;border-radius:6px;padding:.3rem .7rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;cursor:pointer;}
+        .aba-intro{padding:.75rem 1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);border-left:3px solid #C9A961;margin-bottom:1rem;font-size:.8rem;color:var(--muted);line-height:1.6;}
+        .aba-intro b{color:var(--text);}
+        .btn-ex{background:none;border:1px dashed #C9A961;color:#C9A961;border-radius:8px;padding:.5rem .9rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.74rem;cursor:pointer;margin-top:.6rem;}
+        @media(max-width:700px){.tabs{padding:.7rem 1rem;gap:.5rem;}.tabs .tab{font-size:.6rem;padding:.4rem .55rem;letter-spacing:.03em;}.tabs .st{width:1.1rem;height:1.1rem;margin-right:.3rem;}.tg{flex-basis:100%;}.tabs .tg-more{margin-top:0;}.prog{padding:.5rem 1rem;}}
 </style>
 </head>
 <body>
@@ -168,26 +191,36 @@
 </div>
 
 <!-- TABS -->
-<div class="tabs">
-    <a class="tab tab-link" href="caso-motor-cc.html" title="Atividade · Parte 1: análise do caso Whirlpool China (motor de corrente contínua)" style="color:#C9A961;font-weight:700;"><span class="tl-dot"></span>📘 Parte 1 · Caso Motor CC</a>
-    <a class="tab tab-link" href="exercicio-whirlpool.html" title="Atividade · Parte 2: cinco negociações da Whirlpool e o impacto de cada alavanca" style="color:#C9A961;font-weight:700;"><span class="tl-dot"></span>🎓 Parte 2 · Exercício Whirlpool</a>
-    <div class="tab-div"></div>
-    <div class="tab active" onclick="showTab('categorias',this)">📦 Categorias</div>
-    <div class="tab" onclick="showTab('riscos',this)">⚠️ Avaliação de Riscos</div>
-    <div class="tab" onclick="showTab('kraljic',this)">📍 Matriz Kraljic</div>
-    <div class="tab" onclick="showTab('pcb',this)">🎯 Diagnóstico PCB</div>
-    <div class="tab" onclick="showTab('taxonomia',this)">🗂 Estratégias (64)</div>
-    <div class="tab" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
-    <div class="tab" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
-    <div class="tab" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
-    <a class="tab tab-link" id="tabFin" href="impacto-financeiro.html" title="Impacto das decisões de Compras no EBIT, no capital, no ROIC e no EVA"><span class="tl-dot"></span>💰 Impacto Financeiro</a>
-    <div class="tab-div"></div>
-    <div class="tab" onclick="showTab('relatorio',this)">📄 Relatório PDF</div>
-    <div class="tab-div"></div>
-    <a class="tab tab-link" id="tabCanvas" href="canvas-strategic-sourcing.html" title="Canvas Strategic Sourcing"><span class="tl-dot"></span>Canvas</a>
-    <a class="tab tab-link" href="central-inteligencia.html" title="Ferramenta: análise de mercado da sua categoria com Market Intelligence Report"><span class="tl-dot"></span>Inteligência de Mercado</a>
-    <a class="tab tab-link" href="laboratorio-encontro2.html" title="Atividade em grupo — caso Aurora Alimentos"><span class="tl-dot"></span>Laboratório</a>
+<div class="tabs" id="tabsBar">
+    <div class="tg">
+        <span class="tg-l">Atividade</span>
+        <a class="tab tab-link tab-gold" href="caso-motor-cc.html" title="Atividade · Parte 1: análise do caso Whirlpool China (motor de corrente contínua)">📘 Parte 1 · Caso Motor CC</a>
+        <a class="tab tab-link tab-gold" href="exercicio-whirlpool.html" title="Atividade · Parte 2: cinco negociações da Whirlpool e o impacto de cada alavanca">🎓 Parte 2 · Exercício Whirlpool</a>
+    </div>
+    <div class="tg">
+        <span class="tg-l">Análise · siga a ordem</span>
+        <div class="tab active" id="tabbtn-categorias" onclick="showTab('categorias',this)"><span class="st" id="st-categorias">1</span>📦 Categorias</div>
+        <div class="tab" id="tabbtn-riscos" onclick="showTab('riscos',this)"><span class="st" id="st-riscos">2</span>⚠️ Avaliação de Riscos</div>
+        <div class="tab" id="tabbtn-kraljic" onclick="showTab('kraljic',this)"><span class="st" id="st-kraljic">3</span>📍 Matriz Kraljic</div>
+        <div class="tab" id="tabbtn-pcb" onclick="showTab('pcb',this)"><span class="st" id="st-pcb">4</span>🎯 Diagnóstico PCB</div>
+        <div class="tab" id="tabbtn-taxonomia" onclick="showTab('taxonomia',this)"><span class="st" id="st-taxonomia">5</span>🗂 Estratégias (64)</div>
+        <div class="tab" id="tabbtn-relatorio" onclick="showTab('relatorio',this)"><span class="st" id="st-relatorio">6</span>📄 Relatório PDF</div>
+    </div>
+    <div class="tg">
+        <button type="button" class="tab tg-more" id="btnMais" onclick="toggleMais()">＋ Mais ferramentas</button>
+    </div>
+    <div class="tg tg-extra" id="tgExtra" style="display:none;">
+        <span class="tg-l">Mais ferramentas</span>
+        <div class="tab" id="tabbtn-guia" onclick="showTab('guia',this)">📖 Guia Estratégico</div>
+        <div class="tab" id="tabbtn-checklist" onclick="showTab('checklist',this)">✅ Checklist Contrato</div>
+        <div class="tab" id="tabbtn-gestao" onclick="showTab('gestao',this)">🤝 Gestão do Relacionamento</div>
+        <a class="tab tab-link" id="tabFin" href="impacto-financeiro.html" title="Impacto das decisões de Compras no lucro, no caixa, no ROIC e no EVA">💰 Impacto Financeiro</a>
+        <a class="tab tab-link" id="tabCanvas" href="canvas-strategic-sourcing.html" title="Canvas Strategic Sourcing">Canvas</a>
+        <a class="tab tab-link" href="central-inteligencia.html" title="Ferramenta: análise de mercado da sua categoria com Market Intelligence Report">Inteligência de Mercado</a>
+        <a class="tab tab-link" href="laboratorio-encontro2.html" title="Atividade em grupo — caso Aurora Alimentos">Laboratório</a>
+    </div>
 </div>
+<div id="progLine" class="prog"></div>
 
 <!-- ===== KRALJIC ===== -->
 <!-- ===== CATEGORIAS ===== -->
@@ -206,6 +239,8 @@
         <span style="color:#60a5fa;font-weight:700;">⑤ selecione estratégias e alavancas</span> →
         <a href="impacto-financeiro.html" id="flowFin" style="color:#C9A961;font-weight:700;text-decoration:none;">⑥ meça o impacto financeiro</a> → relatório.
     </div>
+    <div style="margin:-.3rem 0 1rem;"><button class="btn-ex" onclick="carregarExemplo()">✨ Ver um exemplo preenchido (Aço laminado)</button>
+        <span style="font-size:.7rem;color:var(--muted);margin-left:.5rem;">Acrescenta uma categoria de exemplo, com riscos, poder e estratégias. Pode ser apagada depois.</span></div>
     <div class="grid2" style="align-items:start;">
         <div class="card">
             <div class="card-title" id="catFormTitle">Cadastrar Categoria</div>
@@ -318,6 +353,8 @@
 
 
 <div id="tab-kraljic" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> um mapa que cruza a importância da categoria para o negócio (eixo vertical) com o risco de ficar sem ela (eixo horizontal). O quadrante indica o tipo de estratégia. <b>Você não digita nada aqui:</b> a importância vem da aba Categorias e o risco, da aba Avaliação de Riscos.</div>
+
     <div class="grid2" style="align-items:start;">
         <div class="card">
             <div class="card-title">Matriz Kraljic — Valor/Impacto × Risco/Complexidade</div>
@@ -339,6 +376,8 @@
 
 <!-- ===== PCB ===== -->
 <div id="tab-pcb" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> uma avaliação de quem tem mais força na negociação. <b>Como usar:</b> mova os dois controles — o poder da sua empresa como compradora (demanda) e o poder do fornecedor (oferta) — e clique em Salvar Diagnóstico. Pode ser feito para a categoria inteira ou para um fornecedor específico.</div>
+
     <div id="pcbEmpty" class="empty" style="display:none;"><div class="empty-icon">🎯</div><p>Cadastre uma categoria na primeira aba.</p></div>
     <div id="pcbCtxBar" class="card" style="margin-bottom:1rem;padding:.85rem 1.2rem;">
         <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
@@ -383,6 +422,8 @@
 
 <!-- ===== CHECKLIST ===== -->
 <div id="tab-checklist" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> a lista do que um bom contrato deve cobrir nesta categoria. <b>Como usar:</b> marque o que o contrato já tem. Serve depois que o fornecedor foi escolhido.</div>
+
     <div id="clEmpty" class="empty" style="display:none;"><div class="empty-icon">✅</div><p>Selecione uma categoria na barra acima.</p></div>
     <div id="clContent" style="display:none;grid-template-columns:240px 1fr;gap:1.5rem;">
         <div class="card" style="height:fit-content;position:sticky;top:130px;">
@@ -401,6 +442,8 @@
 
 <!-- ===== GESTÃO ===== -->
 <div id="tab-gestao" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> uma nota de 0 a 10 para o fornecedor principal em sete critérios. Serve para acompanhar um fornecedor já contratado.</div>
+
     <div id="gestEmpty" class="empty" style="display:none;"><div class="empty-icon">🤝</div><p>Selecione uma categoria na barra acima.</p></div>
     <div id="gestContent" class="grid2" style="display:none;align-items:start;">
         <div class="card">
@@ -425,6 +468,8 @@
 
 <!-- ===== GUIA ===== -->
 <div id="tab-guia" class="panel" style="display:none;">
+    <div class="aba-intro"><b>Consulta rápida:</b> para cada quadrante da Kraljic, o objetivo, o tipo de contrato indicado, os indicadores e os riscos. Não há nada para preencher.</div>
+
     <div class="guide-block">
         <div class="guide-head" style="background:rgba(29,78,216,.1);border-bottom:1px solid var(--border);">
             <span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>
@@ -524,10 +569,14 @@
 </div>
 
 <!-- ===== TAXONOMIA ===== -->
-<div id="tab-taxonomia" class="panel" style="display:none;"><div id="taxWrap"></div></div>
+<div id="tab-taxonomia" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> as 64 formas de agir sobre uma categoria, do Purchasing Chessboard, agrupadas por estratégia. <b>Como usar:</b> marque as que o grupo adotaria. Elas entram no relatório.</div>
+<div id="taxWrap"></div></div>
 
 <!-- ===== RELATÓRIO ===== -->
 <div id="tab-relatorio" class="panel" style="display:none;">
+    <div class="aba-intro"><b>O que é:</b> o documento que reúne toda a análise. <b>Como usar:</b> escolha as seções e as categorias, clique em Gerar Relatório e depois em Imprimir / salvar PDF. As respostas da Parte 1 entram automaticamente.</div>
+
     <div style="max-width:700px;margin:0 auto;">
         <div class="card" style="margin-bottom:1rem;">
             <div class="card-title">Configurar Relatório</div>
@@ -637,7 +686,9 @@ function showTab(name,el){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     const panel=document.getElementById('tab-'+name);
     panel.style.display='block';panel.classList.add('active');
-    if(el) el.classList.add('active');
+    if(!el) el=document.getElementById('tabbtn-'+name);
+    if(el){el.classList.add('active'); if(el.closest('#tgExtra')) toggleMais(true);}
+    if(name==='kraljic'){const sk=cur(); if(sk&&!sk.kVisto&&riscosDaCat(sk).length){sk.kVisto=true;agendarSalvamento();}}
     if(name==='categorias'){renderSupList();renderFornPanel();}
     if(name==='riscos'){refreshRiskCatList();riskCtxSyncFromGlobal();renderRisks();}
     if(name==='kraljic'){syncKraljicX();renderKInfo();setTimeout(()=>{try{if(kChart){kChart.resize();}else{initKChart();}updateKChart();}catch(e){}},80);}
@@ -816,7 +867,55 @@ function agendarSalvamento(){
     clearTimeout(saveTimer);
     saveTimer=setTimeout(salvarLocal, 600);
 }
+function riscosDaCat(s){return risks.filter(r=>r.catId?r.catId===s.id:r.cat===s.name);}
+function toggleMais(abrir){
+    const g=document.getElementById('tgExtra'), b=document.getElementById('btnMais');
+    const on=abrir===true?true:(g.style.display==='none');
+    g.style.display=on?'flex':'none'; b.textContent=on?'− Menos ferramentas':'＋ Mais ferramentas';
+}
+const PASSOS=[
+    {k:'categorias',n:'Categorias',ok:s=>!!s},
+    {k:'riscos',n:'Avaliação de Riscos',ok:s=>riscosDaCat(s).length>=3},
+    {k:'kraljic',n:'Matriz Kraljic',ok:s=>!!s.kVisto&&riscosDaCat(s).length>0},
+    {k:'pcb',n:'Diagnóstico PCB',ok:s=>!!s.pcbQuad||!!(s.pcbForn&&Object.keys(s.pcbForn).length)},
+    {k:'taxonomia',n:'Estratégias',ok:s=>!!(s.tax&&s.tax.length)},
+    {k:'relatorio',n:'Relatório PDF',ok:s=>!!s.relOk}
+];
+function atualizarProgresso(){
+    const line=document.getElementById('progLine'); if(!line) return;
+    const s=cur();
+    const feito=PASSOS.map(p=>!!(s&&p.ok(s)));
+    PASSOS.forEach((p,i)=>{const e=document.getElementById('st-'+p.k); if(e){e.classList.toggle('ok',feito[i]); e.textContent=feito[i]?'✓':(i+1);}});
+    if(!s){line.innerHTML='<span>Comece pelo passo <b>1 · Categorias</b>: cadastre a categoria que o grupo vai analisar.</span>';return;}
+    const n=feito.filter(Boolean).length, prox=feito.indexOf(false);
+    let dica='';
+    if(prox===1){const q=riscosDaCat(s).length; dica=` (${q} de 3 riscos registrados)`;}
+    line.innerHTML=`<span><b>${s.name}</b> · ${n} de 6 passos</span><span class="pbar"><i style="width:${n/6*100}%"></i></span>`+
+        (prox>=0?`<span>Próximo: <b>${prox+1} · ${PASSOS[prox].n}</b>${dica}</span><button onclick="showTab('${PASSOS[prox].k}',null)">Ir →</button>`:'<span style="color:#10b981;font-weight:700;">✓ Análise completa</span>');
+}
+function carregarExemplo(){
+    const NOME='Exemplo · Aço laminado';
+    let s=suppliers.find(o=>o.name===NOME);
+    if(!s){
+        const id='ex'+Date.now();
+        s={id, name:NOME, forn:'Usina A, Usina B, Usina C', spend:'1.500.000.000', kx:50, ky:80, kquad:'',
+           pcbX:40, pcbY:70, pcbQuad:pcbQuad(40,70).n, checklist:{}, scores:Array(CRITERIA.length).fill(5),
+           color:COLORS[suppliers.length%COLORS.length], tax:['A6','A4'], kVisto:true,
+           fin:{spend:1500,direto:true,alav:{saving:5,dpo:20,precoPrazo:0.5,estoque:-5,custoProt:0,prejParada:0}}};
+        suppliers.push(s);
+        const P2='Fora da empresa, dentro da cadeia estendida', P3='Externo à rede da cadeia';
+        [['Alta do preço internacional do aço eleva o custo do contrato','Macro',P3,3,3,'Cláusula de reajuste por índice'],
+         ['Atraso de bobinas por greve no transporte rodoviário','Fornecimento',P2,2,3,'Estoque de segurança de duas semanas'],
+         ['Uma das três usinas reduz a produção e prioriza outros clientes','Fornecimento',P2,2,2,'Dividir o volume entre as três usinas']
+        ].forEach((r,i)=>risks.push({id:id+'r'+i,desc:r[0],tipo:r[1],persp:r[2],catId:id,cat:NOME,forn:'',p:r[3],i:r[4],resp:r[5]}));
+    }
+    syncKraljicX(); updateGlobalSel(); refreshRiskCatList(); selectSup(s.id); renderRisks();
+    try{updateKChart();}catch(e){}
+    salvarLocal();
+    toast('Exemplo carregado. Percorra as abas 2 a 6 para ver como fica uma análise completa.');
+}
 function marcarSalvo(txt){
+    atualizarProgresso();
     const el=document.getElementById('saveState');
     if(el){
         const n=suppliers.length, r=risks.length;
@@ -930,7 +1029,7 @@ function selectSup(id){
     curId=id||null;
     document.getElementById('globalSel').value=id||'';
     updateSupBar(); updatePCBForSup(); renderChecklist(); renderGestao();
-    renderSupList(); renderFornPanel();
+    renderSupList(); renderFornPanel(); atualizarProgresso();
 }
 
 function atualizarLinkCanvas(){
@@ -1430,6 +1529,7 @@ function generatePDF(){
         h+=`</div>`;
     });
 
+    sups.forEach(x=>x.relOk=true); salvarLocal();
     abrirRelatorio(h);
 }
 function abrirRelatorio(h){
