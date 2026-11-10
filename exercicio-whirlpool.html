@@ -184,16 +184,16 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   <p class="note">As cinco negociações, os gastos por categoria e os fornecedores são <b>hipotéticos</b>, criados para o exercício. A base financeira da empresa usa receita, custos, EBIT, estoques, recebíveis e ativo fixo da DFP 2024 da Whirlpool S.A.; o prazo de pagamento (95 dias) e o WACC (14%) são premissas didáticas.</p>
 
   <div class="how">
-    <div><span class="k">1 · Leia</span>o enunciado de cada missão e o conceito que ela trabalha.</div>
+    <div><span class="k">1 · Leia</span>o enunciado de cada negociação e o conceito que ela trabalha.</div>
     <div><span class="k">2 · Digite</span>os dados da negociação nos campos. Os resultados aparecem na hora.</div>
-    <div><span class="k">3 · Discuta</span>as perguntas com o grupo e anote as respostas.</div>
-    <div><span class="k">4 · Confira</span>só então abra "Análise do professor" e compare.</div>
+    <div><span class="k">3 · Discuta</span>as perguntas de cada negociação com o grupo. Não precisa escrever.</div>
+    <div><span class="k">4 · Confira e responda</span>abra a "Análise do professor" e, no fim, escreva a resposta à pergunta final.</div>
   </div>
 
   <a class="bookcard" href="https://atenaeditora.com.br/index.php/catalogo/ebook/contratacao-e-gestao-de-fornecedores-estrategicos-teoria-modelos-e-praticas-para-a-gestao-de-compras-e-suprimentos" target="_blank" rel="noopener">
   <img src="img/capa-contratacao-fornecedores.jpg" alt="Capa do livro Contratação e Gestão de Fornecedores Estratégicos, de Thiago Lima">
   <div><div class="bk-k">Leitura de apoio</div><div class="bk-t">Contratação e Gestão de Fornecedores Estratégicos</div>
-  <div class="bk-s">Alavancas de compras, custo total (TCO) e gestão de fornecedores: o livro aprofunda os conceitos usados nas cinco missões.</div><span class="bk-b">Baixar o e-book · Atena Editora</span></div>
+  <div class="bk-s">Alavancas de compras, custo total (TCO) e gestão de fornecedores: o livro aprofunda os conceitos usados nas cinco negociações.</div><span class="bk-b">Baixar o e-book · Atena Editora</span></div>
 </a>
 
 <a class="bookcard" href="https://atenaeditora.com.br/index.php/catalogo/ebook/a-interface-entre-supply-chain-e-financas-corporativas" target="_blank" rel="noopener">
@@ -259,18 +259,18 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   </div>
   <div class="card">
     <div class="sub-t" style="margin-top:0;">Para fechar: pergunta para o grupo</div>
-    <p style="font-size:.95rem;color:var(--text);">Depois das cinco missões, explique com as palavras do grupo <b>por que o saving de preço, sozinho, não mede bem o resultado da área de Compras</b>.</p>
+    <p style="font-size:.95rem;color:var(--text);">Depois das cinco negociações, explique com as palavras do grupo <b>por que o saving de preço, sozinho, não mede bem o resultado da área de Compras</b>.</p>
     <textarea class="ans" id="final" data-k="final" style="min-height:150px;" placeholder="Resposta do grupo (até meia página)"></textarea><div class="ans-print" id="final-p"></div>
     <div class="lbl" style="margin-top:.8rem;">Integrantes do grupo</div>
     <input class="grp" id="grupo" type="text" placeholder="Nomes dos integrantes" autocomplete="off">
     <p style="font-size:.86rem;">Use pelo menos dois conceitos vistos no exercício — por exemplo: lucro que se repete todo ano × caixa liberado uma vez, custo do dinheiro parado, preço do prazo, custo total (TCO) ou proteção do fornecimento. Se quiser, relacione com os quadrantes da Kraljic: que tipo de ganho tende a pesar mais em cada um?</p>
     <div class="cta">
-      <button class="btn btn-p" onclick="window.print()">🖨 Gerar PDF com as respostas</button>
+      <button class="btn btn-p" onclick="window.print()">🖨 Gerar PDF da entrega</button>
       <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button>
       <button class="btn btn-g" onclick="limpar()">Limpar respostas</button>
       <a class="btn btn-g" href="caso-motor-cc.html">← Voltar à Parte 1</a>
     </div>
-    <p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Tudo é salvo automaticamente neste aparelho. O PDF sai com os dados digitados, os resultados e as respostas do grupo.<span class="saved" id="saved"></span></p>
+    <p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Tudo é salvo automaticamente neste aparelho. O PDF sai com os dados digitados, os resultados e a resposta do grupo à pergunta final.<span class="saved" id="saved"></span></p>
   </div>
 </main>
 
@@ -312,7 +312,7 @@ const MISSOES = [
         <li><b>O prazo teve preço.</b> A usina tirou um desconto de 0,5%. Na prática, a Whirlpool pagou juros à usina: 0,5% por 20 dias. Um ano tem cerca de 18 períodos de 20 dias (365 ÷ 20), então isso dá cerca de <b>9% ao ano</b> (0,5% × 18).</li>
         <li><b>Valeu a pena?</b> O dinheiro normal da Whirlpool custa 14% ao ano; o "empréstimo" da usina custa 9%. Pegar dinheiro mais barato que o normal é bom negócio. Se a usina cobrasse 1%, os juros iriam a cerca de 18% ao ano: mais caro que o dinheiro normal, e o prazo deixaria de valer a pena.</li>
       </ol>
-      <p><b>O que levar desta missão.</b> Na Whirlpool, de cada R$ 100 vendidos sobram R$ 9 de lucro operacional. Para lucrar os mesmos R$ 67,5 mi que o desconto líquido trouxe (5% − 0,5%), a empresa teria de vender <b>R$ 750 mi a mais</b> (67,5 ÷ 0,09). Compras gerou esse lucro sem vender uma geladeira a mais.</p>`
+      <p><b>O que levar desta negociação.</b> Na Whirlpool, de cada R$ 100 vendidos sobram R$ 9 de lucro operacional. Para lucrar os mesmos R$ 67,5 mi que o desconto líquido trouxe (5% − 0,5%), a empresa teria de vender <b>R$ 750 mi a mais</b> (67,5 ÷ 0,09). Compras gerou esse lucro sem vender uma geladeira a mais.</p>`
   },
   {
     id: 'comp', titulo: 'Compressores: parceria, VMI e Supply Chain Finance', quad: 'Estratégico', qcls: 'be', spend: 900,
@@ -332,7 +332,7 @@ const MISSOES = [
         <li><b>Resultado:</b> cerca de R$ 26 mi de valor criado por ano, quase metade do aço, com um desconto mais de cinco vezes menor.</li>
       </ol>
       <p><b>Por que o fornecedor aceita esperar 30 dias?</b> Porque ele não espera. No Supply Chain Finance, um banco paga o fornecedor logo, e a Whirlpool paga o banco 30 dias depois. O banco cobra juros do fornecedor, mas calculados sobre o risco da Whirlpool, uma empresa grande e boa pagadora. São juros menores do que o fornecedor conseguiria sozinho. O fornecedor recebe rápido e barato; a Whirlpool ganha prazo sem pagar nada.</p>
-      <p><b>O que levar desta missão.</b> Em fornecedor estratégico, dá para ganhar caixa sem apertar o parceiro.</p>`
+      <p><b>O que levar desta negociação.</b> Em fornecedor estratégico, dá para ganhar caixa sem apertar o parceiro.</p>`
   },
   {
     id: 'resina', titulo: 'Resinas plásticas: o desconto por volume', quad: 'Alavancagem', qcls: 'ba', spend: 700,
@@ -351,7 +351,7 @@ const MISSOES = [
         <li><b>A conta final.</b> Ganha R$ 9,2 mi, gasta R$ 12,1 mi: <b>perde cerca de R$ 3 mi por ano</b> (a ferramenta mostra R$ 2,8 mi porque não arredonda).</li>
       </ol>
       <p><b>E na vida real é pior:</b> a simulação só cobra o custo do dinheiro. Falta o armazém, o manuseio, o seguro e as perdas.</p>
-      <p><b>O que levar desta missão.</b> Desconto de preço tem de ser comparado com o custo total de ter o material, o chamado TCO. Teria sido melhor negociar o desconto pelo volume do ano, mantendo entregas mensais, ou pedir que o distribuidor deixasse o estoque em consignação.</p>`
+      <p><b>O que levar desta negociação.</b> Desconto de preço tem de ser comparado com o custo total de ter o material, o chamado TCO. Teria sido melhor negociar o desconto pelo volume do ano, mantendo entregas mensais, ou pedir que o distribuidor deixasse o estoque em consignação.</p>`
   },
   {
     id: 'chips', titulo: 'Placas eletrônicas: o preço de não parar', quad: 'Gargalo', qcls: 'bg', spend: 250,
@@ -370,7 +370,7 @@ const MISSOES = [
         <li><b>O que ela evita.</b> Uma parada custa R$ 40 mi; depois do imposto, <b>R$ 26,4 mi</b>.</li>
         <li><b>A conta de equilíbrio.</b> 26,4 ÷ 4,7 ≈ 5,6. A proteção se paga se evitar <b>uma parada a cada 5 ou 6 anos</b>. (A ferramenta mostra 8 anos porque conta só o segundo fornecedor, 40 ÷ 5, sem o estoque.)</li>
       </ol>
-      <p><b>O que levar desta missão.</b> Valor negativo não quer dizer decisão errada. A proteção funciona como um seguro: você paga todo ano e torce para não usar. A pergunta é se uma parada a cada 5 ou 6 anos é provável. Depois da falta de semicondutores de 2021–2022, muita gente diria que sim.</p>`
+      <p><b>O que levar desta negociação.</b> Valor negativo não quer dizer decisão errada. A proteção funciona como um seguro: você paga todo ano e torce para não usar. A pergunta é se uma parada a cada 5 ou 6 anos é provável. Depois da falta de semicondutores de 2021–2022, muita gente diria que sim.</p>`
   },
   {
     id: 'emb', titulo: 'Embalagens: agregar volume e pagar antes', quad: 'Não-crítico', qcls: 'bn', spend: 300,
@@ -390,7 +390,7 @@ const MISSOES = [
         <li><b>Saldo da antecipação:</b> 4 − 1,2 = <b>R$ 2,8 mi por ano</b> a favor da Whirlpool.</li>
         <li><b>Em forma de juros.</b> Ganhar 2% por pagar 10 dias antes: um ano tem cerca de 36 períodos de 10 dias, então isso equivale a cerca de <b>73% ao ano</b> (2% × 36,5). Nenhuma aplicação financeira rende isso.</li>
       </ol>
-      <p><b>O que levar desta missão.</b> É o espelho da missão 2. Para fornecedor pequeno, prazo custa caro, e quem tem caixa pode ganhar com isso. Em toda negociação de prazo, a pergunta é a mesma: quem está financiando quem, e a que juros?</p>`
+      <p><b>O que levar desta negociação.</b> É o espelho do Strategic Sourcing 2. Para fornecedor pequeno, prazo custa caro, e quem tem caixa pode ganhar com isso. Em toda negociação de prazo, a pergunta é a mesma: quem está financiando quem, e a que juros?</p>`
   }
 ];
 
@@ -434,10 +434,10 @@ async function copiar() { salvar(); const m = await Estado.compartilhar(); if (m
 // ---------- Missões ----------
 function renderMissoes() {
   $('missions').innerHTML = MISSOES.map((m, i) => `
-  <h2><span class="n">0${i + 2}</span>Missão ${i + 1}</h2>
+  <h2><span class="n">0${i + 2}</span>Strategic Sourcing ${i + 1}</h2>
   <div class="mission" id="m-${m.id}">
     <div class="m-head">
-      <div><div class="m-num">Missão ${i + 1} · spend R$ ${m.spend.toLocaleString('pt-BR')} mi</div><div class="m-title">${m.titulo}</div></div>
+      <div><div class="m-num">Strategic Sourcing ${i + 1} · spend R$ ${m.spend.toLocaleString('pt-BR')} mi</div><div class="m-title">${m.titulo}</div></div>
       <span class="badge ${m.qcls}">Kraljic · ${m.quad}</span>
     </div>
     <div class="m-body">
@@ -464,7 +464,7 @@ function renderMissoes() {
         <div class="memo"><div class="t">Memória de cálculo</div><div id="${m.id}-memo"></div></div>
       </div>
     </div>
-    <div class="qs"><div class="sub-t" style="margin-top:0;">Perguntas para o grupo</div><ol>${m.perguntas.map((q, j) => `<li>${q}<textarea class="ans" id="${m.id}-t${j}" data-k="${m.id}_${j}" placeholder="Resposta do grupo"></textarea><div class="ans-print" id="${m.id}-t${j}-p"></div></li>`).join('')}</ol></div>
+    <div class="qs"><div class="sub-t" style="margin-top:0;">Para discutir no grupo (não precisa escrever)</div><ol>${m.perguntas.map(q => `<li>${q}</li>`).join('')}</ol></div>
     <details class="reveal"><summary>Análise do professor · abra depois de responder</summary><div class="rv">${m.analise}</div></details>
   </div>`).join('');
 
@@ -542,7 +542,7 @@ function calcular(m) {
 function placar() {
   const B = F.base(BASE);
   let tE = 0, tC = 0, tV = 0, n = 0;
-  let h = '<table class="ptable"><thead><tr><th>Missão</th><th>Kraljic</th><th>Spend</th><th>Lucro a mais/ano</th><th>Caixa liberado</th><th>Valor criado/ano</th></tr></thead><tbody>';
+  let h = '<table class="ptable"><thead><tr><th>Strategic Sourcing</th><th>Kraljic</th><th>Spend</th><th>Lucro a mais/ano</th><th>Caixa liberado</th><th>Valor criado/ano</th></tr></thead><tbody>';
   MISSOES.forEach((m, i) => {
     const r0 = resp[m.id] || {};
     const ok = m.campos.some(c => isFinite(r0[c]));
@@ -553,8 +553,8 @@ function placar() {
   });
   const roicN = ((B.ebit + tE) * (1 - BASE.ir / 100)) / (B.ci + tC) * 100;
   h += `<tr class="tot"><td>Total da rodada</td><td></td><td>${F.fmtMi(MISSOES.reduce((s, m) => s + m.spend, 0))}</td><td>${F.fmtSig(tE)}</td><td>${F.fmtSig(-tC)}</td><td>${F.fmtSig(tV)}</td></tr></tbody></table>`;
-  h += n ? `<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Com ${n} de 5 missões simuladas: o ROIC da Whirlpool vai de <b style="color:var(--gold)">${F.fmtPct(B.roic)} para ${F.fmtPct(roicN)}</b>, e o valor criado por ano (EVA) de ${F.fmtMi(B.eva)} para ${F.fmtMi(B.eva + tV)}.</p>`
-       : '<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Simule as missões para ver o placar.</p>';
+  h += n ? `<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Com ${n} de 5 negociações simuladas: o ROIC da Whirlpool vai de <b style="color:var(--gold)">${F.fmtPct(B.roic)} para ${F.fmtPct(roicN)}</b>, e o valor criado por ano (EVA) de ${F.fmtMi(B.eva)} para ${F.fmtMi(B.eva + tV)}.</p>`
+       : '<p class="warn-s" style="margin-top:.7rem;margin-bottom:0;">Simule as negociações para ver o placar.</p>';
   $('placar').innerHTML = h;
 }
 
