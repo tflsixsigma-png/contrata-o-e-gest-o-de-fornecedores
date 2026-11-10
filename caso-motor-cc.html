@@ -88,6 +88,14 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
 .bookcard .bk-s{font-size:.78rem;color:#cbd5e1;line-height:1.45;}
 .bookcard .bk-b{display:inline-block;margin-top:.5rem;background:#C9A961;color:#0a0f1e;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;padding:.4rem .8rem;border-radius:6px;}
 @media print{.bookcard{display:none;}}
+#respDoc{display:none;}
+@media print{
+  body.pr .nav, body.pr main, body.pr footer{display:none!important;}
+  body.pr #respDoc{display:block;font-family:'Syne',sans-serif;color:#0f172a;padding:0;}
+  #respDoc h1{font-size:1.3rem;margin-bottom:.2rem;color:#0f172a;} #respDoc .rs{font-size:.78rem;color:#475569;padding-bottom:.6rem;border-bottom:2px solid #8a6d1f;margin-bottom:1rem;}
+  #respDoc .rq{font-weight:700;font-size:.92rem;margin-top:1rem;break-after:avoid;} #respDoc .ra{white-space:pre-wrap;border:1px solid #cbd5e1;border-left:3px solid #8a6d1f;padding:.5rem .7rem;margin-top:.3rem;font-size:.9rem;line-height:1.5;min-height:2.2rem;}
+  #respDoc .rf{margin-top:1.5rem;font-size:.66rem;color:#64748b;text-transform:uppercase;letter-spacing:.1em;}
+}
 </style>
 </head>
 <body>
@@ -151,7 +159,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
     <li>Na aba <span class="tab">📍 Matriz Kraljic</span>, confira em que quadrante a categoria ficou.</li>
     <li>Na aba <span class="tab">🎯 Diagnóstico PCB</span>, posicione o poder da Whirlpool (demanda) e o poder dos fornecedores (oferta). Façam o diagnóstico <b>para cada um dos dois fornecedores</b>: o equilíbrio de poder muda conforme o caminho escolhido.</li>
     <li>Na aba <span class="tab">🗂 Estratégias</span>, selecione as alavancas que o grupo adotaria.</li>
-    <li>Volte a esta página e escreva as respostas do grupo no item 05. Depois, na aba <span class="tab">📄 Relatório PDF</span>, gere e salve o relatório: ele já sai com as respostas.</li>
+    <li>Volte a esta página, escreva as respostas do grupo no item 05 e clique em <b>Gerar PDF com as respostas</b>. A aba <span class="tab">📄 Relatório PDF</span> é opcional: serve para o grupo guardar a análise completa.</li>
   </ol>
 
   <div class="card skip">
@@ -190,15 +198,17 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
       <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span><textarea class="ans" id="q3" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
       <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span><textarea class="ans" id="q4" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
     </ol>
-    <p class="note">As respostas são salvas automaticamente neste aparelho e entram no Relatório PDF.<span class="saved" id="saved"></span></p>
+    <div class="cta" style="margin-top:.6rem;"><button class="btn btn-p" onclick="pdfRespostas()">🖨 Gerar PDF com as respostas</button></div>
+    <p class="note">As respostas são salvas automaticamente neste aparelho.<span class="saved" id="saved"></span></p>
   </div>
 
   <h2><span class="n">06</span>Entrega</h2>
   <div class="card gold">
-    <p style="margin-bottom:.4rem;"><b>Um único arquivo: o Relatório PDF da plataforma.</b> Ele reúne a análise (Kraljic, PCB, riscos, estratégias) e as respostas às quatro perguntas escritas nesta página.</p>
+    <p style="margin-bottom:.4rem;"><b>Um único arquivo: o PDF com as respostas do grupo</b>, gerado pelo botão do item 05. A análise na plataforma (Kraljic, riscos, PCB, estratégias) é o caminho para chegar às respostas e será discutida em sala; não precisa ser entregue.</p>
     <p class="note" style="margin-top:0;">Depois, siga para a Parte 2: o Exercício Whirlpool, em que vocês simulam o impacto financeiro de cada alavanca de compras.</p>
     <div class="cta">
       <a class="btn btn-p" href="index.html">Começar na plataforma →</a>
+      <button class="btn btn-g" onclick="pdfRespostas()">🖨 Gerar PDF com as respostas</button>
       <a class="btn btn-g" href="exercicio-whirlpool.html">Ir para a Parte 2</a>
       <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button>
       <a class="btn btn-g" href="enunciado-parte1-motor-cc.pdf" download>⬇ Baixar enunciado em PDF</a>
@@ -206,6 +216,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   </div>
 </main>
 
+<div id="respDoc"></div>
 <footer>Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</footer>
 <script>
 (function(){
@@ -220,6 +231,17 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
   }
   [g,...ids.map(k=>document.getElementById(k))].forEach(e=>e.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(salvar,500);}));
   window.addEventListener('pagehide',()=>{if(t){clearTimeout(t);salvar();}});
+  window.pdfRespostas=function(){
+    salvar();
+    const e=Estado.esc, d=document.getElementById('respDoc');
+    d.innerHTML='<h1>Parte 1 · Caso Whirlpool China: o motor de corrente contínua</h1>'+
+      '<div class="rs">Respostas do grupo'+(g.value.trim()?' · '+e(g.value.trim()):'')+' · '+new Date().toLocaleDateString('pt-BR')+'</div>'+
+      Estado.P1_PERGUNTAS.map((q,i)=>'<div class="rq">'+(i+1)+'. '+q+'</div><div class="ra">'+(e(document.getElementById('q'+(i+1)).value.trim())||'<i style="color:#94a3b8">sem resposta</i>')+'</div>').join('')+
+      '<div class="rf">Gestão estratégica de uma categoria de compras · Prof. Dr. Thiago Lima</div>';
+    document.body.classList.add('pr');
+    window.print();
+  };
+  window.addEventListener('afterprint',()=>document.body.classList.remove('pr'));
   window.copiar=async function(){salvar();const m=await Estado.compartilhar();if(m)document.getElementById('saved').textContent=m;};
 })();
 </script>
