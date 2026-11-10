@@ -159,7 +159,7 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
     <li>Na aba <span class="tab">📍 Matriz Kraljic</span>, confira em que quadrante a categoria ficou.</li>
     <li>Na aba <span class="tab">🎯 Diagnóstico PCB</span>, posicione o poder da Whirlpool (demanda) e o poder dos fornecedores (oferta). Façam o diagnóstico <b>para cada um dos dois fornecedores</b>: o equilíbrio de poder muda conforme o caminho escolhido.</li>
     <li>Na aba <span class="tab">🗂 Estratégias</span>, selecione as alavancas que o grupo adotaria.</li>
-    <li>Volte a esta página, escreva as respostas do grupo no item 05 e clique em <b>Gerar PDF com as respostas</b>. A aba <span class="tab">📄 Relatório PDF</span> é opcional: serve para o grupo guardar a análise completa.</li>
+    <li>Na aba <span class="tab">📄 Relatório PDF</span>, escreva os nomes dos integrantes no campo "Grupo · integrantes", clique em Gerar Relatório e depois em Imprimir / salvar PDF.</li>
   </ol>
 
   <div class="card skip">
@@ -188,62 +188,33 @@ footer{text-align:center;font-size:.62rem;color:var(--muted);padding:2rem 1rem;b
     <p class="note">O grupo pode escolher um dos caminhos ou combinar os dois, desde que justifique.</p>
   </div>
 
-  <h2><span class="n">05</span>Perguntas para o grupo</h2>
+  <h2><span class="n">05</span>Perguntas que vamos discutir em sala</h2>
   <div class="card">
-    <div class="lbl">Integrantes do grupo</div>
-    <input class="grp" id="grupo" type="text" placeholder="Nomes dos integrantes" autocomplete="off">
+    <p>Não é preciso escrever as respostas. Preparem-se para defendê-las em sala, com base no que o grupo preencheu na plataforma.</p>
     <ol class="q">
-      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. Como o grupo pesou o spend pequeno contra o impacto do motor no lançamento?</span><textarea class="ans" id="q1" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
-      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores?<span>Compare o PCB do fornecedor atual com o do novo fornecedor. Use fatos do caso.</span><textarea class="ans" id="q2" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
-      <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span><textarea class="ans" id="q3" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
-      <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span><textarea class="ans" id="q4" placeholder="Resposta do grupo (curta: cerca de 5 linhas)"></textarea></li>
+      <li>Em que quadrante da Kraljic o motor CC ficou, e por quê?<span>O motor pesa menos de 1% do gasto. Como o grupo pesou o spend pequeno contra o impacto do motor no lançamento?</span></li>
+      <li>Quem tem mais poder nessa negociação, a Whirlpool ou os fornecedores?<span>Compare o PCB do fornecedor atual com o do novo fornecedor. Use fatos do caso.</span></li>
+      <li>Qual caminho Castelletti deve seguir: A, B ou uma combinação dos dois?<span>Justifique considerando o prazo de seis meses, a qualidade exigida e o risco de atrasar o lançamento.</span></li>
+      <li>A Whirlpool exige que o prazo de pagamento só comece a contar quando as peças saem do estoque em consignação. Nessa categoria, vale manter essa exigência?<span>Pense no que a Whirlpool ganha com isso e no que pode perder.</span></li>
     </ol>
-    <div class="cta" style="margin-top:.6rem;"><button class="btn btn-p" onclick="pdfRespostas()">🖨 Gerar PDF com as respostas</button></div>
-    <p class="note">As respostas são salvas automaticamente neste aparelho.<span class="saved" id="saved"></span></p>
   </div>
 
   <h2><span class="n">06</span>Entrega</h2>
   <div class="card gold">
-    <p style="margin-bottom:.4rem;"><b>Um único arquivo: o PDF com as respostas do grupo</b>, gerado pelo botão do item 05. A análise na plataforma (Kraljic, riscos, PCB, estratégias) é o caminho para chegar às respostas e será discutida em sala; não precisa ser entregue.</p>
+    <p style="margin-bottom:.4rem;"><b>Um único arquivo: o Relatório PDF da plataforma</b>, com o que o grupo preencheu nas abas: categoria e fornecedores, riscos, posição na Kraljic, diagnóstico de poder (PCB) e estratégias escolhidas. As perguntas do item 05 serão discutidas em sala.</p>
     <p class="note" style="margin-top:0;">Depois, siga para a Parte 2: o Exercício Whirlpool, em que vocês simulam o impacto financeiro de cada alavanca de compras.</p>
     <div class="cta">
       <a class="btn btn-p" href="index.html">Começar na plataforma →</a>
-      <button class="btn btn-g" onclick="pdfRespostas()">🖨 Gerar PDF com as respostas</button>
       <a class="btn btn-g" href="exercicio-whirlpool.html">Ir para a Parte 2</a>
-      <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button>
+      <button class="btn btn-g" onclick="copiar()">🔗 Copiar link do trabalho</button><span class="saved" id="saved"></span>
       <a class="btn btn-g" href="enunciado-parte1-motor-cc.pdf" download>⬇ Baixar enunciado em PDF</a>
     </div>
   </div>
 </main>
 
-<div id="respDoc"></div>
 <footer>Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos</footer>
 <script>
-(function(){
-  const d=Estado.ler().p1||{}, r=d.r||{};
-  const g=document.getElementById('grupo'); g.value=d.grupo||'';
-  const ids=['q1','q2','q3','q4']; ids.forEach(k=>document.getElementById(k).value=r[k]||'');
-  let t=null;
-  function salvar(){
-    const o={grupo:g.value.trim(), r:{}}; ids.forEach(k=>o.r[k]=document.getElementById(k).value);
-    const ok=Estado.gravarChave('p1',o);
-    document.getElementById('saved').textContent=ok?'✓ salvo':'não foi possível salvar neste navegador';
-  }
-  [g,...ids.map(k=>document.getElementById(k))].forEach(e=>e.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(salvar,500);}));
-  window.addEventListener('pagehide',()=>{if(t){clearTimeout(t);salvar();}});
-  window.pdfRespostas=function(){
-    salvar();
-    const e=Estado.esc, d=document.getElementById('respDoc');
-    d.innerHTML='<h1>Parte 1 · Caso Whirlpool China: o motor de corrente contínua</h1>'+
-      '<div class="rs">Respostas do grupo'+(g.value.trim()?' · '+e(g.value.trim()):'')+' · '+new Date().toLocaleDateString('pt-BR')+'</div>'+
-      Estado.P1_PERGUNTAS.map((q,i)=>'<div class="rq">'+(i+1)+'. '+q+'</div><div class="ra">'+(e(document.getElementById('q'+(i+1)).value.trim())||'<i style="color:#94a3b8">sem resposta</i>')+'</div>').join('')+
-      '<div class="rf">Gestão estratégica de uma categoria de compras · Prof. Dr. Thiago Lima</div>';
-    document.body.classList.add('pr');
-    window.print();
-  };
-  window.addEventListener('afterprint',()=>document.body.classList.remove('pr'));
-  window.copiar=async function(){salvar();const m=await Estado.compartilhar();if(m)document.getElementById('saved').textContent=m;};
-})();
+window.copiar=async function(){const m=await Estado.compartilhar();if(m)document.getElementById('saved').textContent=m;};
 </script>
 </body>
 </html>

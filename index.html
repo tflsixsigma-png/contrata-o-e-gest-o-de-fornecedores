@@ -575,22 +575,22 @@
 
 <!-- ===== RELATÓRIO ===== -->
 <div id="tab-relatorio" class="panel" style="display:none;">
-    <div class="aba-intro"><b>O que é:</b> o documento que reúne toda a análise. <b>Como usar:</b> escolha as seções e as categorias, clique em Gerar Relatório e depois em Imprimir / salvar PDF. Se o grupo escreveu respostas na Parte 1, elas também entram.</div>
+    <div class="aba-intro"><b>O que é:</b> o documento que reúne toda a análise. <b>Como usar:</b> escolha as seções e as categorias, clique em Gerar Relatório e depois em Imprimir / salvar PDF. Escreva os nomes dos integrantes no campo Grupo.</div>
 
     <div style="max-width:700px;margin:0 auto;">
         <div class="card" style="margin-bottom:1rem;">
             <div class="card-title">Configurar Relatório</div>
             <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.1rem;">
                 <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Título</label><input id="rTitle" class="ifield" value="Relatório — Gestão de Categorias e Riscos"></div>
-                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Empresa / Turma</label><input id="rOrg" class="ifield" placeholder="Ex: MBA Turma 2025"></div>
+                <div><label style="font-size:.67rem;color:var(--muted);display:block;margin-bottom:.25rem;">Grupo · integrantes</label><input id="rOrg" class="ifield" placeholder="Nomes dos integrantes do grupo"></div>
             </div>
             <div class="card-title">Seções</div>
             <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem;" id="rSecs">
                 <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-sumario" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">📊 Sumário Executivo</div><div style="font-size:.67rem;color:var(--muted);">Tabela consolidada de todas as categorias</div></div></label>
                 <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-kraljic" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">📍 Avaliação Kraljic</div><div style="font-size:.67rem;color:var(--muted);">Posição na matriz por categoria</div></div></label>
                 <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-pcb" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🎯 Diagnóstico PCB (Kearney)</div><div style="font-size:.67rem;color:var(--muted);">Poder de demanda/oferta e quadrante Kearney</div></div></label>
-                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-checklist" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">✅ Checklist de Contrato</div><div style="font-size:.67rem;color:var(--muted);">Itens marcados por categoria</div></div></label>
-                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-gestao" checked style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🤝 Gestão do Relacionamento</div><div style="font-size:.67rem;color:var(--muted);">Score de avaliação por categoria</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-checklist" style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">✅ Checklist de Contrato</div><div style="font-size:.67rem;color:var(--muted);">Itens marcados por categoria</div></div></label>
+                <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);"><input type="checkbox" id="rs-gestao" style="accent-color:var(--blue);width:14px;height:14px;"><div><div style="font-size:.78rem;font-weight:700;">🤝 Gestão do Relacionamento</div><div style="font-size:.67rem;color:var(--muted);">Score de avaliação por categoria</div></div></label>
             </div>
             <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-tax" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">🗂 Estratégias Selecionadas</div><div style="font-size:.67rem;color:var(--muted);">Métodos do Chessboard marcados por categoria</div></div></label>
             <label style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;background:var(--surface2);"><input type="checkbox" id="rs-riscos" checked style="margin-top:.2rem;"><div><div style="font-size:.74rem;font-weight:700;">⚠️ Registro de Riscos</div><div style="font-size:.67rem;color:var(--muted);">Ameaças mapeadas com probabilidade × impacto</div></div></label>
@@ -1378,7 +1378,7 @@ function generatePDF(){
     const kClsMap={Estratégico:'be',Alavancagem:'ba',Gargalo:'bg','Não-crítico':'bn'};
 
     let h=`<style>#reportDoc *{box-sizing:border-box;}#reportDoc{font-family:'Syne',sans-serif;color:#1e293b;margin:0;font-size:12px;line-height:1.45;background:#fff;}#reportDoc .page{padding:2rem;page-break-after:always;}#reportDoc .page:last-child{page-break-after:avoid;}#reportDoc h1{font-size:1.4rem;font-weight:800;color:#1e3a8a;margin-bottom:.25rem;}#reportDoc .sub{font-size:.7rem;color:#64748b;padding-bottom:1rem;border-bottom:3px solid #1e3a8a;margin-bottom:1.5rem;}#reportDoc h2{font-size:.95rem;font-weight:800;color:#1e3a8a;margin:1.3rem 0 .5rem;border-bottom:2px solid #e2e8f0;padding-bottom:.25rem;text-transform:uppercase;}#reportDoc h3{font-size:.82rem;font-weight:700;color:#334155;margin:.75rem 0 .3rem;padding-left:.5rem;border-left:3px solid #3b82f6;}#reportDoc table{width:100%;border-collapse:collapse;margin-bottom:.9rem;}#reportDoc th{background:#1e3a8a;color:white;padding:.38rem .65rem;font-size:.7rem;text-align:left;}#reportDoc td{border:1px solid #e2e8f0;padding:.35rem .65rem;font-size:.74rem;vertical-align:top;}#reportDoc tr:nth-child(even) td{background:#f8fafc;}#reportDoc .badge{display:inline-block;padding:.18rem .5rem;border-radius:999px;font-size:.67rem;font-weight:700;}#reportDoc .be{background:#fee2e2;color:#dc2626;}#reportDoc .ba{background:#dbeafe;color:#1d4ed8;}#reportDoc .bg{background:#ede9fe;color:#7c3aed;}#reportDoc .bn{background:#f1f5f9;color:#475569;}#reportDoc .bp1{background:#fee2e2;color:#dc2626;}#reportDoc .bp2{background:#dbeafe;color:#1d4ed8;}#reportDoc .bp3{background:#f1f5f9;color:#475569;}#reportDoc .bp4{background:#ede9fe;color:#7c3aed;}#reportDoc .cl{padding:.22rem 0;border-bottom:1px solid #f1f5f9;font-size:.74rem;}#reportDoc .cl-done{color:#94a3b8;text-decoration:line-through;}#reportDoc .sec-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:.5rem 0 .2rem;}
-    #reportDoc .resp{border:1px solid #e2e8f0;border-left:3px solid #C9A961;padding:.45rem .7rem;margin:.2rem 0 .7rem;font-size:.78rem;white-space:pre-wrap;background:#fffdf7;}#reportDoc .resp-q{font-size:.78rem;font-weight:700;color:#1e293b;margin-top:.5rem;}
+    #reportDoc h2,#reportDoc h3{break-after:avoid;page-break-after:avoid;}#reportDoc tr{break-inside:avoid;}#reportDoc .resp{border:1px solid #e2e8f0;border-left:3px solid #C9A961;padding:.45rem .7rem;margin:.2rem 0 .7rem;font-size:.78rem;white-space:pre-wrap;background:#fffdf7;}#reportDoc .resp-q{font-size:.78rem;font-weight:700;color:#1e293b;margin-top:.5rem;}
     </style>`;
 
     const incR=document.getElementById('rs-riscos')?document.getElementById('rs-riscos').checked:false;
@@ -1386,12 +1386,7 @@ function generatePDF(){
 
     // CAPA + SUMÁRIO
     atualizarExtras();
-    const p1=estadoExtra.p1||{}, p1r=p1.r||{};
-    h+=`<div class="page"><h1>${title}</h1><div class="sub">${org?org+' · ':''}${p1.grupo?'Grupo: '+Estado.esc(p1.grupo)+' · ':''}Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos · ${new Date().toLocaleDateString('pt-BR')}</div>`;
-    if(Estado.P1_PERGUNTAS.some((q,i)=>(p1r['q'+(i+1)]||'').trim())){
-        h+=`<h2>📘 Parte 1 · Respostas do grupo</h2>`;
-        Estado.P1_PERGUNTAS.forEach((q,i)=>{h+=`<div class="resp-q">${i+1}. ${q}</div><div class="resp">${Estado.esc((p1r['q'+(i+1)]||'').trim())||'<i style="color:#94a3b8">sem resposta</i>'}</div>`;});
-    }
+    h+=`<div class="page"><h1>${title}</h1><div class="sub">${org?Estado.esc(org)+' · ':''}Prof. Dr. Thiago Lima · Desenvolvido para fins didáticos · ${new Date().toLocaleDateString('pt-BR')}</div>`;
     if(incR&&risks.length){
         h+=`<h2>⚠️ Registro de Riscos (probabilidade × impacto)</h2>
         <table><thead><tr><th>Ameaça</th><th>Tipo</th><th>Perspectiva</th><th>Categoria</th><th>Fornecedor</th><th>P</th><th>I</th><th>Score</th><th>Mitigação</th></tr></thead><tbody>`;
